@@ -9,7 +9,7 @@ $adminmenu[$i]['icon']  = 'images/admin/home.png';
 
 $i++;
 $adminmenu[$i]['title'] = _MI_beck_iscore_ADMENU1;
-$adminmenu[$i]['link']  = "admin/main.php";
+$adminmenu[$i]['link']  = "admin/teacher.php";
 $adminmenu[$i]['desc']  = _MI_beck_iscore_ADMENU1_DESC;
 $adminmenu[$i]['icon']  = 'images/admin/teacher.png';
 
@@ -19,6 +19,11 @@ $adminmenu[$i]['link']  = "admin/department.php";
 $adminmenu[$i]['desc']  = _MI_beck_iscore_ADMENU2_DESC;
 $adminmenu[$i]['icon']  = 'images/admin/department.png';
 
+$i++;
+$adminmenu[$i]['title'] = _MI_beck_iscore_ADMENU3;
+$adminmenu[$i]['link']  = "admin/student.php";
+$adminmenu[$i]['desc']  = _MI_beck_iscore_ADMENU3_DESC;
+$adminmenu[$i]['icon']  = 'images/admin/student.png';
 
 $i++;
 $adminmenu[$i]['title'] = _MI_TAD_ADMIN_ABOUT;
