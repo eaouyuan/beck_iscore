@@ -117,3 +117,9 @@ ul {
     text-align: center;
     margin: 3em auto;
 }
+/* 縮圖顯示 */
+img.cover  {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}

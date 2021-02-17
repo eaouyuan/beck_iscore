@@ -1,29 +1,46 @@
 <?php
-/*
-function xoops_module_update_模組目錄(&$module, $old_version) {
-GLOBAL $xoopsDB;
 
-//if(!chk_chk1()) go_update1();
+function xoops_module_update_beck_iscore(&$module, $old_version) {
+    GLOBAL $xoopsDB;
 
-return true;
+    mk_group('編輯群');
+
+    // if(!chk_chk1()) go_update1();
+
+    return true;
+}
+
+function mk_group($name = "")
+{
+    global $xoopsDB;
+    $sql           = "select groupid from " . $xoopsDB->prefix("groups") . " where `name`='$name'";
+    $result        = $xoopsDB->query($sql) or web_error($sql);
+    list($groupid) = $xoopsDB->fetchRow($result);
+    if (empty($groupid)) {
+        $sql = "insert into " . $xoopsDB->prefix("groups") . " (`name`) values('{$name}')";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        //取得最後新增資料的流水編號
+        $groupid = $xoopsDB->getInsertId();
+    }
+    return $groupid;
 }
 
 //檢查某欄位是否存在
 function chk_chk1(){
-global $xoopsDB;
-$sql="select count(`欄位`) from ".$xoopsDB->prefix("資料表");
-$result=$xoopsDB->query($sql);
-if(empty($result)) return false;
-return true;
+    global $xoopsDB;
+    $sql="select count(`欄位`) from ".$xoopsDB->prefix("資料表");
+    $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    if(empty($result)) return false;
+    return true;
 }
 
 //執行更新
 function go_update1(){
-global $xoopsDB;
-$sql="ALTER TABLE ".$xoopsDB->prefix("資料表")." ADD `欄位` smallint(5) NOT NULL";
-$xoopsDB->queryF($sql) or redirect_header(XOOPS_URL,3,  mysql_error());
+    global $xoopsDB;
+    $sql="ALTER TABLE ".$xoopsDB->prefix("資料表")." ADD `欄位` smallint(5) NOT NULL";
+    $xoopsDB->queryF($sql) or redirect_header(XOOPS_URL,3,  mysql_error());
 
-return true;
+    return true;
 }
 
 //建立目錄
@@ -89,5 +106,3 @@ closedir($dir_handle);
 rmdir($dirname);
 return true;
 }
-
- */

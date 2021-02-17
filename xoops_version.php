@@ -2,11 +2,11 @@
 $modversion = array();
 
 //---模組基本資訊---//
-$modversion['name']        = '分校成績輸入';
+$modversion['name']        = _MI_beck_iscore_NAME;
 $modversion['version']     = 1.00;
-$modversion['description'] = '模組說明';
+$modversion['description'] = _MI_beck_iscore_DESCRIPTION;
 $modversion['author']      = 'Beck';
-$modversion['credits']     = '相關有功人員';
+$modversion['credits']     = '';
 $modversion['help']        = 'page=help';
 $modversion['license']     = 'GNU GPL 2.0';
 $modversion['license_url'] = 'www.gnu.org/licenses/gpl-2.0.html/';
@@ -35,7 +35,10 @@ $modversion['system_menu'] = 1;
 
 //---模組資料表架構---//
 $modversion['sqlfile']['mysql'] = 'sql/nzsmr_teacher.sql';
-$modversion['tables'] = 'nzsmr_teacher';
+$modversion['tables'][]         = 'nzsmr_teacher';             //教師管理
+$modversion['tables'][]         = 'nzsmr_department';          //學程 國甲乙 餐飲 資處 美容
+$modversion['tables'][]         = 'beck_iscore_files_center';  //檔案上傳
+$modversion['tables'][]         = 'nzsmr_student';             //學生基本資料
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;
@@ -50,23 +53,31 @@ $modversion['hasMain'] = 1;
 //$i++;
 
 //---模組自動功能---//
-//$modversion['onInstall'] = "include/install.php";
-//$modversion['onUpdate'] = "include/update.php";
-//$modversion['onUninstall'] = "include/onUninstall.php";
+$modversion['onInstall'] = "include/onInstall.php";//安裝時
+$modversion['onUpdate'] = "include/onUpdate.php";     //更新時
+$modversion['onUninstall'] = "include/onUninstall.php"; //反安裝時
 
 //---樣板設定---//
 $modversion['templates']                    = array();
 $i                                          = 1;
-$modversion['templates'][$i]['file']        = 'beck_iscore_adm_main.tpl';
-$modversion['templates'][$i]['description'] = 'beck_iscore_adm_main.tpl';
+$modversion['templates'][$i]['file']        = 'beck_iscore_adm_teacher.tpl';
+$modversion['templates'][$i]['description'] = '後台教師管理樣版';
 
 $i++;
 $modversion['templates'][$i]['file']        = 'beck_iscore_adm_department.tpl';
-$modversion['templates'][$i]['description'] = 'beck_iscore_adm_department.tpl';
+$modversion['templates'][$i]['description'] = '後台學程管理樣版';
 
 $i++;
-$modversion['templates'][$i]['file']        = 'demo_index.tpl';
-$modversion['templates'][$i]['description'] = '模組首頁樣板';
+$modversion['templates'][$i]['file']        = 'beck_iscore_adm_student.tpl';
+$modversion['templates'][$i]['description'] = '後台學生基本資料管理樣版';
+
+$i++;
+$modversion['templates'][$i]['file']        = 'beck_iscore_index.tpl';
+$modversion['templates'][$i]['description'] = '前台成績系統輸入樣板';
+
+// $i++;
+// $modversion['templates'][$i]['file']        = 'demo_adm_main.tpl';
+// $modversion['templates'][$i]['description'] = '後台管理頁樣板';
 
 //---偏好設定---//
 $modversion['config'] = array();
