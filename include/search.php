@@ -1,7 +1,7 @@
 <?php
 //搜尋程式
 
-function 模組目錄_search($queryarray, $andor, $limit, $offset, $userid)
+function beck_iscore_search($queryarray, $andor, $limit, $offset, $userid)
 {
     global $xoopsDB;
     if (get_magic_quotes_gpc()) {
@@ -10,28 +10,28 @@ function 模組目錄_search($queryarray, $andor, $limit, $offset, $userid)
         }
         $queryarray = $arr;
     }
-    $sql = "SELECT `流水號欄位`,`標題欄位`,`日期欄位`, `uid欄位` FROM " . $xoopsDB->prefix("資料表") . " WHERE 篩選條件";
+    $sql = "SELECT `sn`,`stu_name`,`update_time`, `uid` FROM " . $xoopsDB->prefix("yy_student") . " WHERE 1";
     if ($userid != 0) {
         $sql .= " AND uid=" . $userid . " ";
     }
     if (is_array($queryarray) && $count = count($queryarray)) {
-        $sql .= " AND ((`標題欄位` LIKE '%{$queryarray[0]}%'  OR `其他欲搜尋欄位` LIKE '%{$queryarray[0]}%' )";
+        $sql .= " AND ((`stu_name` LIKE '%{$queryarray[0]}%'  OR `family_profile` LIKE '%{$queryarray[0]}%' )";
         for ($i = 1; $i < $count; $i++) {
             $sql .= " $andor ";
-            $sql .= "(`標題欄位` LIKE '%{$queryarray[$i]}%' OR  `其他欲搜尋欄位` LIKE '%{$queryarray[$i]}%' )";
+            $sql .= "(`stu_name` LIKE '%{$queryarray[$i]}%' OR  `family_profile` LIKE '%{$queryarray[$i]}%' )";
         }
         $sql .= ") ";
     }
-    $sql .= "ORDER BY  `日期欄位` DESC";
+    $sql .= "ORDER BY  `create_time` DESC";
     $result = $xoopsDB->query($sql, $limit, $offset);
     $ret    = array();
     $i      = 0;
     while ($myrow = $xoopsDB->fetchArray($result)) {
-        $ret[$i]['image'] = "images/圖示.png";
-        $ret[$i]['link']  = "index.php?流水號欄位=" . $myrow['流水號欄位'];
-        $ret[$i]['title'] = $myrow['標題欄位'];
-        $ret[$i]['time']  = strtotime($myrow['日期欄位']);
-        $ret[$i]['uid']   = $myrow['uid欄位'];
+        $ret[$i]['image'] = "images/icons/on.png";
+        $ret[$i]['link']  = "index.php?sn=" . $myrow['sn'];
+        $ret[$i]['title'] = $myrow['stu_name'];
+        $ret[$i]['time']  = strtotime($myrow['create_time']);
+        $ret[$i]['uid']   = $myrow['uid'];
         $i++;
     }
     return $ret;

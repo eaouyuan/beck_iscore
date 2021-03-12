@@ -17,8 +17,7 @@ function show_content()
 
 /*-----------執行動作判斷區----------*/
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
-$op = system_CleanVars($_REQUEST, 'op', '', 'string');
-// $sn = system_CleanVars($_REQUEST, 'sn', 0, 'int');
+$op = Request::getString('op');
 
 switch ($op) {
 

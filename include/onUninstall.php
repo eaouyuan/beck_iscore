@@ -3,10 +3,27 @@
 function xoops_module_uninstall_beck_iscore(&$module) {
     GLOBAL $xoopsDB;
     $date=date("Ymd");
+    
+    del_group("編輯群");
 
     rename(XOOPS_ROOT_PATH."/uploads/beck_iscore",XOOPS_ROOT_PATH."/uploads/beck_iscore_bak_{$date}");
 
     return true;
+}
+
+// 刪除群組
+function del_group($name=""){
+    global $xoopsDB;
+    $sql = "select groupid from ".$xoopsDB->prefix("groups")." where `name`='$name'";
+    $result=$xoopsDB->query($sql) or web_error($sql);
+    list($groupid)=$xoopsDB->fetchRow($result);
+    if(!empty($groupid)){
+        $sql = "DELETE FROM ".$xoopsDB->prefix("group_permission")." where `gperm_groupid`='{$groupid}'";
+        $xoopsDB->queryF($sql) or web_error($sql);
+
+        $sql_group = "DELETE FROM ".$xoopsDB->prefix("groups")." where `name`='{$name}'";
+        $xoopsDB->queryF($sql_group) or web_error($sql);
+    }   
 }
 
 //刪除目錄

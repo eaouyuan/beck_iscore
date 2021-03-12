@@ -1,4 +1,6 @@
 <?php
+use XoopsModules\Tadtools\Utility;
+
 //判斷是否對該模組有管理權限
 $session_name = basename(__DIR__) . '_adm';
 // var_dump($xoopsUser->isAdmin());
@@ -8,11 +10,12 @@ $session_name = basename(__DIR__) . '_adm';
 // var_dump($isAdmin);
 // echo('<br>');
 
-if($xoopsUser){
-    $isAdmin=$xoopsUser->isAdmin();
-}
+// if($xoopsUser){
+//     $isAdmin=$xoopsUser->isAdmin();
+// }
 // var_dump($xoopsUser->isAdmin());
 // echo('<br>');
+// die();
 // var_dump($session_name);
 // echo('<br>');
 
@@ -32,11 +35,19 @@ if (!isset($_SESSION[$session_name])) {
 // $interface_icon[_TAD_TO_MOD] = "";
 
 //模組後台
-if ($isAdmin) {
+if (power_chk("", 1)) {
     $interface_menu['新增學生'] = "index.php?op=student_form";
     $interface_icon['新增學生'] = "";
 
-    //管理介面
+    $interface_menu['總表PDF'] = "pdf_all.php";
+    $interface_icon['總表PDF'] = "";
+
+    $interface_menu['滑動文章'] = "sortable.php";
+    $interface_icon['滑動文章'] = "";
+}
+
+//管理介面
+if($_SESSION[$session_name] ){
     $interface_menu[_TAD_TO_ADMIN] = "admin/index.php";
     $interface_icon[_TAD_TO_ADMIN] = "";
 }

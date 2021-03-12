@@ -114,34 +114,11 @@ function teacher_insert(){
 
 }
 
-// function system_CleanVars(&$global, $key, $default = '', $type = 'int')
-// {
-//     $GLOBALS['xoopsLogger']->addDeprecated("system_CleanVars() is deprecated since XOOPS 2.5.11, please use 'Xmf\Request' instead");
-//     switch ($type) {
-//         case 'array':
-//             $ret = (isset($global[$key]) && is_array($global[$key])) ? $global[$key] : $default;
-//             break;
-//         case 'date':
-//             $ret = isset($global[$key]) ? strtotime($global[$key]) : $default;
-//             break;
-//         case 'string':
-//             $ret = isset($global[$key]) ? filter_var($global[$key], FILTER_SANITIZE_SPECIAL_CHARS) : $default;
-//             break;
-//         case 'int':
-//         default:
-//             $ret = isset($global[$key]) ? filter_var($global[$key], FILTER_SANITIZE_NUMBER_INT) : $default;
-//             break;
-//     }
-//     if ($ret === false) {
-//         return $default;
-//     }
-
-//     return $ret;
-// }
 /*-----------執行動作判斷區----------*/
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
-$op = system_CleanVars($_REQUEST, 'op', '', 'string');
-// $sn = system_CleanVars($_REQUEST, 'sn', 0, 'int');
+$op = Request::getString('op');
+
+
 
 switch ($op) {
 

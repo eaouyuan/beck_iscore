@@ -123,3 +123,112 @@ img.cover  {
     height: 200px;
     object-fit: cover;
 }
+
+
+ul.nav > li > a {
+    text-shadow: 0px 0px 0px rgba(0, 0, 0, 1);
+}
+
+nav.navbar {
+    box-shadow: 1px 5px 10px 1px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 1px 5px 10px 1px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 1px 5px 10px 1px rgba(0, 0, 0, 0.5);
+    -o-box-shadow: 1px 5px 10px 1px rgba(0, 0, 0, 0.5);
+}
+
+div.new-article {
+    display: block;
+    width: 100%;
+    position: relative;
+    padding: 12px;
+    background-color: white;
+    margin: 14px auto;
+    color: #444;
+}
+
+div.new-article:before,
+div.new-article:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    box-shadow: 0 0 10px black;
+    border-radius: 50%;
+    width: 100%;
+    height: 20px;
+    display: none;
+}
+
+div.top-shadow:before {
+    display: block;
+    top: 0px;
+    clip: rect(-20px auto 0 auto);
+}
+
+div.bottom-shadow:after {
+    display: block;
+    bottom: 0px;
+    clip: rect(20px auto 40px auto);
+}
+
+
+
+/* article.title */
+.latest-post {
+    position: absolute;
+    opacity: 0;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    padding: 1.5em;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(to right bottom, rgba(238, 238, 238, 0.2), rgba(200, 200, 200, 0.3));
+    -webkit-transition: all .6s ease-in-out;
+    transition: all .6s ease-in-out;
+}
+
+.latest-post:hover {
+    overflow: hidden;
+    border-left-color: #dddddd;
+    border-right-color: #dddddd;
+    background: linear-gradient(to right bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.2));
+    border-top: 100px solid rgba(255, 255, 255, 0.3);
+    border-bottom-color: transparent;
+}
+
+.latest-post h3,
+.latest-post h4 {
+    color: #fff !important;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 1);
+    margin: 0;
+    font-weight: 700;
+}
+
+.latest-post {
+    opacity: 1;
+}
+
+.summary {
+    word-break: break-all;
+    line-height: 1.5;
+    font-size: 1.1em;
+    }
+
+img.cover  {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.slide-img {
+    width: 100%; 
+    object-fit: cover;
+}
+.carousel-caption{    
+    background-color: rgba(0,0,0,0.5); 
+}
+#carousel-example-generic{
+    position:relative;    
+    top: -22px;
+}

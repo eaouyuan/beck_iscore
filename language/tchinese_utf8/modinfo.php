@@ -12,3 +12,15 @@ define("_MI_beck_iscore_ADMENU2_DESC", "學程管理");
 
 define("_MI_beck_iscore_ADMENU3", "學生管理");
 define("_MI_beck_iscore_ADMENU3_DESC", "學生管理");
+
+define('_MI_SNEWS_SHOW_NUM', '首頁顯示的文章數量');
+define('_MI_SNEWS_SHOW_NUM_DESC', '請填數字');
+
+
+define('_MI_BECK_ISOCRE_BLOCK_FOCUS', '精選文章');
+define('_MI_BECK_ISOCRE_BLOCK_FOCUS_DESC', '精選文章列表');
+
+
+
+
+

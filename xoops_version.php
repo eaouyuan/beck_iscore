@@ -35,10 +35,13 @@ $modversion['system_menu'] = 1;
 
 //---模組資料表架構---//
 $modversion['sqlfile']['mysql'] = 'sql/nzsmr_teacher.sql';
-$modversion['tables'][]         = 'nzsmr_teacher';             //教師管理
-$modversion['tables'][]         = 'nzsmr_department';          //學程 國甲乙 餐飲 資處 美容
+$modversion['tables'][]         = 'yy_teacher';                //教師管理
+$modversion['tables'][]         = 'yy_department';             //學程 國甲乙 餐飲 資處 美容
 $modversion['tables'][]         = 'beck_iscore_files_center';  //檔案上傳
-$modversion['tables'][]         = 'nzsmr_student';             //學生基本資料
+$modversion['tables'][]         = 'yy_student';                //學生基本資料
+$modversion['tables'][]         = 'yy_announcement';           //公佈欄
+$modversion['tables'][]         = 'yy_announcement_class';     //公佈欄分類
+$modversion['tables'][]         = 'yy_dept';                   //處室分類名稱
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;
@@ -80,34 +83,34 @@ $modversion['templates'][$i]['description'] = '前台成績系統輸入樣板';
 // $modversion['templates'][$i]['description'] = '後台管理頁樣板';
 
 //---偏好設定---//
-$modversion['config'] = array();
-//$i=0;
-//$modversion['config'][$i]['name']    = '偏好設定名稱（英文）';
-//$modversion['config'][$i]['title']    = '偏好設定標題（常數）';
-//$modversion['config'][$i]['description']    = '偏好設定說明（常數）';
-//$modversion['config'][$i]['formtype']    = '輸入表單類型';
-//$modversion['config'][$i]['valuetype']    = '輸入值類型';
-//$modversion['config'][$i]['default']    = 預設值;
-//
-//$i++;
+$modversion['config']                    = array();
+$i                                       = 0;
+$modversion['config'][$i]['name']        = 'show_num';
+$modversion['config'][$i]['title']       = '_MI_SNEWS_SHOW_NUM';
+$modversion['config'][$i]['description'] = '_MI_SNEWS_SHOW_NUM_DESC';
+$modversion['config'][$i]['formtype']    = 'textbox';
+$modversion['config'][$i]['valuetype']   = 'int';
+$modversion['config'][$i]['default']     = 6;
+
+$i++;
 
 //---搜尋---//
-//$modversion['hasSearch'] = 1;
-//$modversion['search']['file'] = "include/search.php";
-//$modversion['search']['func'] = "搜尋函數名稱";
+$modversion['hasSearch'] = 1;
+$modversion['search']['file'] = "include/search.php";
+$modversion['search']['func'] = "beck_iscore_search";
 
 //---區塊設定---//
-//$modversion['blocks'] = array();
-//$i=1;
-//$modversion['blocks'][$i]['file'] = "區塊檔.php";
-//$modversion['blocks'][$i]['name'] = 區塊名稱（常數）;
-//$modversion['blocks'][$i]['description'] = 區塊說明（常數）;
-//$modversion['blocks'][$i]['show_func'] = "執行區塊函數名稱";
-//$modversion['blocks'][$i]['template'] = "區塊樣板.tpl";
-//$modversion['blocks'][$i]['edit_func'] = "編輯區塊函數名稱";
-//$modversion['blocks'][$i]['options'] = "設定值1|設定值2";
-//
-//$i++;
+$modversion['blocks'] = array();
+$i=1;
+$modversion['blocks'][$i]['file']        = "beck_iscore_block_focus.php";
+$modversion['blocks'][$i]['name']        = _MI_BECK_ISOCRE_BLOCK_FOCUS;
+$modversion['blocks'][$i]['description'] = _MI_BECK_ISOCRE_BLOCK_FOCUS_DESC;
+$modversion['blocks'][$i]['show_func']   = "beck_isocre_block_focus";
+$modversion['blocks'][$i]['template']    = "beck_isocre_block_focus.tpl";
+$modversion['blocks'][$i]['edit_func']   = "beck_isocre_block_focus_edit";
+$modversion['blocks'][$i]['options']     = "2|240";
+
+$i++;
 
 //---評論---//
 //$modversion['hasComments'] = 1;
