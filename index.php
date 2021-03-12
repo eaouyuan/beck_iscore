@@ -5,7 +5,374 @@ $xoopsOption['template_main'] = "beck_iscore_index.tpl";
 include_once XOOPS_ROOT_PATH . "/header.php";
 
 
+    // 公告分類列表
+    case "announcement_class_list":
+        announcement_class_list();
+        break;//跳出迴圈,往下執行
+
+    // 新增、編輯 公告分類列表
+    case "announcement_class_form":
+        announcement_class_form($sn);
+        break;//跳出迴圈,往下執行
+    // 新增公告分類列表
+    case "announcement_class_insert":
+        header("location:index.php?op=announcement_class_list");
+        exit;//離開，結束程式
+
+    // 公告分類更新
+    case "announcement_class_update":
+        announcement_class_update($sn);
+        header("location:index.php?op=announcement_class_list");
+        // header("location:{$_SERVER['PHP_SELF']}");
+        exit;
+    // 刪除公告分類
+    case "announcement_class_delete":
+        announcement_class_delete($sn);
+        header("location:index.php?op=announcement_class_list");
+        exit;
+
+    case "student_form":
+        student_form($sn);
+        break;
+
+    case "student_insert":
+        $sn=student_insert();
+        header("location:index.php?sn={$sn}&op=student_show");
+        exit;//離開，結束程式
+    
+    case "student_update":
+        student_update($sn);
+        header("location:index.php?sn={$sn}&op=student_show");
+        // header("location:{$_SERVER['PHP_SELF']}");
+        exit;
+
+    case "student_show":
+        if($sn){
+            student_show($sn);
+        }else{
+            // student_list();
+            // $op="student_list";
+        }
+        break;
+
+    //下載檔案
+    case "tufdl":
+        $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
+        $TadUpFiles->add_file_counter($files_sn,false,true);
+        exit;
+
+    case "student_delete":
+        student_delete($sn);
+        header("location: index.php");
+        exit;
+
+    
+    default:
+        // if($sn){
+        //     teacher_show($sn);
+        //     $op="teacher_show";
+        // }else{
+        //     // teacher_list();
+        //     // $op="teacher_list";
+            // announcement_class_list();
+        //     // var_dump($xoopsUser->rank());
+
+            // $op="announcement_class_list";
+        // }
+        break;
+}
+
 /*-----------function區--------------*/
+
+// sql-新增公告分類
+function announcement_class_insert(){
+
+    global $xoopsDB;
+    // var_dump($_POST);
+    //安全判斷 儲存 更新都要做
+    if (!power_chk('beck_iscore', 1)) {
+        redirect_header('index.php', 3, '無操作權限');
+    }
+
+    $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+
+    $tbl = $xoopsDB->prefix('yy_student');
+    $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+    // echo($sql);die();
+    $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $TadUpFiles->set_col('sn', $sn);
+    $TadUpFiles->del_files();
+
+    $TadUpFiles->set_col('stu_file', $sn);
+    $TadUpFiles->del_files();
+
+}
+
+// sql-更新公告分類
+function announcement_class_update($sn){
+
+    global $xoopsDB,$xoopsUser;
+
+    if (!$xoopsUser->isAdmin()) {
+        redirect_header('index.php', 3, '無操作權限');
+    }
+    
+    //安全判斷 儲存 更新都要做
+    if (!$GLOBALS['xoopsSecurity']->check()) {
+        $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+        throw new Exception($error);
+    }
+    
+    $myts = MyTextSanitizer::getInstance();
+    foreach ($_POST as $key => $value) {
+        $$key = $myts->addSlashes($value);
+        echo "<p>\${$key}={$$key}</p>";
+    }
+    // 過濾到校日期、生日
+    if (validateDate($_POST['arrival_date']['date'],$format = 'Y/m/d')){
+        $arrival_date=$_POST['arrival_date']['date'];
+    }else{
+        echo('到校日期錯誤');
+    }
+    if (validateDate($_POST['birthday']['date'], $format = 'Y/m/d')){
+        $birthday=$_POST['birthday']['date'];
+    }else{
+        echo('生日錯誤');
+    }
+    // echo "<p>\$arrival_date={$arrival_date}</p>";
+    // echo "<p>\$birthday={$birthday}</p>";
+    // die();
+
+    $tbl = $xoopsDB->prefix('yy_student');
+    $sql = "update `$tbl` set 
+        `stu_sn`   = '{$stu_sn}',   `stu_name`     = '{$stu_name}',     `arrival_date` = '{$arrival_date}',
+        `birthday` = '{$birthday}', `national_id`  = '{$national_id}',  `ori_referral` = '{$ori_referral}',
+        `domicile` = '{$domicile}', `ethnic_group` = '{$ethnic_group}', `marital`      = '{$marital}',
+        `height`   = '{$height}',   `weight`       = '{$weight}',       `Low_income`   = '{$Low_income}',
+        `guardian_disability` = '{$guardian_disability}', `referral_reason`   = '{$referral_reason}',
+        `original_education`  = '{$original_education}',  `original_school`   = '{$original_school}',
+        `family_profile`      = '{$family_profile}',      `residence_address` = '{$residence_address}',
+        `address` = '{$address}', `guardian1`='{$guardian1}', `guardian_relationship1`='{$guardian_relationship1}', 
+        `guardian_cellphone1`    = '{$guardian_cellphone1}',    `guardian2`              = '{$guardian2}',
+        `guardian_relationship2` = '{$guardian_cellphone2}',    `guardian_cellphone2`    = '{$guardian_relationship2}',
+        `emergency_contact1`     = '{$emergency_contact1}',     `emergency_contact_rel1` = '{$emergency_contact_rel1}',
+        `emergency_cellphone1`   = '{$emergency_cellphone1}',   `emergency_contact2`     = '{$emergency_contact2}',
+        `emergency_contact_rel2` = '{$emergency_contact_rel2}', `emergency_cellphone2`   = '{$emergency_cellphone2}',
+        `uid` = '{$uid}', `update_time` = now()
+        where `sn`   = '{$sn}'";
+
+    // echo($sql);
+    // die();
+
+    $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+    //上傳表單（enctype='multipart/form-data'）
+    $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+    // 圖檔儲存
+    $TadUpFiles->set_col('sn',$sn);
+    $TadUpFiles->upload_file('stu_pic',1920,640,null,$stu_name,true,false,null, 'png;jpg');
+    // 上傳附檔
+    $TadUpFiles->set_col('stu_file',$sn);
+    $TadUpFiles->upload_file('stu_file',1920,640,null,null,true);
+
+    mk_html($sn);
+
+    return $sn;
+    // die(var_dump($_POST));
+}
+
+// 表單-新增、編輯公告分類
+function announcement_class_form($sn){
+    global $xoopsTpl,$xoopsUser,$xoopsDB;
+
+    // if (!power_chk('beck_iscore', 1)) {
+    //     redirect_header('index.php', 3, '無操作權限');
+    // }
+    $form_title = '新增公告分類';
+    $AnnC       = array();
+    $AnnC['enable']   = '1';
+
+    if($sn){
+        $form_title='編輯公告分類';
+        $tbl    = $xoopsDB->prefix('yy_announcement_class');
+        $sql    = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $AnnC   = $xoopsDB->fetchArray($result);
+    }
+
+    // 載入xoops表單元件
+    include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+    //建立表單
+    $form = new XoopsThemeForm($form_title, 'announcement_class_form', 'index.php', 'post', true , '摘要');
+
+    //公告分類名稱
+    $form->addElement(new XoopsFormText('公告分類名稱', 'ann_class_name', 30 , 65 , $AnnC['ann_class_name']), true);
+
+    // 開關
+    $select   = new XoopsFormRadio('啟用', 'enable', $AnnC['enable']);
+    $options['1'] = '開';
+    $options['0'] = '關';
+    $select->addOptionArray($options);
+    $form->addElement($select);
+
+    //帶入使用者編號
+    if ($sn) {
+        $uid = $_SESSION['beck_iscore_adm'] ? $AnnC['uid'] : $xoopsUser->uid();
+    } else {
+        $uid = $xoopsUser->uid();
+    }
+
+    $form->addElement(new XoopsFormHidden('uid', $uid));
+    //下個動作
+    if ($sn) {
+        $form->addElement(new XoopsFormHidden('op', 'student_update'));
+        $form->addElement(new XoopsFormHidden('sn', $sn));
+    } else {
+        $form->addElement(new XoopsFormHidden('op', 'announcement_class_insert'));
+    }
+    //儲存按鈕
+    // $form->addElement(new XoopsFormButton('', '', '儲存', 'submit'));
+    //產生程式碼
+    $AnnC_form=$form->render();
+    //將表單送到樣板
+    $xoopsTpl->assign('AnnC_form', $AnnC_form);
+
+}
+
+// 列表-公告分類
+function announcement_class_list(){
+    global $xoopsTpl,$xoopsDB,$xoopsModuleConfig;
+    $myts = MyTextSanitizer::getInstance();
+
+    $tbl      = $xoopsDB->prefix('yy_announcement_class');
+    $sql      = "SELECT * FROM $tbl ORDER BY `sn`";
+    
+    //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+    $PageBar = getPageBar($sql, 10, 10);
+    $bar     = $PageBar['bar'];
+    $sql     = $PageBar['sql'];
+    $total   = $PageBar['total'];
+
+    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $all      = array();
+
+    while($ann_cls= $xoopsDB->fetchArray($result)){
+        $ann_cls['sn']             = $myts->htmlSpecialChars($ann_cls['sn']);
+        $ann_cls['ann_class_name'] = $myts->htmlSpecialChars($ann_cls['ann_class_name']);
+        $ann_cls['enable']         = $myts->htmlSpecialChars($ann_cls['enable']);
+        $ann_cls['sort']           = $myts->htmlSpecialChars($ann_cls['sort']);
+        $ann_cls['create_time']    = $myts->htmlSpecialChars($ann_cls['create_time']);
+        $ann_cls['update_time']    = $myts->htmlSpecialChars($ann_cls['update_time']);
+        $ann_cls['enable']=($ann_cls['enable'] =='1')?'是':'否';
+        $all    []                 = $ann_cls;
+    }
+    // var_dump($all);die();
+    $xoopsTpl->assign('all', $all);
+    $xoopsTpl->assign('bar', $bar);
+    $xoopsTpl->assign('total', $total);
+}
+
+// 新增、編輯 公告分類 表單
+function student_form($sn){
+    global $xoopsTpl,$xoopsUser,$xoopsDB;
+
+    if (!power_chk('beck_iscore', 1)) {
+        redirect_header('index.php', 3, '無操作權限');
+    }
+
+    if($sn){
+        $students=array();
+        $tbl      = $xoopsDB->prefix('yy_student');
+        $sql      = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $students = $xoopsDB->fetchArray($result);
+    }
+    // var_dump($students['arrival_date']);
+    // var_dump(date("Y/m/d", strtotime($students['arrival_date'])));
+    // die();
+
+    // 載入xoops表單元件
+    include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+    //建立表單
+    $form = new XoopsThemeForm('新增學生', 'student_form', 'index.php', 'post', true , '摘要');
+
+    //建立類別選項
+    // $select   = new XoopsFormRadio('類別或主題', 'topic_sn', $topic_sn);
+    // $options['1'] = '街巷故事';
+    // $options['2'] = '市井觀點';
+    // $options['3'] = '私房知識塾';
+    // $select->addOptionArray($options);
+    // $form->addElement($select);
+    
+    //學號
+    $form->addElement(new XoopsFormText('學號', 'stu_sn', 30 , 65 , $students['stu_sn']), true);
+    //學生姓名
+    $form->addElement(new XoopsFormText('學生姓名', 'stu_name', 30 , 65 , $students['stu_name']), true);
+    //入校日期
+    $form->addElement(new XoopsFormDateTime('入校日期', 'arrival_date',15, strtotime($students['arrival_date']),false));
+    //生日
+    $form->addElement(new XoopsFormDateTime('生日', 'birthday',15,strtotime($students['birthday']),false));
+    //身份證字號
+    $form->addElement(new XoopsFormText('身份證字號', 'national_id', 30 , 65 , $students['national_id']), true);
+    //原轉介單位
+    $form->addElement(new XoopsFormText('原轉介單位', 'ori_referral', 30 , 65 , $students['ori_referral']), 0);
+    //戶籍
+    $form->addElement(new XoopsFormText('戶籍', 'domicile', 30 , 65 , $students['domicile']), 0);
+    //族群類別
+    $form->addElement(new XoopsFormText('族群類別', 'ethnic_group', 30 , 65 , $students['ethnic_group']), 0);
+    //婚姻狀況
+    $form->addElement(new XoopsFormText('婚姻狀況', 'marital', 30 , 65 , $students['marital']), 0);
+    //身高
+    $form->addElement(new XoopsFormText('身高', 'height', 30 , 65 , $students['height']), 0);
+    //體重
+    $form->addElement(new XoopsFormText('體重', 'weight', 30 , 65 , $students['weight']), 0);
+    //低收入戶
+    $form->addElement(new XoopsFormText('低收入戶', 'Low_income', 30 , 65 , $students['Low_income']), 0);
+    //監護人身心障礙
+    $form->addElement(new XoopsFormText('監護人身心障礙', 'guardian_disability', 30 , 65 , $students['guardian_disability']), 0);
+    //轉介原因
+    $form->addElement(new XoopsFormText('轉介原因', 'referral_reason', 30 , 65 , $students['referral_reason']), 0);
+    //原學歷
+    $form->addElement(new XoopsFormText('原學歷', 'original_education', 30 , 65 , $students['original_education']), 0);
+    //原就學學校
+    $form->addElement(new XoopsFormText('原就學學校', 'original_school', 30 , 65 , $students['original_school']), 0);
+    //家庭概況
+    include_once XOOPS_ROOT_PATH . "/modules/tadtools/ck.php";
+    $ck = new CKEditor("beck_iscore", "family_profile", $students['family_profile']);
+    $ck->setToolbarSet('myBasic');
+    $ck->setHeight(350);
+    $form->addElement(new XoopsFormLabel('家庭概況', $ck->render()), true);
+    //戶籍地址
+    $form->addElement(new XoopsFormText('戶籍地址', 'residence_address', 30 , 65 , $students['residence_address']), 0);
+    //居住地址
+    $form->addElement(new XoopsFormText('居住地址', 'address', 30 , 65 , $students['address']), 0);
+    //監護人1
+    $form->addElement(new XoopsFormText('監護人1', 'guardian1', 30 , 65 , $students['guardian1']), 0);
+    //監護人關係1
+    $form->addElement(new XoopsFormText('監護人關係1', 'guardian_relationship1', 30 , 65 , $students['guardian_relationship1']), 0);
+    //監護人手機1
+    $form->addElement(new XoopsFormText('監護人手機1', 'guardian_cellphone1', 30 , 65 , $students['guardian_cellphone1']), 0);
+    //監護人2
+    $form->addElement(new XoopsFormText('監護人2', 'guardian2', 30 , 65 , $students['guardian2']), 0);
+    //監護人關係2
+    $form->addElement(new XoopsFormText('監護人關係2', 'guardian_relationship2', 30 , 65 , $students['guardian_relationship2']), 0);
+    //監護人手機2
+    $form->addElement(new XoopsFormText('監護人手機2', 'guardian_cellphone2', 30 , 65 , $students['guardian_cellphone2']), 0);
+    //緊急聯絡人1
+    $form->addElement(new XoopsFormText('緊急聯絡人1', 'emergency_contact1', 30 , 65 , $students['emergency_contact1']), 0);
+    //緊急聯絡人關係1
+    $form->addElement(new XoopsFormText('緊急聯絡人關係1', 'emergency_contact_rel1', 30 , 65 , $students['emergency_contact_rel1']), 0);
+    //緊急聯絡人手機1
+    $form->addElement(new XoopsFormText('緊急聯絡人手機1', 'emergency_cellphone1', 30 , 65 , $students['emergency_cellphone1']), 0);
+    //緊急聯絡人2
+    $form->addElement(new XoopsFormText('緊急聯絡人2', 'emergency_contact2', 30 , 65 , $students['emergency_contact2']), 0);
+    //緊急聯絡人關係2
+    $form->addElement(new XoopsFormText('緊急聯絡人關係2', 'emergency_contact_rel2', 30 , 65 , $students['emergency_contact_rel2']), 0);
+    //緊急聯絡人手機2
+    $form->addElement(new XoopsFormText('緊急聯絡人手機2', 'emergency_cellphone2', 30 , 65 , $students['emergency_cellphone2']), 0);
+    //建立學生排序欄位
+    $form->addElement(new XoopsFormText('學生排序', 'sort', 30 , 3 , $students['sort']), 0);
 
 //顯示教師基本資料
 function teacher_show($sn)
@@ -445,6 +812,72 @@ function student_delete($sn){
     $TadUpFiles->del_files();
 
 }
+
+function announcement_list(){
+    global $xoopsTpl,$xoopsDB,$xoopsModuleConfig;
+
+    $myts = MyTextSanitizer::getInstance();
+
+    $tbl      = $xoopsDB->prefix('yy_student');
+    $sql      = "SELECT * FROM $tbl ORDER BY `sn` DESC";
+    
+    //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+    $PageBar = getPageBar($sql, $xoopsModuleConfig['show_num'], 10);
+    $bar     = $PageBar['bar'];
+    $sql     = $PageBar['sql'];
+    $total   = $PageBar['total'];
+
+    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $all      = array();
+    while($students = $xoopsDB->fetchArray($result)){
+        $students['stu_sn']                 = $myts->htmlSpecialChars($students['stu_sn']);
+        $students['stu_name']               = $myts->htmlSpecialChars($students['stu_name']);
+        $students['arrival_date']           = $myts->htmlSpecialChars($students['arrival_date']);
+        $students['birthday']               = $myts->htmlSpecialChars($students['birthday']);
+        $students['national_id']            = $myts->htmlSpecialChars($students['national_id']);
+        $students['ori_referral']           = $myts->htmlSpecialChars($students['ori_referral']);
+        $students['domicile']               = $myts->htmlSpecialChars($students['domicile']);
+        $students['ethnic_group']           = $myts->htmlSpecialChars($students['ethnic_group']);
+        $students['marital']                = $myts->htmlSpecialChars($students['marital']);
+        $students['height']                 = $myts->htmlSpecialChars($students['height']);
+        $students['weight']                 = $myts->htmlSpecialChars($students['weight']);
+        $students['Low_income']             = $myts->htmlSpecialChars($students['Low_income']);
+        $students['guardian_disability']    = $myts->htmlSpecialChars($students['guardian_disability']);
+        $students['referral_reason']        = $myts->htmlSpecialChars($students['referral_reason']);
+        $students['original_education']     = $myts->htmlSpecialChars($students['original_education']);
+        $students['original_school']        = $myts->htmlSpecialChars($students['original_school']);
+        $students['family_profile']         = $myts->displayTarea($students['family_profile'], 1, 0, 0, 0, 0);
+        $students['residence_address']      = $myts->htmlSpecialChars($students['residence_address']);
+        $students['address']                = $myts->htmlSpecialChars($students['address']);
+        $students['guardian1']              = $myts->htmlSpecialChars($students['guardian1']);
+        $students['guardian_relationship1'] = $myts->htmlSpecialChars($students['guardian_relationship1']);
+        $students['guardian_cellphone1']    = $myts->htmlSpecialChars($students['guardian_cellphone1']);
+        $students['guardian2']              = $myts->htmlSpecialChars($students['guardian2']);
+        $students['guardian_relationship2'] = $myts->htmlSpecialChars($students['guardian_relationship2']);
+        $students['guardian_cellphone2']    = $myts->htmlSpecialChars($students['guardian_cellphone2']);
+        $students['emergency_contact1']     = $myts->htmlSpecialChars($students['emergency_contact1']);
+        $students['emergency_contact_rel1'] = $myts->htmlSpecialChars($students['emergency_contact_rel1']);
+        $students['emergency_cellphone1']   = $myts->htmlSpecialChars($students['emergency_cellphone1']);
+        $students['emergency_contact2']     = $myts->htmlSpecialChars($students['emergency_contact2']);
+        $students['emergency_contact_rel2'] = $myts->htmlSpecialChars($students['emergency_contact_rel2']);
+        $students['emergency_cellphone2']   = $myts->htmlSpecialChars($students['emergency_cellphone2']);
+        $students['sort']                   = $myts->htmlSpecialChars($students['sort']);
+        // 顯示上次上傳的圖片
+        $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        $TadUpFiles->set_col('sn',$students['sn']);
+        //取得單一圖片 1$kind=images（大圖）/thumb（小圖）/file（檔案）,2$kind="url"/"dir",3$file_sn,4$hash(加密)
+        $students['cover'] = $TadUpFiles->get_pic_file('thumb','url',$files_sn);
+
+        $all[]=$students;
+    }
+
+    // die(var_dump($all));
+    $xoopsTpl->assign('all', $all);
+    $xoopsTpl->assign('bar', $bar);
+    $xoopsTpl->assign('total', $total);
+}
+
+
 
 /*-----------執行動作判斷區----------*/
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
