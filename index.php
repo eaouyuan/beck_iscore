@@ -1,11 +1,21 @@
 <?php
 use Xmf\Request;
 use XoopsModules\Tadtools\Utility;
+use XoopsModules\beck_iscore\announcement;
+use XoopsModules\beck_iscore\dept_school;
 
 /*-----------引入檔案區--------------*/
 include_once "header.php";
 $xoopsOption['template_main'] = "beck_iscore_index.tpl";
 include_once XOOPS_ROOT_PATH . "/header.php";
+
+if (!class_exists('XoopsModules\beck_iscore\announcement')) {
+    require XOOPS_ROOT_PATH . '/modules/beck_iscore/preloads/autoloader.php';
+    // include dirname(__DIR__) . '/beck_iscore/preloads/autoloader.php';
+}
+
+// include_once ".\class\announcement.php";
+// $announcement = new announcement();
 
 /*-----------執行動作判斷區----------*/
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
@@ -17,90 +27,102 @@ $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image
 // die(var_dump($op));
 switch ($op) {
     
+// 公告系統
     // 公告分類列表
-    case "announcement_class_list":
-        announcement_class_list();
+        case "announcement_class_list":
+            announcement_class_list();
+            break;//跳出迴圈,往下執行
+        
+        // 新增、編輯 公告分類表單
+        case "announcement_class_form":
+            announcement_class_form($sn);
+            break;//跳出迴圈,往下執行
+
+        // 新增公告分類
+        case "announcement_class_insert":
+            announcement_class_insert();
+            header("location:index.php?op=announcement_class_list");
+            exit;//離開，結束程式
+
+        // 更新公告分類
+        case "announcement_class_update":
+            announcement_class_update($sn);
+            header("location:index.php?op=announcement_class_list");
+            exit;
+
+        // 刪除公告分類
+        case "announcement_class_delete":
+            announcement_class_delete($sn);
+            header("location:index.php?op=announcement_class_list");
+            exit;
+
+    // 公告消息列表
+    case "announcement_list":
+        announcement_list();
         break;//跳出迴圈,往下執行
     
-    // 新增、編輯 公告分類表單
-    case "announcement_class_form":
-        announcement_class_form($sn);
+    // 新增、編輯 公告消息表單
+    case "announcement_form":
+        announcement_form($sn);
         break;//跳出迴圈,往下執行
-        
-    // 新增公告分類
-    case "announcement_class_insert":
-        announcement_class_insert();
-        header("location:index.php?op=announcement_class_list");
+
+    // 顯示公告消息
+    case "announcement_show":
+        announcement_show($sn);
+        break;//跳出迴圈,往下執行
+
+    // 新增公告消息
+    case "announcement_insert":
+        $sn=announcement_insert();
+        header("location:index.php?op=announcement_show&sn={$sn}");
         exit;//離開，結束程式
 
-    // 更新公告分類
-    case "announcement_class_update":
-        announcement_class_update($sn);
-        header("location:index.php?op=announcement_class_list");
-        exit;
-    // 刪除公告分類
-    case "announcement_class_delete":
-        announcement_class_delete($sn);
-        header("location:index.php?op=announcement_class_list");
+    // 更新公告消息
+    case "announcement_update":
+        $sn=announcement_update($sn);
+        header("location:index.php?op=announcement_show&sn={$sn}");
         exit;
 
-        // 公告消息列表
-        case "announcement_list":
-            announcement_list();
-            break;//跳出迴圈,往下執行
-        
-        // 新增、編輯 公告消息表單
-        case "announcement_form":
-            announcement_form($sn);
-            break;//跳出迴圈,往下執行
-
-        // 新增公告消息
-        case "announcement_insert":
-            announcement_insert();
-            header("location:index.php?op=announcement_list");
-            exit;//離開，結束程式
-
-        // 更新公告消息
-        case "announcement_update":
-            announcement_update($sn);
-            header("location:index.php?op=announcement_list");
-            exit;
-
-        // 刪除公告消息
-        case "announcement_delete":
-            announcement_delete($sn);
-            header("location:index.php?op=announcement_list");
-            exit;
+    // 刪除公告消息
+    case "announcement_delete":
+        announcement_delete($sn);
+        header("location:index.php?op=announcement_list");
+        exit;
     // 校務管理
         // 處室列表
-        case "dept_school_list":
-            dept_school_list();
-            break;//跳出迴圈,往下執行
-        
-        // 新增、編輯 處室表單
-        case "dept_school_form":
-            dept_school_form($sn);
-            break;//跳出迴圈,往下執行
+            case "dept_school_list":
+                dept_school_list();
+                break;//跳出迴圈,往下執行
+            
+            // 新增、編輯 處室表單
+            case "dept_school_form":
+                dept_school_form($sn);
+                break;//跳出迴圈,往下執行
 
-        // 新增處室
-        case "dept_school_insert":
-            dept_school_insert();
-            header("location:index.php?op=dept_school_list");
-            exit;//離開，結束程式
+            // 新增處室
+            case "dept_school_insert":
+                dept_school_insert();
+                header("location:index.php?op=dept_school_list");
+                exit;//離開，結束程式
 
-        // 更新處室
-        case "dept_school_update":
-            dept_school_update($sn);
-            header("location:index.php?op=dept_school_list");
-            exit;
+            // 更新處室
+            case "dept_school_update":
+                dept_school_update($sn);
+                header("location:index.php?op=dept_school_list");
+                exit;
 
-        // 刪除處室
-        case "dept_school_delete":
-            dept_school_delete($sn);
-            header("location:index.php?op=dept_school_list");
-            exit;
+            // 刪除處室
+            case "dept_school_delete":
+                dept_school_delete($sn);
+                header("location:index.php?op=dept_school_list");
+                exit;
 
 
+
+
+    
+    
+    
 
     case "student_form":
         student_form($sn);
@@ -160,20 +182,158 @@ switch ($op) {
     function announcement_class_delete($sn){
         global $xoopsDB,$xoopsUser;
 
-    if (!$xoopsUser->isAdmin()) {
-        redirect_header('index.php', 3, '無操作權限');
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('index.php', 3, '無操作權限');
+        }
+        
+        $tbl = $xoopsDB->prefix('yy_announcement_class');
+        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
     }
-    
-    //安全判斷 儲存 更新都要做
-    if (!$GLOBALS['xoopsSecurity']->check()) {
-        $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-        redirect_header("index.php?op=announcement_class_list", 3, '表單Token錯誤，請重新輸入!');
-        throw new Exception($error);
+
+    // sql-更新公告分類
+    function announcement_class_update($sn){
+
+        global $xoopsDB,$xoopsUser;
+
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('index.php', 3, '無操作權限');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("index.php?op=announcement_class_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+
+        $tbl = $xoopsDB->prefix('yy_announcement_class');
+        $sql = "update `$tbl` set 
+                    `ann_class_name`   = '{$ann_class_name}',
+                    `enable`= '{$enable}',
+                    `uid` = '{$uid}', 
+                    `update_time` = now()
+                where `sn`   = '{$sn}'";
+
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        return $sn;
     }
 
+    // sql-新增公告分類
+    function announcement_class_insert(){
+
+        global $xoopsDB,$xoopsUser;
+
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('index.php', 3, '無操作權限');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("index.php?op=announcement_class_form", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
 
 
-    $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        $tbl = $xoopsDB->prefix('yy_announcement_class');
+        $sql = "insert into `$tbl` (
+            `ann_class_name`,`enable`,`uid`,`create_time`,`update_time`) 
+            values('{$ann_class_name}','{$enable}','{$uid}',now(), now())";
+
+        $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+        return $sn;
+    }
+
+    // 表單-新增、編輯公告分類
+    function announcement_class_form($sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('index.php', 3, '無操作權限');
+        }
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("index.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#announcement_class_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $form_title = '新增公告分類';
+
+        if($sn){
+            $AnnC       = array();
+            $form_title='編輯公告分類';
+            $tbl    = $xoopsDB->prefix('yy_announcement_class');
+            $sql    = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $AnnC   = $xoopsDB->fetchArray($result);
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+
+        // 給預設值
+        $sn = (!isset($AnnC['sn'])) ? '' : $AnnC['sn'];
+        $xoopsTpl->assign('sn', $sn);
+
+        // 公告分類名稱
+        $ann_class_name = (!isset($AnnC['ann_class_name'])) ? '' : $AnnC['ann_class_name'];
+        $xoopsTpl->assign('ann_class_name', $ann_class_name);
+
+        // 公告分類啟用
+        $enable = (!isset($AnnC['enable'])) ? '1' : $AnnC['enable'];
+        $enable_opt_ary=['1'=>'開','0'=>'關'];
+        $enable_option='';
+        foreach ($enable_opt_ary as $k=>$v){
+            $enable_check= ($enable==$k)?'checked':'';
+            $enable_option.=<<<HTML
+            <div class="form-check form-check-inline  m-2">
+                <input class="form-check-input" type="radio" name="enable" id="enable{$k}" title="{$v}" value="{$k}" {$enable_check}>
+                <label class="form-check-label" for="enable1">{$v}</label>
+            </div>
+        HTML;
+        }
+        $xoopsTpl->assign('enable_option', $enable_option);
+
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $AnnC['uid'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
+
+        // //下個動作
+        if ($sn) {
+            $op='announcement_class_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='announcement_class_insert';
+        }
+        $xoopsTpl->assign('op', $op);
 
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
@@ -226,98 +386,120 @@ switch ($op) {
     function announcement_delete($sn){
         global $xoopsDB,$xoopsUser;
 
-        if (!$xoopsUser->isAdmin()) {
-            redirect_header('index.php', 3, '無操作權限');
+        $tbl        = $xoopsDB->prefix('yy_announcement');
+        $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $Ann        = $xoopsDB->fetchArray($result);
+
+        if(!($xoopsUser->isAdmin() and $_SESSION['xoopsUserId']== $Ann['uid'])){
+            redirect_header('index.php?op=announcement_list', 3, '非管理員或公告建立者！');
         }
         
-        $tbl = $xoopsDB->prefix('yy_announcement_class');
+        $tbl = $xoopsDB->prefix('yy_announcement');
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
-        // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    $TadUpFiles->set_col('sn', $sn);
-    $TadUpFiles->del_files();
 
-    $TadUpFiles->set_col('stu_file', $sn);
-    $TadUpFiles->del_files();
-
-}
+    }
 
     // sql-更新公告消息
     function announcement_update($sn){
 
-    global $xoopsDB,$xoopsUser;
+        global $xoopsDB,$xoopsUser;
 
-    if (!$xoopsUser->isAdmin()) {
-        redirect_header('index.php', 3, '無操作權限');
-    }
-    
-    //安全判斷 儲存 更新都要做
-    if (!$GLOBALS['xoopsSecurity']->check()) {
-        $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-        redirect_header("index.php?op=announcement_class_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
-        throw new Exception($error);
-    }
-    
-    $myts = MyTextSanitizer::getInstance();
-    foreach ($_POST as $key => $value) {
-        $$key = $myts->addSlashes($value);
-        echo "<p>\${$key}={$$key}</p>";
-    }
+        // if (!$xoopsUser->isAdmin()) {
+        //     redirect_header('index.php', 3, '無操作權限');
+        // }
+        // if(!($xoopsUser->isAdmin() AND $_SESSION['xoopsUserId']== $Ann['uid'])){
+        //     redirect_header('index.php?op=announcement_list', 3, '無操作權限');
+        // }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("index.php?op=announcement_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        $tbl = $xoopsDB->prefix('yy_announcement');
+        $sql = "update `$tbl` set 
+                    `ann_class_id`   = '{$ann_class_id}',
+                    `dept_id`= '{$dept_id}',
+                    `title` = '{$title}', 
+                    `content` = '{$content}', 
+                    `end_date` = '{$end_date}', 
+                    `update_user` = '{$uid}', 
+                    `update_date` = now()
+                where `sn`   = '{$sn}'";
 
-    $tbl = $xoopsDB->prefix('yy_announcement_class');
-    $sql = "update `$tbl` set 
-                `ann_class_name`   = '{$ann_class_name}',
-                `enable`= '{$enable}',
-                `uid` = '{$uid}', 
-                `update_time` = now()
-            where `sn`   = '{$sn}'";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
 
-    // echo($sql);die();
-    $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    return $sn;
-}
+        //上傳表單（enctype='multipart/form-data'）
+        $TadUpFiles=new TadUpFiles("beck_iscore","/announcement",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        // 上傳附檔
+        $TadUpFiles->set_col('ann_file',$sn);
+        $TadUpFiles->upload_file('ann_file',1920,640,null,null,true);
+
+        return $sn;
+    }
 
     // sql-新增公告消息
     function announcement_insert(){
 
-    global $xoopsDB,$xoopsUser;
+        global $xoopsDB,$xoopsUser;
 
-    if (!$xoopsUser->isAdmin()) {
-        redirect_header('index.php', 3, '無操作權限');
+        if (!$xoopsUser) {
+            redirect_header('index.php', 3, '無操作權限');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("index.php?op=announcement_form", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // var_dump($_POST);die();
+
+        $tbl = $xoopsDB->prefix('yy_announcement');
+        $sql = "insert into `$tbl` (
+                    `ann_class_id`,`dept_id`,`title`,`content`,`start_date`,
+                    `end_date`,`uid`,`create_date`,`update_user`,`update_date`,
+                    `top`
+                )values(
+                    '{$ann_class_id}','{$dept_id}','{$title}','{$content}',now(),
+                    '{$end_date}','{$uid}',now(), '{$uid}',now(),
+                    '{$top}'
+                )";
+        // echo($sql);die();
+
+        $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        
+        //上傳表單（enctype='multipart/form-data'）
+        $TadUpFiles=new TadUpFiles("beck_iscore","/announcement",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        // 上傳附檔
+        $TadUpFiles->set_col('ann_file',$sn);
+        $TadUpFiles->upload_file('ann_file',1920,640,null,null,true);
+
+        return $sn;
     }
-    
-    //安全判斷 儲存 更新都要做
-    if (!$GLOBALS['xoopsSecurity']->check()) {
-        $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-        redirect_header("index.php?op=announcement_class_form", 3, '表單Token錯誤，請重新輸入!');
-        throw new Exception($error);
-    }
-
-    
-    $myts = MyTextSanitizer::getInstance();
-    foreach ($_POST as $key => $value) {
-        $$key = $myts->addSlashes($value);
-        echo "<p>\${$key}={$$key}</p>";
-    }
-
-
-    $tbl = $xoopsDB->prefix('yy_announcement_class');
-    $sql = "insert into `$tbl` (
-        `ann_class_name`,`enable`,`uid`,`create_time`,`update_time`) 
-        values('{$ann_class_name}','{$enable}','{$uid}',now(), now())";
-
-    $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
-
-    return $sn;
-}
 
     function announcement_show($sn){
         global $xoopsTpl,$xoopsDB,$xoopsUser;
     
-        if (!$xoopsUser) {
-            redirect_header('index.php', 3, '無操作權限');
-        }
+        if (!$xoopsUser){redirect_header('index.php', 3, '無操作權限。error:2103212230');}
+        if (!$sn){redirect_header('index.php', 3, '不存在的公告編號！');}
 
         $myts = MyTextSanitizer::getInstance();
     
@@ -346,6 +528,11 @@ switch ($op) {
         $Ann['uname'] = users_data($Ann['uid'])['uname'];
         $Ann['dept_name']  = dept_school::GetDept($Ann['dept_id'])['dept_name'];
 
+        //　瀏覽次數累加
+        $Ann['hit_count']++;
+        $sql_hitcount = "update `$tbl` set `hit_count`   = '{$Ann['hit_count']}'   where `sn`   = '{$sn}'";
+        $xoopsDB->queryF($sql_hitcount) or Utility::web_error($sql_hitcount, __FILE__, __LINE__);
+
         // 顯示附檔
         $TadUpFiles=new TadUpFiles("beck_iscore","/announcement",$file="/file",$image="/image",$thumbs="/image/.thumbs");
         $TadUpFiles->set_col('ann_file',$sn);
@@ -368,126 +555,162 @@ switch ($op) {
 
     // 表單-新增、編輯公告消息
     function announcement_form($sn){
-        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        global $xoopsTpl,$xoopsUser,$xoopsDB,$TadUpFiles;
+        // include_once ".\class\announcement.php";
 
-    if (!$xoopsUser->isAdmin()) {
-        redirect_header('index.php', 3, '無操作權限');
-    }
-    //套用formValidator驗證機制
-    if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
-        redirect_header("index.php", 3, _TAD_NEED_TADTOOLS);
-    }
-    include_once TADTOOLS_PATH."/formValidator.php";
-    $formValidator      = new formValidator("#announcement_class_form", true);
-    $formValidator_code = $formValidator->render();
-    $xoopsTpl->assign("formValidator_code",$formValidator_code);
-
-    // if (!power_chk('beck_iscore', 1)) {
-    //     redirect_header('index.php', 3, '無操作權限');
-    // }
-
-
-    // 載入xoops表單元件
-    include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-
-    $form_title = '新增公告分類';
-
-    if($sn){
-        $AnnC       = array();
-        $form_title='編輯公告分類';
-        $tbl    = $xoopsDB->prefix('yy_announcement_class');
-        $sql    = "SELECT * FROM $tbl Where `sn`='{$sn}'";
-        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $AnnC   = $xoopsDB->fetchArray($result);
-    }
-    $xoopsTpl->assign('form_title', $form_title);
-
-    // 給預設值
-    $sn = (!isset($AnnC['sn'])) ? '' : $AnnC['sn'];
-    $xoopsTpl->assign('sn', $sn);
-
-    // 公告分類名稱
-    $ann_class_name = (!isset($AnnC['ann_class_name'])) ? '' : $AnnC['ann_class_name'];
-    $xoopsTpl->assign('ann_class_name', $ann_class_name);
-
-    // 公告分類啟用
-    $enable = (!isset($AnnC['enable'])) ? '1' : $AnnC['enable'];
-    $enable_opt_ary=['1'=>'開','0'=>'關'];
-    $enable_option='';
-    foreach ($enable_opt_ary as $k=>$v){
-        $enable_check= ($enable==$k)?'checked':'';
-        $enable_option.=<<<HTML
-        <div class="form-check form-check-inline  m-2">
-            <input class="form-check-input" type="radio" name="enable" id="enable{$k}" title="{$v}" value="{$k}" {$enable_check}>
-            <label class="form-check-label" for="enable1">{$v}</label>
-        </div>
-HTML;
-    }
-    $xoopsTpl->assign('enable_option', $enable_option);
-
-    // //帶入使用者編號
-    if ($sn) {
-        $uid = $_SESSION['beck_iscore_adm'] ? $AnnC['uid'] : $xoopsUser->uid();
-    } else {
-        $uid = $xoopsUser->uid();
-    }
-    $xoopsTpl->assign('uid', $uid);
-    
-
-    // //下個動作
-    if ($sn) {
-        $op='announcement_class_update';
-        $xoopsTpl->assign('sn', $sn);
-    } else {
-        $op='announcement_class_insert';
-    }
-    $xoopsTpl->assign('op', $op);
-
-    $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
-    $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
-
-}
-
-    // 列表-公告分類
-    function announcement_class_list(){
-        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
-        if (!$xoopsUser->isAdmin()) {
+        if (!$xoopsUser) {
             redirect_header('index.php', 3, '無操作權限');
         }
 
-    $myts = MyTextSanitizer::getInstance();
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("index.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#announcement_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
 
-    $tbl      = $xoopsDB->prefix('yy_announcement_class');
-    $sql      = "SELECT * FROM $tbl ORDER BY `update_time` DESC";
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $form_title = '新增公告消息';
+
+        if($sn){
+            $Ann        = array();
+            $form_title = '編輯公告消息';
+            $tbl        = $xoopsDB->prefix('yy_announcement');
+            $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $Ann        = $xoopsDB->fetchArray($result);
+        
+            if(!($xoopsUser->isAdmin() AND $_SESSION['xoopsUserId']== $Ann['uid'])){
+                redirect_header('index.php?op=announcement_list', 3, '無操作權限');
+            }
+
+        }
+        // die(var_dump($Ann));
+
+        // 給預設值
+        $xoopsTpl->assign('form_title', $form_title);
+        $sn = (!isset($Ann['sn'])) ? '' : $Ann['sn'];
+        $xoopsTpl->assign('sn', $sn);
+
+        // 公告分類
+        $ann_class_id = (!isset($Ann['ann_class_id'])) ? '' : $Ann['ann_class_id'];
+        $ann_c_sel_htm=announcement::GetAnn_Class_Sel_htm($ann_class_id);
+        $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
+        
+        // 處室分類
+        $ann_dept_id = (!isset($Ann['dept_id'])) ? '' : $Ann['dept_id'];
+        $dept_c_sel_htm=dept_school::GetDept_Class_Sel_htm($ann_dept_id);
+        $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
+        
+        // 標題
+        $xoopsTpl->assign('title', $Ann['title']);
+
+        //內容ckeditor
+        include_once XOOPS_ROOT_PATH . "/modules/tadtools/ck.php";
+        $ck = new CKEditor("beck_iscore", "content", $Ann['content']);
+        $ck->setToolbarSet('mySimple');
+        $ck->setHeight(350);
+        $content=$ck->render();
+        $xoopsTpl->assign('content', $content);
+
+        // 公告結束日期 預設一個月後
+        if($Ann['end_date']){
+            $end_date=$Ann['end_date'];
+        }else{
+            $end_date=gmdate('Y-m-d',strtotime('+1 month'));
+        }
+        $xoopsTpl->assign('end_date', $end_date);
+
+        // 置頂
+        $top = (!isset($Ann['top'])) ? '0' : $Ann['top'];
+        $top_opt_ary=['0'=>'否','1'=>'是'];
+        $top_option='';
+        foreach ($top_opt_ary as $k=>$v){
+            $top_check= ($top==$k)?'checked':'';
+            $top_option.=<<<HTML
+            <div class="form-check form-check-inline  m-2">
+                <input class="form-check-input" type="radio" name="top" id="top{$k}" title="{$v}" value="{$k}" {$top_check}>
+                <label class="form-check-label" for="top{$k}">{$v}</label>
+            </div>
+        HTML;
+        }
+        $xoopsTpl->assign('top_option', $top_option);
+
+        //上傳附檔
+        $TadUpFiles=new TadUpFiles("beck_iscore","/announcement",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        $TadUpFiles->set_col('ann_file',$sn); //若 $show_list_del_file ==true 時一定要有
+        $upform=$TadUpFiles->upform(true,'ann_file');
+        $xoopsTpl->assign('upform', $upform);
+
     
-    //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-    $PageBar = getPageBar($sql, 10, 10);
-    $bar     = $PageBar['bar'];
-    $sql     = $PageBar['sql'];
-    $total   = $PageBar['total'];
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $Ann['uid'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
 
-    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    $all      = array();
+        // //下個動作
+        if ($sn) {
+            $op='announcement_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='announcement_insert';
+        }
+        $xoopsTpl->assign('op', $op);
 
-    while($ann_cls= $xoopsDB->fetchArray($result)){
-        $ann_cls['sn']             = $myts->htmlSpecialChars($ann_cls['sn']);
-        $ann_cls['ann_class_name'] = $myts->htmlSpecialChars($ann_cls['ann_class_name']);
-        $ann_cls['enable']         = $myts->htmlSpecialChars($ann_cls['enable']);
-        $ann_cls['sort']           = $myts->htmlSpecialChars($ann_cls['sort']);
-        $ann_cls['create_time']    = $myts->htmlSpecialChars($ann_cls['create_time']);
-        $ann_cls['update_time']    = $myts->htmlSpecialChars($ann_cls['update_time']);
-        $ann_cls['enable']=($ann_cls['enable'] =='1')?'是':'否';
-        $all    []                 = $ann_cls;
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
     }
-    $xoopsTpl->assign('all', $all);
-    $xoopsTpl->assign('bar', $bar);
-    $xoopsTpl->assign('total', $total);
-    
-    include_once XOOPS_ROOT_PATH . "/modules/tadtools/sweet_alert.php";
-    $sweet_alert = new sweet_alert();
-    $sweet_alert->render("announcement_class_del", "index.php?op=announcement_class_delete&sn=", 'sn');
 
-}
+    // 列表-公告消息
+    function announcement_list(){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        if (!$xoopsUser) {
+            redirect_header('index.php', 3, '無操作權限');
+        }
+
+        $myts = MyTextSanitizer::getInstance();
+
+        $tbl      = $xoopsDB->prefix('yy_announcement');
+        $sql      = "SELECT * FROM $tbl ORDER BY `update_date` DESC";
+        
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        $PageBar = getPageBar($sql, 10, 10);
+        $bar     = $PageBar['bar'];
+        $sql     = $PageBar['sql'];
+        $total   = $PageBar['total'];
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+
+        while($ann_cls= $xoopsDB->fetchArray($result)){
+            $ann_cls['sn']             = $myts->htmlSpecialChars($ann_cls['sn']);
+            $ann_cls['ann_class_name'] = $myts->htmlSpecialChars($ann_cls['ann_class_name']);
+            $ann_cls['enable']         = $myts->htmlSpecialChars($ann_cls['enable']);
+            $ann_cls['sort']           = $myts->htmlSpecialChars($ann_cls['sort']);
+            $ann_cls['create_time']    = $myts->htmlSpecialChars($ann_cls['create_time']);
+            $ann_cls['update_time']    = $myts->htmlSpecialChars($ann_cls['update_time']);
+            $ann_cls['enable']=($ann_cls['enable'] =='1')?'是':'否';
+            $all    []                 = $ann_cls;
+        }
+        $xoopsTpl->assign('all', $all);
+        $xoopsTpl->assign('bar', $bar);
+        $xoopsTpl->assign('total', $total);
+        
+        include_once XOOPS_ROOT_PATH . "/modules/tadtools/sweet_alert.php";
+        $sweet_alert = new sweet_alert();
+        $sweet_alert->render("announcement_class_del", "index.php?op=announcement_class_delete&sn=", 'sn');
+
+    }
+
 
 // ----------------------------------
 // 校務管理-處室列表
@@ -499,7 +722,7 @@ HTML;
             redirect_header('index.php', 3, '無操作權限');
         }
         
-        $tbl = $xoopsDB->prefix('yy_announcement_class');
+        $tbl = $xoopsDB->prefix('yy_dept_school');
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -698,9 +921,11 @@ HTML;
         $sweet_alert->render("dept_school_del", "index.php?op=dept_school_delete&sn=", 'sn');
 
     }
+// ----------------------------------
 
 
-//顯示教師基本資料
+
+    //顯示教師基本資料
 function teacher_show($sn)
 {
     global $xoopsTpl,$xoopsDB;
@@ -755,13 +980,52 @@ function student_form($sn){
     //建立表單
     $form = new XoopsThemeForm('新增學生', 'student_form', 'index.php', 'post', true , '摘要');
 
+    $複選方塊  = new XoopsFormCheckBox('$複選方塊', 'name', '值','ids');
+    $options['1'] = '街巷故事';
+    $options['2'] = '市井觀點';
+    $options['3'] = '私房知識塾';
+    $複選方塊->addOptionArray($options);
+    
+    $單選鈕   = new XoopsFormRadio('$單選鈕', 'name', '值');
+    $是否單選  = new XoopsFormRadioYN('$是否單選', 'name', '值');
+    // $下拉選單  = new XoopsFormSelect('$下拉選單', 'name', '預設值', 大小, 多選);
+    $options['1'] = '街巷故事';
+    $options['2'] = '市井觀點';
+    $options['3'] = '私房知識塾';
+    // $下拉選單->addOptionArray($options);
+
+
+    // $群組核選  = new XoopsFormSelectCheckGroup('$群組核選', 'name', '值', 大小 ,多選);
+    // $國家選單  = new XoopsFormSelectCountry('$國家選單', 'name', 'TW', 大小);
+    // $群組選單  = new XoopsFormSelectGroup('$群組選單', 'name', 含訪客, '值', 大小 ,多選);
+    // $語系選單  = new XoopsFormSelectLang('$語系選單', 'name', '值', 大小);
+    // $比對選單  = new XoopsFormSelectMatchOption('$比對選單', 'name', '值', 大小);
+    // $佈景選單  = new XoopsFormSelectTheme('$佈景選單', 'name', '值', 大小);
+    // $時區選單  = new XoopsFormSelectTimezone('$時區選單', 'name', '值', 大小);
+    // $使用者選單 = new XoopsFormSelectUser('$使用者選單', 'name', 含訪客, '值', 大小 ,多選);
+    
+    // $form->addElement($複選方塊);
+    // $form->addElement($單選鈕);
+    // $form->addElement($是否單選);
+    // $form->addElement($下拉選單);
+    // $form->addElement($群組核選);
+    // $form->addElement($國家選單);
+    // $form->addElement($群組選單);
+    // $form->addElement($語系選單);
+    // $form->addElement($比對選單);
+    // $form->addElement($佈景選單);
+    // $form->addElement($時區選單);
+    // $form->addElement($使用者選單);
+
+    
+
     //建立類別選項
-    // $select   = new XoopsFormRadio('類別或主題', 'topic_sn', $topic_sn);
-    // $options['1'] = '街巷故事';
-    // $options['2'] = '市井觀點';
-    // $options['3'] = '私房知識塾';
-    // $select->addOptionArray($options);
-    // $form->addElement($select);
+    $select   = new XoopsFormRadio('類別或主題', 'topic_sn', $topic_sn);
+    $options['1'] = '街巷故事';
+    $options['2'] = '市井觀點';
+    $options['3'] = '私房知識塾';
+    $select->addOptionArray($options);
+    $form->addElement($select);
     
     //學號
     $form->addElement(new XoopsFormText('學號', 'stu_sn', 30 , 65 , $students['stu_sn']), true);
@@ -1169,69 +1433,7 @@ function student_delete($sn){
 
 }
 
-function announcement_list(){
-    global $xoopsTpl,$xoopsDB,$xoopsModuleConfig;
 
-    $myts = MyTextSanitizer::getInstance();
-
-    $tbl      = $xoopsDB->prefix('yy_student');
-    $sql      = "SELECT * FROM $tbl ORDER BY `sn` DESC";
-    
-    //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-    $PageBar = getPageBar($sql, $xoopsModuleConfig['show_num'], 10);
-    $bar     = $PageBar['bar'];
-    $sql     = $PageBar['sql'];
-    $total   = $PageBar['total'];
-
-    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    $all      = array();
-    while($students = $xoopsDB->fetchArray($result)){
-        $students['stu_sn']                 = $myts->htmlSpecialChars($students['stu_sn']);
-        $students['stu_name']               = $myts->htmlSpecialChars($students['stu_name']);
-        $students['arrival_date']           = $myts->htmlSpecialChars($students['arrival_date']);
-        $students['birthday']               = $myts->htmlSpecialChars($students['birthday']);
-        $students['national_id']            = $myts->htmlSpecialChars($students['national_id']);
-        $students['ori_referral']           = $myts->htmlSpecialChars($students['ori_referral']);
-        $students['domicile']               = $myts->htmlSpecialChars($students['domicile']);
-        $students['ethnic_group']           = $myts->htmlSpecialChars($students['ethnic_group']);
-        $students['marital']                = $myts->htmlSpecialChars($students['marital']);
-        $students['height']                 = $myts->htmlSpecialChars($students['height']);
-        $students['weight']                 = $myts->htmlSpecialChars($students['weight']);
-        $students['Low_income']             = $myts->htmlSpecialChars($students['Low_income']);
-        $students['guardian_disability']    = $myts->htmlSpecialChars($students['guardian_disability']);
-        $students['referral_reason']        = $myts->htmlSpecialChars($students['referral_reason']);
-        $students['original_education']     = $myts->htmlSpecialChars($students['original_education']);
-        $students['original_school']        = $myts->htmlSpecialChars($students['original_school']);
-        $students['family_profile']         = $myts->displayTarea($students['family_profile'], 1, 0, 0, 0, 0);
-        $students['residence_address']      = $myts->htmlSpecialChars($students['residence_address']);
-        $students['address']                = $myts->htmlSpecialChars($students['address']);
-        $students['guardian1']              = $myts->htmlSpecialChars($students['guardian1']);
-        $students['guardian_relationship1'] = $myts->htmlSpecialChars($students['guardian_relationship1']);
-        $students['guardian_cellphone1']    = $myts->htmlSpecialChars($students['guardian_cellphone1']);
-        $students['guardian2']              = $myts->htmlSpecialChars($students['guardian2']);
-        $students['guardian_relationship2'] = $myts->htmlSpecialChars($students['guardian_relationship2']);
-        $students['guardian_cellphone2']    = $myts->htmlSpecialChars($students['guardian_cellphone2']);
-        $students['emergency_contact1']     = $myts->htmlSpecialChars($students['emergency_contact1']);
-        $students['emergency_contact_rel1'] = $myts->htmlSpecialChars($students['emergency_contact_rel1']);
-        $students['emergency_cellphone1']   = $myts->htmlSpecialChars($students['emergency_cellphone1']);
-        $students['emergency_contact2']     = $myts->htmlSpecialChars($students['emergency_contact2']);
-        $students['emergency_contact_rel2'] = $myts->htmlSpecialChars($students['emergency_contact_rel2']);
-        $students['emergency_cellphone2']   = $myts->htmlSpecialChars($students['emergency_cellphone2']);
-        $students['sort']                   = $myts->htmlSpecialChars($students['sort']);
-        // 顯示上次上傳的圖片
-        $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
-        $TadUpFiles->set_col('sn',$students['sn']);
-        //取得單一圖片 1$kind=images（大圖）/thumb（小圖）/file（檔案）,2$kind="url"/"dir",3$file_sn,4$hash(加密)
-        $students['cover'] = $TadUpFiles->get_pic_file('thumb','url',$files_sn);
-
-        $all[]=$students;
-    }
-
-    // die(var_dump($all));
-    $xoopsTpl->assign('all', $all);
-    $xoopsTpl->assign('bar', $bar);
-    $xoopsTpl->assign('total', $total);
-}
 
 
 

@@ -41,7 +41,7 @@ $modversion['tables'][]         = 'beck_iscore_files_center';  //檔案上傳
 $modversion['tables'][]         = 'yy_student';                //學生基本資料
 $modversion['tables'][]         = 'yy_announcement';           //公佈欄
 $modversion['tables'][]         = 'yy_announcement_class';     //公佈欄分類
-$modversion['tables'][]         = 'yy_dept';                   //處室分類名稱
+$modversion['tables'][]         = 'yy_dept_school';            //處室名稱
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

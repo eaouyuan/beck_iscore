@@ -1,6 +1,6 @@
 
 <div class="container">
-    <h2 style="float:left">公告分類 ─ 列表</h2>
+    <h2 style="float:left">公告消息 ─ 列表</h2>
    
         <button type="button" class="btn btn-primary btn-sm" style="float:right" 
             onclick="self.location.href='index.php?op=announcement_class_form';">
@@ -9,13 +9,13 @@
 
 
 </div>
-
+<!-- <div class=""> -->
 <{if $all}>
-    <table class="table table-bordered">
+    <table class="table table-bordered table-sm table-hover">
         <thead class="table-info">
             <tr>
-                <th scope="col" class="text-center">編號</th>
-                <th scope="col" class="text-center">公告分類名稱</th>
+                <th scope="col" class="text-center">編號 　</th>
+                <th scope="col" class="text-center">table-sm公告分類名稱</th>
                 <th scope="col" class="text-center">啟用</th>
                 <th scope="col" class="text-center">建立日期</th>
                 <th scope="col" class="text-center">最近修改日期</th>
@@ -42,7 +42,8 @@
 
 
         </tbody>
-    </table>   
+    </table>
+<!-- </div>    -->
 <{else}>
     <div class="alert alert-danger row col-12">
         尚無內容

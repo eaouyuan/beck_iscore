@@ -3,6 +3,7 @@
 function xoops_module_install_beck_iscore(&$module) {
 
     mk_dir(XOOPS_ROOT_PATH."/uploads/beck_iscore");
+    mk_dir(XOOPS_ROOT_PATH."/uploads/beck_iscore/ann");
     mk_group("編輯群", "校務行政系統-編輯群");
 
     return true;
