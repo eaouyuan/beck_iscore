@@ -61,6 +61,26 @@ function mk_html($sn)
 }
  
 
+
+if (!function_exists('word_cut')) {
+    function word_cut($string, $limit, $pad = "...")
+    {
+        $len = mb_strlen($string, 'UTF-8');
+        if ($len <= $limit) {
+            return $string;
+        }
+
+        //先找出裁切後的字串有多少英文字
+        $tmp_content = mb_substr($string, 0, $limit, 'UTF-8');
+        preg_match_all('/(\w)/', $tmp_content, $match);
+        $eng = count($match[1]);
+        $add = round($eng / 2, 0);
+        $limit += $add;
+        $string = mb_substr($string, 0, $limit, 'UTF-8');
+        return $string . $pad;
+    }
+}
+
 function mk_json($sn)
 {
     global $xoopsDB, $TadUpFiles;

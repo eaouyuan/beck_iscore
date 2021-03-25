@@ -18,7 +18,7 @@ defined('XOOPS_ROOT_PATH') || die('Restricted access.');
 /**
  * Class 物件名稱CorePreload
  */
-class beck_iscore extends XoopsPreloadItem
+class Beck_iscoreCorePreload extends XoopsPreloadItem
 {
     // to add PSR-4 autoloader
 

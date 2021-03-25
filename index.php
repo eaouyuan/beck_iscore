@@ -1,37 +1,29 @@
 <?php
 use Xmf\Request;
 use XoopsModules\Tadtools\Utility;
-use XoopsModules\beck_iscore\announcement;
-use XoopsModules\beck_iscore\dept_school;
+use XoopsModules\Beck_iscore\Announcement;
+use XoopsModules\Beck_iscore\Dept_school;
 
 /*-----------引入檔案區--------------*/
 include_once "header.php";
 $xoopsOption['template_main'] = "beck_iscore_index.tpl";
 include_once XOOPS_ROOT_PATH . "/header.php";
 
-if (!class_exists('XoopsModules\beck_iscore\announcement')) {
+if (!class_exists('XoopsModules\Beck_iscore\Announcement')) {
     require XOOPS_ROOT_PATH . '/modules/beck_iscore/preloads/autoloader.php';
     // include dirname(__DIR__) . '/beck_iscore/preloads/autoloader.php';
 }
-
-// include_once ".\class\announcement.php";
-// $announcement = new announcement();
 
 /*-----------執行動作判斷區----------*/
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
 $op = Request::getString('op');
 $sn = Request::getInt('sn');
-// $ann_list['ann_class_id']=Request::getInt('ann_class_id');
-// $ann_list['dept_id']=Request::getInt('dept_id');
-// $ann_list['search']=Request::getString('search');
+$ann_list['ann_class_id']=Request::getInt('ann_class_id');
+$ann_list['dept_id']=Request::getInt('dept_id');
+$ann_list['search']=Request::getString('search');
 
 // var_dump($_REQUEST);
-
 // var_dump(isset($_REQUEST['search'])); 
-
-if(isset($_REQUEST['ann_class_id'])){$ann_list['ann_class_id']=Request::getInt('ann_class_id');}
-if(isset($_REQUEST['dept_id'])){$ann_list['dept_id']          =Request::getInt('dept_id');}
-if(isset($_REQUEST['search'])){$ann_list['search']            =Request::getString('search');}
 // die(var_dump($_SESSION));
 // die(var_dump($_REQUEST));
 // var_dump($_REQUEST);
@@ -605,7 +597,7 @@ switch ($op) {
 
         $form_title = '新增公告消息';
         $space='0';//顯示公告分類及發佈處室空白選項
-
+        $Ann=[];
         if($sn){
             $Ann        = array();
             $form_title = '編輯公告消息';
@@ -628,12 +620,12 @@ switch ($op) {
 
         // 公告分類
         $ann_class_id = (!isset($Ann['ann_class_id'])) ? '' : $Ann['ann_class_id'];
-        $ann_c_sel_htm=announcement::GetAnn_Class_Sel_htm($ann_class_id,$space);
+        $ann_c_sel_htm=Announcement::GetAnn_Class_Sel_htm($ann_class_id,$space);
         $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
         
         // 處室分類
         $ann_dept_id = (!isset($Ann['dept_id'])) ? '' : $Ann['dept_id'];
-        $dept_c_sel_htm=dept_school::GetDept_Class_Sel_htm($ann_dept_id,$space);
+        $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id,$space);
         $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
         
         // 標題
@@ -648,7 +640,7 @@ switch ($op) {
         $xoopsTpl->assign('content', $content);
 
         // 公告結束日期 預設一個月後
-        if($Ann['end_date']){
+        if(isset($Ann['end_date'])){
             $end_date=$Ann['end_date'];
         }else{
             $end_date=gmdate('Y-m-d',strtotime('+1 month'));
@@ -750,9 +742,9 @@ switch ($op) {
 
         while($anns= $xoopsDB->fetchArray($result)){
             $anns['sn']           = $myts->htmlSpecialChars($anns['sn']);
-            $anns['ann_class_id'] = $myts->htmlSpecialChars(announcement::GetAnn_Class($anns['ann_class_id'])['ann_class_name']);
-            $anns['dept_id']      = $myts->htmlSpecialChars(dept_school::GetDept($anns['dept_id'])['dept_name']);
-            $anns['title']        = $myts->htmlSpecialChars($anns['title']);
+            $anns['ann_class_id'] = $myts->htmlSpecialChars(Announcement::GetAnn_Class($anns['ann_class_id'])['ann_class_name']);
+            $anns['dept_id']      = $myts->htmlSpecialChars(Dept_school::GetDept($anns['dept_id'])['dept_name']);
+            $anns['title']        = word_cut($myts->htmlSpecialChars($anns['title']), 30);
             $anns['top']          = $myts->htmlSpecialChars($anns['top']);
             $anns['start_date']   = $myts->htmlSpecialChars($anns['start_date']);
             $anns['end_date']     = $myts->htmlSpecialChars($anns['end_date']);
@@ -763,13 +755,18 @@ switch ($op) {
         
         // 公告分類
         $ann_class_id = (!isset($parameter['ann_class_id'])) ? '' : $parameter['ann_class_id'];
-        $ann_c_sel_htm=announcement::GetAnn_Class_Sel_htm($ann_class_id);
+        $ann_c_sel_htm=Announcement::GetAnn_Class_Sel_htm($ann_class_id);
         $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
         
         // 處室分類
         $ann_dept_id = (!isset($parameter['dept_id'])) ? '' : $parameter['dept_id'];
-        $dept_c_sel_htm=dept_school::GetDept_Class_Sel_htm($ann_dept_id);
+        $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id);
         $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
+
+        // 關鍵字
+        $ann_list['search'];
+        $xoopsTpl->assign('search', $ann_list['search']);
+
 
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);

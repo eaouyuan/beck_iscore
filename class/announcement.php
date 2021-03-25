@@ -1,5 +1,5 @@
 <?php
-namespace XoopsModules\beck_iscore;
+namespace XoopsModules\Beck_iscore;
 use XoopsModules\Tadtools\CkEditor;
 use XoopsModules\Tadtools\FormValidator;
 use XoopsModules\Tadtools\StarRating;
@@ -15,7 +15,7 @@ use XoopsModules\Tadtools\Utility;
 
 
  */
-class announcement
+class Announcement
 {
 
 

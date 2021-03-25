@@ -72,7 +72,7 @@
 
             <{if $is_admin}>
             <td class="text-center">
-                <a href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm">編輯</a>
+                <a href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
                 <a href="javascript:ann_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
             </td>
             <{/if}>
