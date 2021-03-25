@@ -3,6 +3,7 @@ use Xmf\Request;
 use XoopsModules\Tadtools\Utility;
 use XoopsModules\Beck_iscore\Announcement;
 use XoopsModules\Beck_iscore\Dept_school;
+use XoopsModules\Tadtools\TadUpFiles;
 
 /*-----------引入檔案區--------------*/
 include_once "header.php";
@@ -22,7 +23,7 @@ $ann_list['ann_class_id']=Request::getInt('ann_class_id');
 $ann_list['dept_id']=Request::getInt('dept_id');
 $ann_list['search']=Request::getString('search');
 
-// var_dump($_REQUEST);
+// var_dump($_POST);
 // var_dump(isset($_REQUEST['search'])); 
 // die(var_dump($_SESSION));
 // die(var_dump($_REQUEST));
@@ -555,7 +556,7 @@ switch ($op) {
         $xoopsDB->queryF($sql_hitcount) or Utility::web_error($sql_hitcount, __FILE__, __LINE__);
 
         // 顯示附檔
-        $TadUpFiles=new TadUpFiles("beck_iscore","/announcement",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        $TadUpFiles=new TadUpFiles("beck_iscore","/announcement");
         $TadUpFiles->set_col('ann_file',$sn);
         $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'filename');
         
@@ -763,10 +764,9 @@ switch ($op) {
         $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id);
         $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
 
-        // 關鍵字
-        $ann_list['search'];
-        $xoopsTpl->assign('search', $ann_list['search']);
-
+        // 關鍵字傳到樣版
+        $xoopsTpl->assign('search', $parameter['search']);
+        // var_dump($ann_list);die();
 
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);
@@ -779,16 +779,7 @@ switch ($op) {
         // if($_SESSION['beck_iscore_adm'] OR $_SESSION['xoopsUserId']== $Ann['uid']){
         $xoopsTpl->assign('is_admin', $_SESSION['beck_iscore_adm']);
         // }
-
-
         $xoopsTpl->assign('op', "announcement_list");
-        // //帶入使用者編號
-        // if ($sn) {
-        //     $uid = $_SESSION['beck_iscore_adm'] ? $Ann['uid'] : $xoopsUser->uid();
-        // } else {
-        //     $uid = $xoopsUser->uid();
-        // }
-        // $xoopsTpl->assign('uid', $uid);
 
     }
 

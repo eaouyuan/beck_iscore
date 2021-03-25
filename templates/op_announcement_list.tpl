@@ -6,7 +6,7 @@
     <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
         <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
     </button>
-    <form name="announcement_list" id="announcement_list" action="index.php" method="post">
+    <form name="announcement_list" id="announcement_list" action="index.php" method="get">
         <div class="form-group row">
             <label for="ann_class_id" class="col-1.5 col-form-label text-sm-right px-0">分類：</label>
             <div class="col-2 text-center px-0 mr-3">
@@ -23,14 +23,15 @@
             </div>
 
             <label class="col-1 col-form-label text-sm-right px-0" for="search">關鍵字</label>
-            <div class="mx-sm-3 col-2.5 text-left px-0">
-                <input type="text" class="form-control" id="search" name="search" placeholder="search">
+            <div class="mx-sm-3 col-2 text-left px-0">
+                <input type="text" class="form-control" id="search" name="search" placeholder="search" value="<{$search}>">
             </div>
-            <button type="submit" class="btn btn-outline-dark col-1">搜尋</button>
+            <div>
+                <input name="op" id="op" value="<{$op}>" type="hidden">
+            </div>
+            <button type="submit" class="btn btn-outline-dark col-0.5">搜尋</button>
         </div>
-        <div>
-            <input name="op" id="op" value="<{$op}>" type="hidden">
-        </div>
+
 
 
     </form>
