@@ -1,6 +1,6 @@
-body {
+/* body {
     font-family: 微軟正黑體;
-    /* font-size: 1.2rem; */
+    font-size: 1.2rem;
   }
   
   nav#news {
@@ -28,16 +28,16 @@ body {
   
   .footer {
     margin-top: 100px;
-  }
+  } */
   
   
   /************ start 首頁輪播樣式 ************/
-  .img-container {
+  /* .img-container {
     width: 100%;
     height: 800px;
-    background-color: #000;
+    background-color: #000; */
     /* background-image: url('../images/pic2.jpg'); */
-    background-repeat: no-repeat;
+    /* background-repeat: no-repeat;
     background-size: cover !important;
     background-position: left center;
     color: white;
@@ -61,8 +61,8 @@ body {
   
   .carousel-caption p {
     padding: 10px 20px 0 20px;
-  }
-  /************ end 首頁輪播樣式 ************/
+  } */
+  /* *********** end 首頁輪播樣式 *********** */
   
   /************* start 內文樣式 *************/
   .container.article {
@@ -87,7 +87,7 @@ body {
     line-height: 2rem !important;
   }
   
-  .a2a_default_style {
+  /* .a2a_default_style {
     text-align: right;
     float: right;
     margin-top: 20px;
@@ -96,7 +96,7 @@ body {
   
   .img-container2 .card-text li {
     margin-bottom: .75rem;
-  }
+  } */
   
   /************* end 內文樣式 ***************/
   
@@ -146,7 +146,7 @@ body {
   /******* end 文章文字大小按鈕樣式 ********/
   
   /****** 首頁最新文章區塊 ******/
-  div.new-article {
+  /* div.new-article {
     display: block;
     width: 100%;
     position: relative;
@@ -178,10 +178,10 @@ body {
     display: block;
     bottom: 0px;
     clip: rect(20px auto 40px auto);
-  }
+  } */
   
   /* article.title */
-  .latest-post {
+  /* .latest-post {
     position: absolute;
     opacity: 0;
     top: 0px;
@@ -214,7 +214,7 @@ body {
   
   .latest-post {
     opacity: 1;
-  }
+  } */
   /* //article.title */
   /****** //首頁最新文章區塊 ******/
   
@@ -222,7 +222,7 @@ body {
   /*--------------------------------------------------------------
   # point
   --------------------------------------------------------------*/
-  .jumbotron {
+  /* .jumbotron {
     padding-top: 6rem;
     padding-bottom: 6rem;
     margin-bottom: 0;
@@ -278,4 +278,4 @@ body {
   
   .media {
     padding: 1rem;
-  }
+  } */

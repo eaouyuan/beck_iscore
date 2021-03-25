@@ -56,7 +56,7 @@ class dept_school
     }
 
     //處室分類下拉選單
-    public static function GetDept_Class_Sel_htm($Dept_c_id)
+    public static function GetDept_Class_Sel_htm($Dept_c_id,$space='0')
     {
         global $xoopsDB, $xoopsTpl, $xoopsUser;
 
@@ -64,7 +64,7 @@ class dept_school
         $sql     = "SELECT * FROM $tbl WHERE `enable` ='1' ORDER BY `sn`";
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
 
-        if($Dept_c_id==''){
+        if($space=='0'){
             $htm='<option selected></option>';
         }else{
             $htm='';

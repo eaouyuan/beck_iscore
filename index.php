@@ -21,9 +21,26 @@ if (!class_exists('XoopsModules\beck_iscore\announcement')) {
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
 $op = Request::getString('op');
 $sn = Request::getInt('sn');
-$TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+// $ann_list['ann_class_id']=Request::getInt('ann_class_id');
+// $ann_list['dept_id']=Request::getInt('dept_id');
+// $ann_list['search']=Request::getString('search');
+
+// var_dump($_REQUEST);
+
+// var_dump(isset($_REQUEST['search'])); 
+
+if(isset($_REQUEST['ann_class_id'])){$ann_list['ann_class_id']=Request::getInt('ann_class_id');}
+if(isset($_REQUEST['dept_id'])){$ann_list['dept_id']          =Request::getInt('dept_id');}
+if(isset($_REQUEST['search'])){$ann_list['search']            =Request::getString('search');}
 // die(var_dump($_SESSION));
 // die(var_dump($_REQUEST));
+// var_dump($_REQUEST);
+// var_dump($sn);
+// var_dump($op);
+// var_dump($uid);
+// var_dump($ann_list); 
+// var_dump($dept_id); 
+// die();
 // die(var_dump($op));
 switch ($op) {
     
@@ -58,7 +75,11 @@ switch ($op) {
 
     // 公告消息列表
     case "announcement_list":
-        announcement_list();
+        if(isset($ann_list)){
+            announcement_list($ann_list);
+        }else{
+            announcement_list();
+        }
         break;//跳出迴圈,往下執行
     
     // 新增、編輯 公告消息表單
@@ -149,6 +170,7 @@ switch ($op) {
 
     //下載檔案
     case "tufdl":
+        $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
         $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
         $TadUpFiles->add_file_counter($files_sn,false,true);
         exit;
@@ -391,13 +413,16 @@ switch ($op) {
         $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $Ann        = $xoopsDB->fetchArray($result);
 
-        if(!($xoopsUser->isAdmin() and $_SESSION['xoopsUserId']== $Ann['uid'])){
+        if(!($xoopsUser->isAdmin() or $_SESSION['xoopsUserId']== $Ann['uid'])){
             redirect_header('index.php?op=announcement_list', 3, '非管理員或公告建立者！');
         }
-        
         $tbl = $xoopsDB->prefix('yy_announcement');
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        $TadUpFiles=new TadUpFiles("beck_iscore","/announcement",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        $TadUpFiles->set_col('ann_file', $sn);
+        $TadUpFiles->del_files();
 
     }
 
@@ -433,7 +458,8 @@ switch ($op) {
                     `content` = '{$content}', 
                     `end_date` = '{$end_date}', 
                     `update_user` = '{$uid}', 
-                    `update_date` = now()
+                    `update_date` = now(),
+                    `top`='{$top}'
                 where `sn`   = '{$sn}'";
 
         // echo($sql);die();
@@ -499,7 +525,6 @@ switch ($op) {
         global $xoopsTpl,$xoopsDB,$xoopsUser;
     
         if (!$xoopsUser){redirect_header('index.php', 3, '無操作權限。error:2103212230');}
-        if (!$sn){redirect_header('index.php', 3, '不存在的公告編號！');}
 
         $myts = MyTextSanitizer::getInstance();
     
@@ -507,7 +532,9 @@ switch ($op) {
         $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
         $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $Ann        = $xoopsDB->fetchArray($result);
-        
+
+        if (!$Ann or !$sn){redirect_header('index.php?op=announcement_list', 3, '不存在的公告編號！');}
+
         $Ann['form_title']   = '公告消息瀏覽';
         $Ann['sn']           = $myts->htmlSpecialChars($Ann['sn']);
         $Ann['ann_class_id'] = $myts->htmlSpecialChars($Ann['ann_class_id']);
@@ -525,8 +552,10 @@ switch ($op) {
         $Ann['enable']       = $myts->htmlSpecialChars($Ann['enable']);
         $Ann['sort']         = $myts->htmlSpecialChars($Ann['sort']);
         
-        $Ann['uname'] = users_data($Ann['uid'])['uname'];
-        $Ann['dept_name']  = dept_school::GetDept($Ann['dept_id'])['dept_name'];
+        $Ann['uname']        = users_data($Ann['uid'])['uname'];
+        $Ann['dept_name']    = dept_school::GetDept($Ann['dept_id'])['dept_name'];
+        $Ann['ann_class_id'] = announcement::GetAnn_Class($Ann['ann_class_id'])['ann_class_name'];
+
 
         //　瀏覽次數累加
         $Ann['hit_count']++;
@@ -575,6 +604,7 @@ switch ($op) {
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
 
         $form_title = '新增公告消息';
+        $space='0';//顯示公告分類及發佈處室空白選項
 
         if($sn){
             $Ann        = array();
@@ -587,7 +617,7 @@ switch ($op) {
             if(!($xoopsUser->isAdmin() AND $_SESSION['xoopsUserId']== $Ann['uid'])){
                 redirect_header('index.php?op=announcement_list', 3, '無操作權限');
             }
-
+            $space='1';
         }
         // die(var_dump($Ann));
 
@@ -598,12 +628,12 @@ switch ($op) {
 
         // 公告分類
         $ann_class_id = (!isset($Ann['ann_class_id'])) ? '' : $Ann['ann_class_id'];
-        $ann_c_sel_htm=announcement::GetAnn_Class_Sel_htm($ann_class_id);
+        $ann_c_sel_htm=announcement::GetAnn_Class_Sel_htm($ann_class_id,$space);
         $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
         
         // 處室分類
         $ann_dept_id = (!isset($Ann['dept_id'])) ? '' : $Ann['dept_id'];
-        $dept_c_sel_htm=dept_school::GetDept_Class_Sel_htm($ann_dept_id);
+        $dept_c_sel_htm=dept_school::GetDept_Class_Sel_htm($ann_dept_id,$space);
         $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
         
         // 標題
@@ -671,7 +701,7 @@ switch ($op) {
     }
 
     // 列表-公告消息
-    function announcement_list(){
+    function announcement_list($parameter=null){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
         if (!$xoopsUser) {
             redirect_header('index.php', 3, '無操作權限');
@@ -679,8 +709,35 @@ switch ($op) {
 
         $myts = MyTextSanitizer::getInstance();
 
+        
+        $now=date('Y-m-d');
         $tbl      = $xoopsDB->prefix('yy_announcement');
-        $sql      = "SELECT * FROM $tbl ORDER BY `update_date` DESC";
+        $sql      = "SELECT `sn`,`ann_class_id`,`dept_id`,`title`,`start_date`,
+                            `end_date`,`update_user`,`update_date`,`top`,
+                            `hit_count` FROM $tbl WHERE ";
+
+        $have_par='0';
+        if(!empty($parameter['ann_class_id'])){
+            $sql.="`ann_class_id`='{$parameter['ann_class_id']}'";
+            $have_par='1';
+        }
+        if(!empty($parameter['dept_id'])){
+            if($have_par=='1'){$sql.=" AND ";}
+            $sql.="`dept_id`='{$parameter['dept_id']}'";
+            $have_par='1';
+        }
+        if(!empty($parameter['search'])){
+            if($have_par=='1'){$sql.=" AND ";}
+            $sql.="((`content` like '%{$parameter['search']}%') or (`title` like '%{$parameter['search']}%')) ";
+            $have_par='1';
+        }
+        if($have_par=='0'){
+            $sql.=" `end_date`>='{$now}' ORDER BY `top` DESC ,`sn` DESC";
+        }else{
+            $sql.=" ORDER BY `top` DESC , `sn` DESC";
+        }
+        // echo($sql);
+        // die();
         
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
         $PageBar = getPageBar($sql, 10, 10);
@@ -691,23 +748,50 @@ switch ($op) {
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
 
-        while($ann_cls= $xoopsDB->fetchArray($result)){
-            $ann_cls['sn']             = $myts->htmlSpecialChars($ann_cls['sn']);
-            $ann_cls['ann_class_name'] = $myts->htmlSpecialChars($ann_cls['ann_class_name']);
-            $ann_cls['enable']         = $myts->htmlSpecialChars($ann_cls['enable']);
-            $ann_cls['sort']           = $myts->htmlSpecialChars($ann_cls['sort']);
-            $ann_cls['create_time']    = $myts->htmlSpecialChars($ann_cls['create_time']);
-            $ann_cls['update_time']    = $myts->htmlSpecialChars($ann_cls['update_time']);
-            $ann_cls['enable']=($ann_cls['enable'] =='1')?'是':'否';
-            $all    []                 = $ann_cls;
+        while($anns= $xoopsDB->fetchArray($result)){
+            $anns['sn']           = $myts->htmlSpecialChars($anns['sn']);
+            $anns['ann_class_id'] = $myts->htmlSpecialChars(announcement::GetAnn_Class($anns['ann_class_id'])['ann_class_name']);
+            $anns['dept_id']      = $myts->htmlSpecialChars(dept_school::GetDept($anns['dept_id'])['dept_name']);
+            $anns['title']        = $myts->htmlSpecialChars($anns['title']);
+            $anns['top']          = $myts->htmlSpecialChars($anns['top']);
+            $anns['start_date']   = $myts->htmlSpecialChars($anns['start_date']);
+            $anns['end_date']     = $myts->htmlSpecialChars($anns['end_date']);
+            $anns['update_user']  = $myts->htmlSpecialChars($anns['update_user']);
+            $all  []              = $anns;
         }
+        // var_dump($all);die();
+        
+        // 公告分類
+        $ann_class_id = (!isset($parameter['ann_class_id'])) ? '' : $parameter['ann_class_id'];
+        $ann_c_sel_htm=announcement::GetAnn_Class_Sel_htm($ann_class_id);
+        $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
+        
+        // 處室分類
+        $ann_dept_id = (!isset($parameter['dept_id'])) ? '' : $parameter['dept_id'];
+        $dept_c_sel_htm=dept_school::GetDept_Class_Sel_htm($ann_dept_id);
+        $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
+
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);
         $xoopsTpl->assign('total', $total);
         
         include_once XOOPS_ROOT_PATH . "/modules/tadtools/sweet_alert.php";
         $sweet_alert = new sweet_alert();
-        $sweet_alert->render("announcement_class_del", "index.php?op=announcement_class_delete&sn=", 'sn');
+        $sweet_alert->render("ann_del", "index.php?op=announcement_delete&sn=", 'sn');
+
+        // if($_SESSION['beck_iscore_adm'] OR $_SESSION['xoopsUserId']== $Ann['uid']){
+        $xoopsTpl->assign('is_admin', $_SESSION['beck_iscore_adm']);
+        // }
+
+
+        $xoopsTpl->assign('op', "announcement_list");
+        // //帶入使用者編號
+        // if ($sn) {
+        //     $uid = $_SESSION['beck_iscore_adm'] ? $Ann['uid'] : $xoopsUser->uid();
+        // } else {
+        //     $uid = $xoopsUser->uid();
+        // }
+        // $xoopsTpl->assign('uid', $uid);
 
     }
 

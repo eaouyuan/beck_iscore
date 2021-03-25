@@ -5,14 +5,14 @@
     <h3><{$form_title}></h3>
 
     <div class="form-group row">
-        <label for="name" class="col-lg-2 col-form-label text-sm-right">分類</label>
+        <label for="ann_class_id" class="col-lg-2 col-form-label text-sm-right">分類</label>
         <div class="col-lg-4">
             <select class="custom-select validate[required]" name="ann_class_id">
                 <{$ann_c_sel_htm}>
             </select>
         </div>
 
-        <label for="name" class="col-lg-2 col-form-label text-sm-right">發佈處室</label>
+        <label for="dept_id" class="col-lg-2 col-form-label text-sm-right">發佈處室</label>
         <div class="col-lg-4">
             <select class="custom-select validate[required]" name="dept_id">
                 <{$dept_c_sel_htm}>

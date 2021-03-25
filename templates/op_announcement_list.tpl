@@ -1,46 +1,84 @@
 
 <div class="container">
-    <h2 style="float:left">公告消息 ─ 列表</h2>
-   
-        <button type="button" class="btn btn-primary btn-sm" style="float:right" 
-            onclick="self.location.href='index.php?op=announcement_class_form';">
-            <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增分類"> 新增分類
-        </button>
+    <h2 style="float:left" class="mb-3">公告消息 ─ 列表</h2>
+    <!-- <h2 style="float:left">公告消息 ─ 列表</h2>   -->
+    <div class="col row"></div>
+    <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
+        <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
+    </button>
+    <form name="announcement_list" id="announcement_list" action="index.php" method="post">
+        <div class="form-group row">
+            <label for="ann_class_id" class="col-1.5 col-form-label text-sm-right px-0">分類：</label>
+            <div class="col-2 text-center px-0 mr-3">
+                <select class="custom-select" name="ann_class_id">
+                    <{$ann_c_sel_htm}>
+                </select>
+            </div>
+
+            <label for="dept_id" class="col-1.5 col-form-label text-sm-right px-0">發佈處室：</label>
+            <div class="col-2 text-left px-0 mr-3">
+                <select class="custom-select" name="dept_id">
+                    <{$dept_c_sel_htm}>
+                </select>
+            </div>
+
+            <label class="col-1 col-form-label text-sm-right px-0" for="search">關鍵字</label>
+            <div class="mx-sm-3 col-2.5 text-left px-0">
+                <input type="text" class="form-control" id="search" name="search" placeholder="search">
+            </div>
+            <button type="submit" class="btn btn-outline-dark col-1">搜尋</button>
+        </div>
+        <div>
+            <input name="op" id="op" value="<{$op}>" type="hidden">
+        </div>
+
+
+    </form>
+
 
 
 </div>
 <!-- <div class=""> -->
 <{if $all}>
-    <table class="table table-bordered table-sm table-hover">
+    <table class="table table-bordered table-sm table-hover table-shadow">
         <thead class="table-info">
             <tr>
-                <th scope="col" class="text-center">編號 　</th>
-                <th scope="col" class="text-center">table-sm公告分類名稱</th>
-                <th scope="col" class="text-center">啟用</th>
+                <th scope="col" class="text-center">編號</th>
+                <th scope="col" class="text-center">類別</th>
+                <th scope="col" class="text-center">單位</th>
+                <th scope="col" class="text-center">標題</th>
                 <th scope="col" class="text-center">建立日期</th>
-                <th scope="col" class="text-center">最近修改日期</th>
-                <th scope="col" class="text-center">編輯</th>
+                <!-- <th scope="col" class="text-center">結束日期</th> -->
+                <th scope="col" class="text-center">點閱數</th>
+                <{if $is_admin}>
+                <th scope="col" class="text-center">功能</th>
+                <{/if}>
+
             </tr>
         </thead>
         <tbody>
     <{foreach from=$all key=i item=its}>
-        <tr>    
-            <th class="text-center" scope="row"><{$its.sn}></th>
-            <td class="text-center"><{$its.ann_class_name}></td>
-            <td class="text-center"><{$its.enable}></td>
-            <td class="text-center"><{$its.create_time}></td>
-            <td class="text-center"><{$its.update_time}></td>
-            <td class="text-center">
-                <a href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_class_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2"><i class="fa fa-pencil"></i> 編輯</a>
-
-                <a href="javascript:announcement_class_del(<{$its.sn}>)" class="btn btn-danger btn-sm "><i class='fa fa-times '>刪除</i></a>
-
-
+        <tr> 
+            <th class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"scope="row"><{$its.sn}></th>
+            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.ann_class_id}></td>
+            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.dept_id}></td>
+            <td class="text-left clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>">
+                <{if $its.top=='1'}><span class="badge" style="background-color:blue;font-weight:normal;color:white;text-shadow:none;">置頂</span><{/if}>
+                <{$its.title}>
             </td>
+            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.start_date}></td>
+            <!-- <td class="text-center"><{$its.end_date}></td> -->
+            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.hit_count}></td>
+
+            <{if $is_admin}>
+            <td class="text-center">
+                <a href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm">編輯</a>
+                <a href="javascript:ann_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
+            </td>
+            <{/if}>
+
         </tr>
     <{/foreach}>
-
-
         </tbody>
     </table>
 <!-- </div>    -->
@@ -58,3 +96,15 @@
     </div>
 <{/if}>
 *}>
+
+<script type="text/javascript">
+    $(document).ready(function($){
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
+
+<style type="text/css">
+    [data-href] { cursor: pointer; }
+</style>

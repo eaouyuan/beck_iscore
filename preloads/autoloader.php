@@ -23,7 +23,7 @@ spl_autoload_register(static function ($class) {
     // echo('<br>');
 
     if (strncmp($prefix, $class, $len) !== 0) {
-        // return;
+        return;
     }
     // get the relative class name
     $relativeClass = mb_substr($class, $len);

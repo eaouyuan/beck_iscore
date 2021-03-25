@@ -56,7 +56,7 @@ class announcement
     }
 
     //公告分類下拉選單
-    public static function GetAnn_Class_Sel_htm($ann_class_id)
+    public static function GetAnn_Class_Sel_htm($ann_class_id,$space='0')
     {
         global $xoopsDB, $xoopsTpl, $xoopsUser;
 
@@ -65,7 +65,7 @@ class announcement
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
 
         // var_dump($ann_class_id);die();
-        if($ann_class_id==''){
+        if($space=='0'){
             $htm='<option selected></option>';
         }else{
             $htm='';
@@ -80,6 +80,20 @@ class announcement
         return ($htm);
     }
 
+
+    //取得公告分類
+    public static function GetAnn_Class($id)
+    {
+        global $xoopsDB, $xoopsTpl, $xoopsUser;
+
+        $tbl    = $xoopsDB->prefix('yy_announcement_class');
+        $sql    = "SELECT * FROM $tbl WHERE `sn` ='{$id}'  ORDER BY `sn`";
+        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $annc   = $xoopsDB->fetchArray($result);
+    
+        // var_dump($Dept);die();
+        return ($annc);
+    }
 
     //取得分類新聞
     public function get_cate_news($mode = 'assign', $include_sub_cate = false)
