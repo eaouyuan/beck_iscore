@@ -99,7 +99,6 @@
 
 fieldset p { margin-bottom: .5em;}
 
-#myid {}
 
 /* Buttons style */
 .xo-buttons a, .xo-buttons button{
@@ -142,7 +141,7 @@ fieldset p { margin-bottom: .5em;}
     width:16px;
     height:16px;
 }
-.ui-corner-all { -moz-border-radius: 5px; -webkit-border-radius: 5px; }
+/* .ui-corner-all { -moz-border-radius: 5px; -webkit-border-radius: 5px; } */
 /* Buttons style */
 
 /* align */
@@ -168,7 +167,7 @@ div.rmmenuicon a {
     height: 75px; 
     width: 75px !important;
     width: 75px; 
-    vertical-align: middle;
+    /* vertical-align: middle; */
     text-decoration : none;
     border: 1px solid #CCCCCC;
     padding: 2px 5px 1px 5px;
