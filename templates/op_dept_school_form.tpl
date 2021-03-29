@@ -1,6 +1,6 @@
 <{$formValidator_code}>
 
-<form name="deptpart_school_form" id="deptpart_school_form" action="index.php" method="post">
+<form name="deptpart_school_form" id="deptpart_school_form" action="school_affairs.php" method="post">
     <h3><{$form_title}></h3>
 
     <div class="form-group row">
@@ -15,7 +15,7 @@
     </div>
     <div class="col-md-12 text-center mb-3">
         <button class="btn btn-primary" type="submit">儲存</button>
-        <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/index.php?op=dept_school_list">取消</a>
+        <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=dept_school_list">取消</a>
     </div>
 
     <div>

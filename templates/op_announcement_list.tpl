@@ -1,23 +1,24 @@
 
 <div class="container">
     <h2 style="float:left" class="mb-3">公告消息 ─ 列表</h2>
-    <!-- <h2 style="float:left">公告消息 ─ 列表</h2>   -->
     <div class="col row"></div>
-    <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
+    <{if $show_add_button=='1'}>
+        <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
         <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
-    </button>
+        </button>
+    <{/if}>
     <form name="announcement_list" id="announcement_list" action="index.php" method="get">
         <div class="form-group row">
             <label for="ann_class_id" class="col-1.5 col-form-label text-sm-right px-0">分類：</label>
             <div class="col-2 text-center px-0 mr-3">
-                <select class="custom-select" name="ann_class_id">
+                <select class="custom-select" name="ann_class_id" id="ann_class_id">
                     <{$ann_c_sel_htm}>
                 </select>
             </div>
 
             <label for="dept_id" class="col-1.5 col-form-label text-sm-right px-0">發佈處室：</label>
             <div class="col-2 text-left px-0 mr-3">
-                <select class="custom-select" name="dept_id">
+                <select class="custom-select" name="dept_id" id="dept_id">
                     <{$dept_c_sel_htm}>
                 </select>
             </div>
@@ -29,7 +30,8 @@
             <div>
                 <input name="op" id="op" value="<{$op}>" type="hidden">
             </div>
-            <button type="submit" class="btn btn-outline-dark col-0.5">搜尋</button>
+            <button type="submit" class="btn btn-outline-dark col-0.5 mr-1">搜尋</button>
+            <button type="button" id="clear" class="btn btn-outline-dark col-0.5">清空</button>
         </div>
 
 
@@ -102,6 +104,11 @@
     $(document).ready(function($){
         $(".clickable-row").click(function() {
             window.location = $(this).data("href");
+        });
+        $("#clear").click(function() {
+            $('#search').val('');
+            $("#ann_class_id option:selected").prop("selected", false)
+            $("#dept_id option:selected").prop("selected", false)
         });
     });
 </script>

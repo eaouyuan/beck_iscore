@@ -3,7 +3,7 @@
     <h2 style="float:left">學校處室 ─ 列表</h2>
 
     <button type="button" class="btn btn-primary btn-sm" style="float:right" 
-        onclick="self.location.href='index.php?op=dept_school_form';">
+        onclick="self.location.href='school_affairs.php?op=dept_school_form';">
         <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增處室"> 新增處室
     </button>
 
@@ -33,7 +33,7 @@
                 <td class="text-center"><{$its.create_time}></td>
                 <td class="text-center"><{$its.update_time}></td>
                 <td class="text-center">
-                    <a href="<{$xoops_url}>/modules/beck_iscore/index.php?op=dept_school_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2"><i class="fa fa-pencil"></i> 編輯</a>
+                    <a href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=dept_school_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2"><i class="fa fa-pencil"></i> 編輯</a>
 
                     <a href="javascript:dept_school_del(<{$its.sn}>)" class="btn btn-danger btn-sm "><i class='fa fa-times '>刪除</i></a>
 

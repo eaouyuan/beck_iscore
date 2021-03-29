@@ -42,6 +42,7 @@ $modversion['tables'][]         = 'yy_student';                //學生基本資
 $modversion['tables'][]         = 'yy_announcement';           //公佈欄
 $modversion['tables'][]         = 'yy_announcement_class';     //公佈欄分類
 $modversion['tables'][]         = 'yy_dept_school';            //處室名稱
+$modversion['tables'][]         = 'yy_semester';               //學年度
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;
