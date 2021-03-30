@@ -513,6 +513,8 @@ switch ($op) {
 
     }
 
+    
+// ----------------------------------
 // 學年度
     // sql-刪除學年度
     function semester_delete($sn){

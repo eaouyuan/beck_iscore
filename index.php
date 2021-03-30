@@ -129,7 +129,7 @@ switch ($op) {
     case "tufdl":
         $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
         $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
-        $TadUpFiles->add_file_counter($files_sn,false,true);
+        $TadUpFiles->add_file_counter($files_sn,false,false);
         exit;
 
     case "student_delete":
