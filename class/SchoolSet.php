@@ -34,10 +34,11 @@ class SchoolSet
         $sql         = "SELECT * FROM $tbl Where `activity`='1'";
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $school_year = $xoopsDB->fetchArray($result);
-        
         $this->sem_sn=$school_year['sn'];
         $this->sem_year=$school_year['year'];
         $this->sem_term=$school_year['term'];
+
+        
 
     }
 

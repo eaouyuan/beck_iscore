@@ -83,11 +83,13 @@ switch ($op) {
     
 // 教師 列表
     case "teacher_list":
-        if(isset($ann_list)){
-            teacher_list($ann_list,'1');
-        }else{
-            teacher_list(null,'1');
-        }
+        // if(isset($ann_list)){
+        //     teacher_list($ann_list,'1');
+        // }else{
+        //     teacher_list(null,'1');
+        // }
+
+        teacher_list();
         break;//跳出迴圈,往下執行
 
     // 新增、編輯 教師表單
@@ -423,41 +425,42 @@ switch ($op) {
 
     }
 
-    // 列表-公告消息
-    function teacher_list($parameter=null,$show_add_button){
+    // 列表- 教師
+    function teacher_list(){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
-        if (!$xoopsUser) {
+
+        if (!$xoopsUser->isAdmin()) {
             redirect_header('index.php', 3, '無操作權限');
         }
 
         $myts = MyTextSanitizer::getInstance();
 
-        $now=date('Y-m-d');
-        $tbl      = $xoopsDB->prefix('yy_announcement');
-        $sql      = "SELECT `sn`,`ann_class_id`,`dept_id`,`title`,`start_date`,
-                            `end_date`,`update_user`,`update_date`,`top`,
-                            `hit_count` FROM $tbl WHERE ";
+        // $now=date('Y-m-d');
+        $tbl      = $xoopsDB->prefix('users');
+        $tb2      = $xoopsDB->prefix('yy_teacher');
+        // $sql      = "SELECT * FROM $tbl";
+        $sql      = "SELECT * , ur.uid FROM $tbl as ur LEFT JOIN $tb2 as tr ON ur.uid=tr.uid";
 
-        $have_par='0';
-        if(!empty($parameter['ann_class_id'])){
-            $sql.="`ann_class_id`='{$parameter['ann_class_id']}'";
-            $have_par='1';
-        }
-        if(!empty($parameter['dept_id'])){
-            if($have_par=='1'){$sql.=" AND ";}
-            $sql.="`dept_id`='{$parameter['dept_id']}'";
-            $have_par='1';
-        }
-        if(!empty($parameter['search'])){
-            if($have_par=='1'){$sql.=" AND ";}
-            $sql.="((`content` like '%{$parameter['search']}%') or (`title` like '%{$parameter['search']}%')) ";
-            $have_par='1';
-        }
-        if($have_par=='0'){
-            $sql.=" `end_date`>='{$now}' ORDER BY `top` DESC ,`sn` DESC";
-        }else{
-            $sql.=" ORDER BY `top` DESC , `sn` DESC";
-        }
+        // $have_par='0';
+        // if(!empty($parameter['ann_class_id'])){
+        //     $sql.="`ann_class_id`='{$parameter['ann_class_id']}'";
+        //     $have_par='1';
+        // }
+        // if(!empty($parameter['dept_id'])){
+        //     if($have_par=='1'){$sql.=" AND ";}
+        //     $sql.="`dept_id`='{$parameter['dept_id']}'";
+        //     $have_par='1';
+        // }
+        // if(!empty($parameter['search'])){
+        //     if($have_par=='1'){$sql.=" AND ";}
+        //     $sql.="((`content` like '%{$parameter['search']}%') or (`title` like '%{$parameter['search']}%')) ";
+        //     $have_par='1';
+        // }
+        // if($have_par=='0'){
+        //     $sql.=" `end_date`>='{$now}' ORDER BY `top` DESC ,`sn` DESC";
+        // }else{
+        //     $sql.=" ORDER BY `top` DESC , `sn` DESC";
+        // }
         // echo($sql); // die();
         
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
@@ -468,28 +471,30 @@ switch ($op) {
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
-
-        while($anns= $xoopsDB->fetchArray($result)){
-            $anns['sn']           = $myts->htmlSpecialChars($anns['sn']);
-            $anns['ann_class_id'] = $myts->htmlSpecialChars(Announcement::GetAnn_Class($anns['ann_class_id'])['ann_class_name']);
-            $anns['dept_id']      = $myts->htmlSpecialChars(Dept_school::GetDept($anns['dept_id'])['dept_name']);
-            $anns['title']        = word_cut($myts->htmlSpecialChars($anns['title']), 30);
-            $anns['top']          = $myts->htmlSpecialChars($anns['top']);
-            $anns['start_date']   = $myts->htmlSpecialChars($anns['start_date']);
-            $anns['end_date']     = $myts->htmlSpecialChars($anns['end_date']);
-            $anns['update_user']  = $myts->htmlSpecialChars($anns['update_user']);
-            $all  []              = $anns;
+        while($tch= $xoopsDB->fetchArray($result)){
+            $tch['uid']        = $myts->htmlSpecialChars($tch['uid']);
+            $tch['name']       = $myts->htmlSpecialChars($tch['name']);
+            $tch['email']      = $myts->htmlSpecialChars($tch['email']);
+            $tch['dep_id']     = $myts->htmlSpecialChars($tch['dep_id']);
+            $tch['title']      = $myts->htmlSpecialChars($tch['title']);
+            $tch['sex']        = $myts->htmlSpecialChars($tch['sex']);
+            $tch['phone']      = $myts->htmlSpecialChars($tch['phone']);
+            $tch['cell_phone'] = $myts->htmlSpecialChars($tch['cell_phone']);
+            $tch['enable']     = $myts->htmlSpecialChars($tch['enable']);
+            $tch['isteacher']  = $myts->htmlSpecialChars($tch['isteacher']);
+            $tch['sort']       = $myts->htmlSpecialChars($tch['sort']);
+            $all  []              = $tch;
         }
-        // var_dump($all);die();
+        var_export($all);die();
         
         // 公告分類
         $ann_class_id = (!isset($parameter['ann_class_id'])) ? '' : $parameter['ann_class_id'];
-        $ann_c_sel_htm=Announcement::GetAnn_Class_Sel_htm($ann_class_id);
+        // $ann_c_sel_htm=Announcement::GetAnn_Class_Sel_htm($ann_class_id);
         $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
         
         // 處室分類
         $ann_dept_id = (!isset($parameter['dept_id'])) ? '' : $parameter['dept_id'];
-        $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id);
+        // $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id);
         $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
 
         // 關鍵字傳到樣版
@@ -513,7 +518,7 @@ switch ($op) {
 
     }
 
-    
+
 // ----------------------------------
 // 學年度
     // sql-刪除學年度

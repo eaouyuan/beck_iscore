@@ -151,9 +151,13 @@ switch ($op) {
             // $op="announcement_class_list";
         // }
         // header("location:{$_SERVER['PHP_SELF']}");
-        announcement_list(null,'0');
-        $op="announcement_list";
-        break;
+        if (!$xoopsUser) {
+            break;
+        }else{
+            announcement_list(null,'0');
+            $op="announcement_list";
+            break;
+        }
 }
 
 /*-----------function區--------------*/
