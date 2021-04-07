@@ -36,7 +36,6 @@ $ann_list['search']=Request::getString('search');
 // die();
 // die(var_dump($op));
 switch ($op) {
-    // 公告系統
     // 公告分類列表
         case "announcement_class_list":
             announcement_class_list();
@@ -375,9 +374,10 @@ switch ($op) {
         $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $Ann        = $xoopsDB->fetchArray($result);
 
-        if(!($xoopsUser->isAdmin() or $_SESSION['xoopsUserId']== $Ann['uid'])){
+        if(!($xoopsUser->isAdmin() or strval($_SESSION['xoopsUserId'])== $Ann['uid'])){
             redirect_header('index.php?op=announcement_list', 3, '非管理員或公告建立者！');
         }
+
         $tbl = $xoopsDB->prefix('yy_announcement');
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -573,10 +573,15 @@ switch ($op) {
             $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             $Ann        = $xoopsDB->fetchArray($result);
-        
-            if(!($xoopsUser->isAdmin() AND $_SESSION['xoopsUserId']== $Ann['uid'])){
-                redirect_header('index.php?op=announcement_list', 3, '無操作權限');
+            // var_dump('uid:'.$Ann['uid']);
+            // var_dump('_SESSION["xoopsUserId"]:'.$_SESSION['xoopsUserId']);
+            // die();
+
+            if(!($xoopsUser->isAdmin() or (strval($_SESSION['xoopsUserId'])== $Ann['uid']))){
+                redirect_header('index.php?op=announcement_list', 3, '無操作權限或此公告不存在!');
             }
+
+
             $space='1';
         }
         // die(var_dump($Ann));
@@ -666,7 +671,6 @@ switch ($op) {
         if (!$xoopsUser) {
             redirect_header('index.php', 3, '無操作權限');
         }
-
         $myts = MyTextSanitizer::getInstance();
 
         $now=date('Y-m-d');
@@ -754,35 +758,35 @@ switch ($op) {
 // ----------------------------------
 
 //顯示教師基本資料
-function teacher_show($sn)
-{
-    global $xoopsTpl,$xoopsDB;
+    // function teacher_show($sn)
+    // {
+    //     global $xoopsTpl,$xoopsDB;
 
-    $tbl = $xoopsDB->prefix('yy_teacher');
-    $sql="SELECT * FROM $tbl Where `sn`='{$sn}'";
-    $result=$xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    $teachers=$xoopsDB->fetchArray($result);//fetchrow
+    //     $tbl = $xoopsDB->prefix('yy_teacher');
+    //     $sql="SELECT * FROM $tbl Where `sn`='{$sn}'";
+    //     $result=$xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //     $teachers=$xoopsDB->fetchArray($result);//fetchrow
 
-    $TadUpFiles=new TadUpFiles("beck_iscore","/teacher",$file="/file",$image="/image",$thumbs="/image/.thumbs");
-    $TadUpFiles->set_col('sn',$sn);
-    $teachers['cover'] = $TadUpFiles->show_files('pic',true,'',true,null,null,null,false);
-    // $teachers['cover'] = $TadUpFiles->show_files('pic', true, '', true, null, null, null, true);
+    //     $TadUpFiles=new TadUpFiles("beck_iscore","/teacher",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+    //     $TadUpFiles->set_col('sn',$sn);
+    //     $teachers['cover'] = $TadUpFiles->show_files('pic',true,'',true,null,null,null,false);
+    //     // $teachers['cover'] = $TadUpFiles->show_files('pic', true, '', true, null, null, null, true);
 
-    $TadUpFiles->set_col('tea_attached',$sn);
-    $teachers['files'] = $TadUpFiles->show_files();
+    //     $TadUpFiles->set_col('tea_attached',$sn);
+    //     $teachers['files'] = $TadUpFiles->show_files();
 
-    // die(var_dump($teachers));
-    $xoopsTpl->assign('teachers', $teachers);
-}
+    //     // die(var_dump($teachers));
+    //     $xoopsTpl->assign('teachers', $teachers);
+    // }
 
-//顯示教師列表
-function teacher_list()
-{
-    global $xoopsTpl;
+    // //顯示教師列表
+    // function teacher_list()
+    // {
+    //     global $xoopsTpl;
 
-    $main = "模組開發中";
-    $xoopsTpl->assign('content', $main);
-}
+    //     $main = "模組開發中";
+    //     $xoopsTpl->assign('content', $main);
+    // }
 
 // 新增學生表單
 function student_form($sn){

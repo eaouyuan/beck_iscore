@@ -23,6 +23,7 @@ class SchoolSet
     public $sem_sn; //學年度編號
     public $sem_year; //學年度
     public $sem_term; //學期
+    // public $tch_sex; //性別
  
 
 
@@ -37,9 +38,6 @@ class SchoolSet
         $this->sem_sn=$school_year['sn'];
         $this->sem_year=$school_year['year'];
         $this->sem_term=$school_year['term'];
-
-        
-
     }
 
     public static function aaa()

@@ -56,7 +56,7 @@ class Announcement
     }
 
     //公告分類下拉選單
-    public static function GetAnn_Class_Sel_htm($ann_class_id,$space='0')
+    public static function GetAnn_Class_Sel_htm($ann_class_id,$space='1')
     {
         global $xoopsDB, $xoopsTpl, $xoopsUser;
 
@@ -65,7 +65,7 @@ class Announcement
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
 
         // var_dump($ann_class_id);die();
-        if($space=='0'){
+        if($space=='1'){
             $htm='<option selected></option>';
         }else{
             $htm='';

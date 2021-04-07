@@ -1,7 +1,7 @@
 -- DROP TABLE IF EXISTS `yy_teacher`;
 CREATE TABLE `yy_teacher` (
     `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-    `uid` mediumint(8) unsigned NOT NULL COMMENT '使用者編號',
+    `uid` mediumint(8) unsigned NOT NULL COMMENT '教師uid',
     `dep_id` smallint(5) unsigned  NOT NULL COMMENT '部門id',
     `title` varchar(255)  NOT NULL COMMENT '教師職稱',
     `sex` enum('0','1')  NOT NULL COMMENT '0:女 1:男',
@@ -10,10 +10,15 @@ CREATE TABLE `yy_teacher` (
     `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
     `isteacher` enum('0','1') NOT NULL default '1' COMMENT '是教師',
     `sort` smallint(5) unsigned NOT NULL COMMENT '排序',
+    `create_uid` mediumint(8) unsigned NOT NULL COMMENT '建立者編號',
     `create_time` datetime NOT NULL,
     `update_time` datetime NOT NULL,
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+-- 教師編號不能重複
+ALTER TABLE `yy_teacher`
+ADD UNIQUE `uid` (`uid`);
+
 
 -- DROP TABLE IF EXISTS `yy_department`;
 CREATE TABLE `yy_department` (
@@ -21,8 +26,9 @@ CREATE TABLE `yy_department` (
     `sort` tinyint(5) unsigned NOT NULL COMMENT '排序',
     `dep_name` varchar(65) NOT NULL COMMENT '學程名稱',
     `dep_status` enum('0','1','2') NOT NULL COMMENT '學程狀態 0關閉 1啟用 2暫停',
-    `creat_name` varchar(65) NOT NULL COMMENT '建立者',
+    `create_uid` varchar(65) NOT NULL COMMENT '建立者',
     `create_time` datetime NOT NULL,
+    `update_uid` varchar(65) NOT NULL COMMENT '修改者',
     `update_time` datetime NOT NULL,
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -172,3 +178,17 @@ INSERT INTO `yy_dept_school` (`sn`, `dept_name`, `enable`, `sort`, `uid`, `creat
 (4,	'秘書室',	'1',	0,	1,	'2021-03-17 13:51:48',	'2021-03-17 13:51:48'),
 (5,	'住宿管理員',	'1',	0,	1,	'2021-03-17 13:51:58',	'2021-03-17 13:51:58'),
 (6,	'家園處',	'1',	0,	1,	'2021-03-17 13:52:06',	'2021-03-17 13:52:06');
+
+-- DROP TABLE IF EXISTS `yy_class`;
+CREATE TABLE `yy_class` (
+    `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+    `sort` tinyint(5) unsigned NOT NULL COMMENT '排序',
+    `class_name` varchar(65) NOT NULL COMMENT '班級名稱',
+    `class_status` enum('0','1','2') NOT NULL DEFAULT '1' COMMENT '班級狀態 0關閉 1啟用 2暫停',
+    `tutor_sn` smallint(5) unsigned NOT NULL COMMENT '導師編號',
+    `create_uid` varchar(65) NOT NULL COMMENT '建立者',
+    `create_time` datetime NOT NULL,
+    `update_uid` varchar(65) NOT NULL COMMENT '修改者',
+    `update_time` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

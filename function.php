@@ -8,6 +8,63 @@ if (!file_exists(XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php")) {
 include_once XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php";
 // require_once XOOPS_ROOT_PATH."/modules/tadtools/TadUpFiles.php" ;
 
+// 是否htl
+function yn_htm($ary=[],$name,$value='0'){
+    $htm='';
+    foreach ($ary as $k=>$v){
+        $chk= ($value==$k)?'checked':'';
+        $htm.=<<<HTML
+        <div class="form-check form-check-inline  m-2">
+            <input class="form-check-input" type="radio" name="{$name}" id="{$name}{$k}" title="{$v}" value="{$k}" {$chk}>
+            <label class="form-check-label" for="{$name}{$k}">{$v}</label>
+        </div>
+    HTML;
+    }
+    return $htm;
+}
+
+//取得select option htm
+function Get_select_opt_htm($ary=[],$value='',$show_space='1')
+{
+    if($show_space=='1'){
+        $return_htm='<option></option>';
+    }else{
+        $return_htm='';
+    }
+    foreach ($ary as $k=>$v){
+        $selected= ($value==strval($k))?'selected':'';
+        $return_htm.="<option value='{$k}' {$selected}>{$v}</option>";
+    }
+    return ($return_htm);
+}
+
+
+// 取得所有使用者資料
+function all_users_data($isteacher=null){
+    global $xoopsDB;
+
+    $tbl      = $xoopsDB->prefix('users');
+    $tb2      = $xoopsDB->prefix('yy_teacher');
+    $sql      = "SELECT  tr.*,ur.name,ur.uname,ur.email,ur.uid
+                FROM $tbl as ur left JOIN $tb2 as tr ON ur.uid=tr.uid" ;
+    if($isteacher){
+        $sql.=" where `isteacher`='1'";
+    }
+    $sql.=" ORDER BY `name` ";
+
+    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $all      = array();
+    
+    while($user= $xoopsDB->fetchArray($result)){
+        // $all[$user['uid']]['name']  = $user['name'];
+        // $all[$user['uid']]['uname'] = $user['uname'];
+        // $all[$user['uid']]['email'] = $user['email'];
+        // $all[$user['uid']]['uid']   = $user['uid'];
+        $all[]=$user;
+    }
+    // var_dump($all);die();
+    return $all;
+}
 
 // 取得使用者資料
 function users_data($uid){
@@ -18,9 +75,32 @@ function users_data($uid){
     $user = $xoopsDB->fetchArray($result);//fetchrow
     // var_dump($user);die();
     return $user;
-
 }
 
+// 取得使用者群組
+function users_group($uid){
+    global $xoopsDB;
+    $tbl      = $xoopsDB->prefix('groups_users_link');
+    $sql      = "SELECT * FROM $tbl Where `uid`='{$uid}'";
+    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    while($group= $xoopsDB->fetchArray($result)){
+        $groups[]=$group['groupid'];
+    }
+    return $groups;
+}
+    //更新群組
+function update_group($uid){
+    global $xoopsDB;
+    // die(var_dump($_POST['group']));
+    $sql = "delete from " . $xoopsDB->prefix("groups_users_link") . "  where uid='$uid'";
+    $result = $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    foreach ($_POST['group'] as $group_id) {
+        $group_id = (int) $group_id;
+        $sql = "insert into " . $xoopsDB->prefix("groups_users_link") . " (`groupid` , `uid`) values('$group_id','$uid')";
+        $result = $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    }
+
+}
 
 function validateDate($date, $format = 'Y-m-d')
 {
