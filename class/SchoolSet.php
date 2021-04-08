@@ -23,6 +23,8 @@ class SchoolSet
     public $sem_sn; //學年度編號
     public $sem_year; //學年度
     public $sem_term; //學期
+    public $users; //使用者資料
+    public $teachers; //教師資料
     // public $tch_sex; //性別
  
 
@@ -30,7 +32,13 @@ class SchoolSet
     //建構函數
     public function __construct()
     {            
-        global $xoopsDB, $xoopsTpl, $xoopsUser , $xoopsConfig;
+        $this->get_semester();
+        $this->get_teachers_data();
+
+    }
+    // get 學期資料
+    private function get_semester(){
+        global $xoopsDB;
         $tbl = $xoopsDB->prefix('yy_semester');
         $sql         = "SELECT * FROM $tbl Where `activity`='1'";
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -39,6 +47,53 @@ class SchoolSet
         $this->sem_year=$school_year['year'];
         $this->sem_term=$school_year['term'];
     }
+    // get 教師資料含處室
+    private function get_teachers_data(){
+        global $xoopsDB;
+        // get all users
+        $tb1 = $xoopsDB->prefix('users');
+        $tb2 = $xoopsDB->prefix('yy_teacher');
+        $tb3 = $xoopsDB->prefix('yy_dept_school');
+        $sql = "SELECT 
+                    $tb1.uid,$tb1.name,$tb1.uname,$tb1.email,
+                    $tb2.dep_id,$tb2.sex,$tb2.phone,$tb2.cell_phone,$tb2.enable,$tb2.isteacher,
+                    $tb3.dept_name
+                FROM $tb1 LEFT JOIN $tb2 ON $tb1.uid=$tb2.uid
+                    LEFT JOIN $tb3 ON $tb2.dep_id=$tb3.sn
+                ";
+        // echo($sql);
+        $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($user= $xoopsDB->fetchArray($result)){
+            $all[] = $user;
+        }
+        $this->users=$all;
+
+        // get all teachers 
+        $sql.= " WHERE $tb2.isteacher='1' ";
+        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all    = [];
+        while($tch= $xoopsDB->fetchArray($result)){
+            $all[] = $tch;
+        }
+        $this->teachers=$all;
+    }
+
+    public function get_depts_user($cat='user'){
+        if($cat=='user'){
+            $all=$this->users;
+        }else{
+            $all=$this->teachers;
+        }
+        $data=[];
+        foreach ($all as $k=>$v){
+            $v['dep_id']=$v['dep_id']??'0';
+            $v['dept_name']=$v['dept_name']??'未設定';
+            $data[$v['dept_name']][$v['uid']]=$v['name'];
+        }
+        return $data;
+    }
+
 
     public static function aaa()
     {
@@ -50,10 +105,8 @@ class SchoolSet
     }
 
     //Get學期 option html
-    public function Get_term_htm($term='',$show_space='1')
-    {
+    public function Get_term_htm($term='',$show_space='1'){
         global $xoopsDB, $xoopsTpl, $xoopsUser;
-
 
         $terms=['1','2'];
         if($show_space=='0'){
@@ -86,8 +139,7 @@ class SchoolSet
     }
 
      //Get現在學年度 option html
-    public function Get_activity_htm($value='0')
-    {
+    public function Get_activity_htm($value='0'){
         global $xoopsDB, $xoopsTpl, $xoopsUser;
         // 是否: 現在學年度
         $default = (!isset($default)) ? '0' : $default;

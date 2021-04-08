@@ -8,15 +8,15 @@ if (!file_exists(XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php")) {
 include_once XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php";
 // require_once XOOPS_ROOT_PATH."/modules/tadtools/TadUpFiles.php" ;
 
-// 是否htl
-function yn_htm($ary=[],$name,$value='0'){
+// Get radio html
+function radio_htm($ary=[],$name,$value='0'){
     $htm='';
     foreach ($ary as $k=>$v){
         $chk= ($value==$k)?'checked':'';
         $htm.=<<<HTML
         <div class="form-check form-check-inline  m-2">
-            <input class="form-check-input" type="radio" name="{$name}" id="{$name}{$k}" title="{$v}" value="{$k}" {$chk}>
-            <label class="form-check-label" for="{$name}{$k}">{$v}</label>
+            <input class="form-check-input" type="radio" name="{$name}" id="{$name}_{$k}" title="{$v}" value="{$k}" {$chk}>
+            <label class="form-check-label" for="{$name}_{$k}">{$v}</label>
         </div>
     HTML;
     }
@@ -39,7 +39,7 @@ function Get_select_opt_htm($ary=[],$value='',$show_space='1')
 }
 
 
-// 取得所有使用者資料
+// 取得所有使用者資料 目前沒用
 function all_users_data($isteacher=null){
     global $xoopsDB;
 

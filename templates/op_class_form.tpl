@@ -5,7 +5,7 @@
     <h3><{$form_title}></h3>
 
     <div class="form-group row">
-        <label for="class_name" class="col-lg-2 col-form-label text-sm-right">班級名稱</label>
+        <label for="class_name" class="col-2 col-form-label text-sm-right">班級名稱</label>
         <div class="col-lg-4">
             <input class="form-control validate[required]" type="text" name="class_name" id="class_name" value="<{$class.class_name}>">
         </div>
@@ -21,7 +21,7 @@
     <div class="form-group row">
         <label for="tutor" class="col-lg-2 col-form-label text-sm-right">導師</label>
         <div class="col-lg-10">
-            <{$chk_htm}>
+            <{$tchhtm}>
         </div>
     </div>
 

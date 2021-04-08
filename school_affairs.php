@@ -30,7 +30,7 @@ $g2p=Request::getInt('g2p');
 // die();
 
 switch ($op) {
-// 處室列表
+// 處室 管理
     case "dept_school_list":
         dept_school_list();
         break;//跳出迴圈,往下執行
@@ -58,7 +58,7 @@ switch ($op) {
         header("location:school_affairs.php?op=dept_school_list");
         exit;
 
-// 學年度列表
+// 學年度 列表
     case "semester_list":
         semester_list();
         break;//跳出迴圈,往下執行
@@ -121,7 +121,7 @@ switch ($op) {
         header("location:school_affairs.php?op=teacher_list");
         exit;
     
-// 班級列表
+// 班級 管理
     case "class_list":
         class_list();
         break;//跳出迴圈,往下執行
@@ -146,7 +146,35 @@ switch ($op) {
     // 刪除 班級
     case "class_delete":
         class_delete($sn);
-        header("location:school_affairs.php?op=dept_school_list");
+        header("location:school_affairs.php?op=class_list");
+        exit;
+
+// 學程 管理
+    case "department_list":
+        department_list();
+        break;//跳出迴圈,往下執行
+
+    // 新增、編輯 處室表單
+    case "department_form":
+        department_form($sn);
+        break;//跳出迴圈,往下執行
+
+    // 新增
+    case "department_insert":
+        department_insert();
+        header("location:school_affairs.php?op=department_insert");
+        exit;//離開，結束程式
+
+    // 更新
+    case "department_update":
+        class_update($sn);
+        header("location:school_affairs.php?op=department_update");
+        exit;
+
+    // 刪除 班級
+    case "department_delete":
+        class_delete($sn);
+        header("location:school_affairs.php?op=department_delete");
         exit;
 
     default:
@@ -160,16 +188,15 @@ switch ($op) {
 /*-----------function區--------------*/
 
 // ----------------------------------
-// 班級列表
+// 學程 管理
     // sql-刪除 班級
-    function class_delete($sn){
+    function department_delete($sn){
         global $xoopsDB,$xoopsUser;
-
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('school_affairs.php', 3, '無操作權限');
+            redirect_header('school_affairs.php?op=department_list', 3, '無操作權限');
         }
         
-        $tbl = $xoopsDB->prefix('yy_dept_school');
+        $tbl = $xoopsDB->prefix('yy_department');
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -177,12 +204,12 @@ switch ($op) {
     }
 
     // sql-更新 班級
-    function class_update($sn){
+    function department_update($sn){
 
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('school_affairs.php', 3, '無操作權限');
+            redirect_header('school_affairs.php?op=department_list', 3, '無操作權限');
         }
         
         //安全判斷 儲存 更新都要做
@@ -198,11 +225,235 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
 
-        $tbl = $xoopsDB->prefix('yy_dept_school');
+        $tbl = $xoopsDB->prefix('yy_department');
         $sql = "update `$tbl` set 
-                    `dept_name`   = '{$dept_name}',
-                    `enable`= '{$enable}',
-                    `uid` = '{$uid}', 
+                    `department_name`   = '{$department_name}',
+                    `department_status`= '{$status}',
+                    `tutor_sn`= '{$teacher}',
+                    `update_uid` = '{$operator_uid}', 
+                    `update_time` = now()
+                where `sn`   = '{$sn}'";
+
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        return $sn;
+    }
+
+    // sql-新增 班級
+    function department_insert(){
+
+        global $xoopsDB,$xoopsUser;
+        // var_dump($_REQUEST);die();
+
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('school_affairs.php?op=department_list', 3, '無操作權限');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=dept_school_form", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // die(var_dump($_POST));
+
+        $tbl = $xoopsDB->prefix('yy_department');
+        $sql = "insert into `$tbl` (
+            `department_name`,`department_status`,`tutor_sn`,`create_uid`,`create_time`,`update_uid`,`update_time`) 
+            values('{$department_name}','{$status}','{$teacher}','{$operator_uid}',now(),'{$operator_uid}', now())";
+        // echo($sql);die();
+        $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+        return $sn;
+    }
+
+    // 表單-新增、編輯 班級
+    function department_form($sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        // var_export($SchoolSet->users);die();
+        // print_r($SchoolSet->get_depts_user());die();
+
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('school_affairs?op=department_list.php', 3, '無操作權限');
+        }
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("school_affairs.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#department_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // if (!power_chk('beck_iscore', 1)) {
+        //     redirect_header('school_affairs.php', 3, '無操作權限');
+        // }
+
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/department/xoopsformloader.php");
+
+        $form_title = '新增班級';
+
+        if($sn){
+            $department      = array();
+            $form_title = '編輯學校班級';
+            $tbl        = $xoopsDB->prefix('yy_department');
+            $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $department      = $xoopsDB->fetchArray($result);
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+        // var_dump($department);die();
+        // 給預設值
+        $department['sn']           = (!isset($department['sn'])) ? '' : $department['sn'];
+        $department['department_name']   = (!isset($department['department_name'])) ? '' : $department['department_name'];
+        $department['department_status'] = (!isset($department['department_status'])) ? '1' : $department['department_status'];
+        $department['tutor_sn']     = (!isset($department['tutor_sn'])) ? '' : $department['tutor_sn'];
+
+        $xoopsTpl->assign('department', $department);
+
+        // 班級狀態，預計啟用
+        $department_status_ary=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
+        $department_st_op_htm=Get_select_opt_htm($department_status_ary,$department['department_status'],'0');
+        $xoopsTpl->assign('department_st_op_htm', $department_st_op_htm);
+        
+
+        $get_depts_user=$SchoolSet->get_depts_user('teacher');
+        // print_r($get_depts_user );die();
+        $htm='';
+        foreach ($get_depts_user as $dep=>$v){
+            $htm.=<<<HTML
+                <table department="table table-bordered">
+                    <thead department="table-info">
+                        <tr><th scope="col" department="text-center">{$dep}</th></tr>
+                    </thead>
+                    <tbody><tr><td>    
+            HTML;
+                    $htm.=radio_htm($v,'teacher',$department['tutor_sn']);
+            $htm.=<<<HTML
+                    </td></tr></tbody>
+                </table>
+            HTML; 
+        }
+        $xoopsTpl->assign('tchhtm', $htm);
+
+        // //帶入使用者編號
+        $operator_uid = $xoopsUser->uid();
+        $xoopsTpl->assign('operator_uid', $operator_uid);
+
+        // //下個動作
+        if ($sn) {
+            $op='department_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='department_insert';
+        }
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+
+    // 列表- 學程
+    function department_list(){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('school_affairs.php', 3, '無操作權限');
+        }
+
+        $myts = MyTextSanitizer::getInstance();
+
+        $tbl      = $xoopsDB->prefix('yy_department');
+        $sql      = "SELECT * FROM $tbl ORDER BY `sn`";
+        
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        $PageBar = getPageBar($sql, 10, 10);
+        $bar     = $PageBar['bar'];
+        $sql     = $PageBar['sql'];
+        $total   = $PageBar['total'];
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=$g2p*10+1;}
+
+        $department_status=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
+        while(  $department= $xoopsDB->fetchArray($result)){
+                $department['no']           = $i;
+                $department['sn']           = $myts->htmlSpecialChars($department['sn']);
+                $department['department_name']   = $myts->htmlSpecialChars($department['department_name']);
+                $department['department_status'] = $myts->htmlSpecialChars($department_status[$department['department_status']]);
+                $department['sort']         = $myts->htmlSpecialChars($department['sort']);
+                $department['tutor_sn']     = $myts->htmlSpecialChars(users_data($department['tutor_sn'])['name']);
+                $all   []              = $department;
+                $i++;
+        }
+        $xoopsTpl->assign('all', $all);
+        $xoopsTpl->assign('bar', $bar);
+        $xoopsTpl->assign('total', $total);
+        
+        
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('cls_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=department_delete&sn=", 'sn','確定要刪除班級資料?','刪除後無法還原。');
+
+
+    }
+// ----------------------------------
+
+// ----------------------------------
+// 班級列表
+    // sql-刪除 班級
+    function class_delete($sn){
+        global $xoopsDB,$xoopsUser;
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('school_affairs.php?op=class_list', 3, '無操作權限');
+        }
+        
+        $tbl = $xoopsDB->prefix('yy_class');
+        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+    }
+
+    // sql-更新 班級
+    function class_update($sn){
+
+        global $xoopsDB,$xoopsUser;
+
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('school_affairs.php?op=class_list', 3, '無操作權限');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=dept_school_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+
+        $tbl = $xoopsDB->prefix('yy_class');
+        $sql = "update `$tbl` set 
+                    `class_name`   = '{$class_name}',
+                    `class_status`= '{$status}',
+                    `tutor_sn`= '{$teacher}',
+                    `update_uid` = '{$operator_uid}', 
                     `update_time` = now()
                 where `sn`   = '{$sn}'";
 
@@ -250,10 +501,13 @@ switch ($op) {
     // 表單-新增、編輯 班級
     function class_form($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        // var_export($SchoolSet->users);die();
+        // print_r($SchoolSet->get_depts_user());die();
 
-        // if (!$xoopsUser->isAdmin()) {
-        //     redirect_header('school_affairs.php', 3, '無操作權限');
-        // }
+        if (!$xoopsUser->isAdmin()) {
+            redirect_header('school_affairs?op=class_list.php', 3, '無操作權限');
+        }
         //套用formValidator驗證機制
         if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
             redirect_header("school_affairs.php", 3, _TAD_NEED_TADTOOLS);
@@ -263,9 +517,9 @@ switch ($op) {
         $formValidator_code = $formValidator->render();
         $xoopsTpl->assign("formValidator_code",$formValidator_code);
 
-        if (!power_chk('beck_iscore', 1)) {
-            redirect_header('school_affairs.php', 3, '無操作權限');
-        }
+        // if (!power_chk('beck_iscore', 1)) {
+        //     redirect_header('school_affairs.php', 3, '無操作權限');
+        // }
 
 
         // 載入xoops表單元件
@@ -295,21 +549,26 @@ switch ($op) {
         $class_status_ary=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
         $class_st_op_htm=Get_select_opt_htm($class_status_ary,$class['class_status'],'0');
         $xoopsTpl->assign('class_st_op_htm', $class_st_op_htm);
+        
 
-
-        $all_users_data=all_users_data(true);
-        // var_dump($all_users_data);die();
-        $chk_htm='';
-        foreach ($all_users_data as $k=>$v){
-            $check= ($class['class_status']==$k)?'checked':'';
-            $chk_htm.=<<<HTML
-            <div class="form-check form-check-inline  m-2">
-                <input class="form-check-input" type="radio" name="teacher" id="teacher_{$v['uid']}" title="{$v['name']}" value="{$v['uid']}">
-                <label class="form-check-label" for="teacher_{$v['uid']}">{$v['name']}</label>
-            </div>
-        HTML;
+        $get_depts_user=$SchoolSet->get_depts_user('teacher');
+        // print_r($get_depts_user );die();
+        $htm='';
+        foreach ($get_depts_user as $dep=>$v){
+            $htm.=<<<HTML
+                <table class="table table-bordered">
+                    <thead class="table-info">
+                        <tr><th scope="col" class="text-center">{$dep}</th></tr>
+                    </thead>
+                    <tbody><tr><td>    
+            HTML;
+                    $htm.=radio_htm($v,'teacher',$class['tutor_sn']);
+            $htm.=<<<HTML
+                    </td></tr></tbody>
+                </table>
+            HTML; 
         }
-        $xoopsTpl->assign('chk_htm', $chk_htm);
+        $xoopsTpl->assign('tchhtm', $htm);
 
         // //帶入使用者編號
         $operator_uid = $xoopsUser->uid();
@@ -349,14 +608,18 @@ switch ($op) {
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
+        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=$g2p*10+1;}
+
         $class_status=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
         while(  $class= $xoopsDB->fetchArray($result)){
+                $class['no']           = $i;
                 $class['sn']           = $myts->htmlSpecialChars($class['sn']);
                 $class['class_name']   = $myts->htmlSpecialChars($class['class_name']);
                 $class['class_status'] = $myts->htmlSpecialChars($class_status[$class['class_status']]);
                 $class['sort']         = $myts->htmlSpecialChars($class['sort']);
                 $class['tutor_sn']     = $myts->htmlSpecialChars(users_data($class['tutor_sn'])['name']);
                 $all   []              = $class;
+                $i++;
         }
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);
@@ -597,12 +860,12 @@ switch ($op) {
         // 教師開關
         $onoff=['0'=>'關','1'=>'開'];
         $en_chk = (!isset($tch['enable'])) ? '0' : $tch['enable'];
-        $tch_en_htm=yn_htm($onoff,'enable',$en_chk);
+        $tch_en_htm=radio_htm($onoff,'enable',$en_chk);
 
         // 具備教師身份
         $ynary=['0'=>'否','1'=>'是'];
         $isteacher = (!isset($tch['isteacher'])) ? '0' : $tch['isteacher'];
-        $tch_is_html=yn_htm($ynary,'isteacher',$isteacher);
+        $tch_is_html=radio_htm($ynary,'isteacher',$isteacher);
 
         $xoopsTpl->assign('tch_en_htm', $tch_en_htm);
         $xoopsTpl->assign('tch_is_html', $tch_is_html);
