@@ -188,7 +188,7 @@ switch ($op) {
 /*-----------function區--------------*/
 
 // ----------------------------------
-// 學程 管理
+// 學程 管理 0409
     // sql-刪除 學程
     function department_delete($sn){
         global $xoopsDB,$xoopsUser;
