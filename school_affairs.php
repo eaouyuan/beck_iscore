@@ -162,19 +162,19 @@ switch ($op) {
     // 新增
     case "department_insert":
         department_insert();
-        header("location:school_affairs.php?op=department_insert");
+        header("location:school_affairs.php?op=department_list");
         exit;//離開，結束程式
 
     // 更新
     case "department_update":
-        class_update($sn);
-        header("location:school_affairs.php?op=department_update");
+        department_update($sn);
+        header("location:school_affairs.php?op=department_list");
         exit;
 
     // 刪除 班級
     case "department_delete":
-        class_delete($sn);
-        header("location:school_affairs.php?op=department_delete");
+        department_delete($sn);
+        header("location:school_affairs.php?op=department_list");
         exit;
 
     default:
@@ -189,7 +189,7 @@ switch ($op) {
 
 // ----------------------------------
 // 學程 管理
-    // sql-刪除 班級
+    // sql-刪除 學程
     function department_delete($sn){
         global $xoopsDB,$xoopsUser;
         if (!$xoopsUser->isAdmin()) {
@@ -203,7 +203,7 @@ switch ($op) {
 
     }
 
-    // sql-更新 班級
+    // sql-更新 學程
     function department_update($sn){
 
         global $xoopsDB,$xoopsUser;
@@ -215,7 +215,7 @@ switch ($op) {
         //安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("school_affairs.php?op=dept_school_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            redirect_header("school_affairs.php?op=department_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
             throw new Exception($error);
         }
         
@@ -224,12 +224,11 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
-
+        // die();
         $tbl = $xoopsDB->prefix('yy_department');
         $sql = "update `$tbl` set 
-                    `department_name`   = '{$department_name}',
-                    `department_status`= '{$status}',
-                    `tutor_sn`= '{$teacher}',
+                    `dep_name`   = '{$dep_name}',
+                    `dep_status`= '{$dep_status}',
                     `update_uid` = '{$operator_uid}', 
                     `update_time` = now()
                 where `sn`   = '{$sn}'";
@@ -239,7 +238,7 @@ switch ($op) {
         return $sn;
     }
 
-    // sql-新增 班級
+    // sql-新增 學程
     function department_insert(){
 
         global $xoopsDB,$xoopsUser;
@@ -266,19 +265,19 @@ switch ($op) {
 
         $tbl = $xoopsDB->prefix('yy_department');
         $sql = "insert into `$tbl` (
-            `department_name`,`department_status`,`tutor_sn`,`create_uid`,`create_time`,`update_uid`,`update_time`) 
-            values('{$department_name}','{$status}','{$teacher}','{$operator_uid}',now(),'{$operator_uid}', now())";
+            `dep_name`,`dep_status`,`create_uid`,`create_time`,`update_uid`,`update_time`) 
+            values('{$dep_name}','{$dep_status}','{$operator_uid}',now(),'{$operator_uid}', now())";
         // echo($sql);die();
         $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
 
         return $sn;
     }
-
+ 
     // 表單-新增、編輯 班級
     function department_form($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
-        $SchoolSet= new SchoolSet;
+        // $SchoolSet= new SchoolSet;
         // var_export($SchoolSet->users);die();
         // print_r($SchoolSet->get_depts_user());die();
 
@@ -300,13 +299,13 @@ switch ($op) {
 
 
         // 載入xoops表單元件
-        include_once(XOOPS_ROOT_PATH."/department/xoopsformloader.php");
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
 
-        $form_title = '新增班級';
+        $form_title = '新增學程';
 
         if($sn){
             $department      = array();
-            $form_title = '編輯學校班級';
+            $form_title = '編輯學程';
             $tbl        = $xoopsDB->prefix('yy_department');
             $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -315,37 +314,17 @@ switch ($op) {
         $xoopsTpl->assign('form_title', $form_title);
         // var_dump($department);die();
         // 給預設值
-        $department['sn']           = (!isset($department['sn'])) ? '' : $department['sn'];
-        $department['department_name']   = (!isset($department['department_name'])) ? '' : $department['department_name'];
-        $department['department_status'] = (!isset($department['department_status'])) ? '1' : $department['department_status'];
-        $department['tutor_sn']     = (!isset($department['tutor_sn'])) ? '' : $department['tutor_sn'];
+        $department['sn']         = (!isset($department['sn'])) ? '' : $department['sn'];
+        $department['dep_name']   = (!isset($department['dep_name'])) ? '' : $department['dep_name'];
+        $department['dep_status'] = (!isset($department['dep_status'])) ? '1' : $department['dep_status'];
 
         $xoopsTpl->assign('department', $department);
-
-        // 班級狀態，預計啟用
+        // 學程狀態，預計啟用
         $department_status_ary=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
-        $department_st_op_htm=Get_select_opt_htm($department_status_ary,$department['department_status'],'0');
+        $department_st_op_htm=Get_select_opt_htm($department_status_ary,$department['dep_status'],'0');
         $xoopsTpl->assign('department_st_op_htm', $department_st_op_htm);
         
-
-        $get_depts_user=$SchoolSet->get_depts_user('teacher');
-        // print_r($get_depts_user );die();
-        $htm='';
-        foreach ($get_depts_user as $dep=>$v){
-            $htm.=<<<HTML
-                <table department="table table-bordered">
-                    <thead department="table-info">
-                        <tr><th scope="col" department="text-center">{$dep}</th></tr>
-                    </thead>
-                    <tbody><tr><td>    
-            HTML;
-                    $htm.=radio_htm($v,'teacher',$department['tutor_sn']);
-            $htm.=<<<HTML
-                    </td></tr></tbody>
-                </table>
-            HTML; 
-        }
-        $xoopsTpl->assign('tchhtm', $htm);
+        // var_dump($department);die();
 
         // //帶入使用者編號
         $operator_uid = $xoopsUser->uid();
@@ -385,17 +364,16 @@ switch ($op) {
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
-        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=$g2p*10+1;}
+        if($g2p=null OR $g2p=='' OR $g2p=='1'){$i=1;}else{$i=$g2p*10+1;}
 
-        $department_status=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
+        $dep_stat=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
         while(  $department= $xoopsDB->fetchArray($result)){
-                $department['no']           = $i;
-                $department['sn']           = $myts->htmlSpecialChars($department['sn']);
-                $department['department_name']   = $myts->htmlSpecialChars($department['department_name']);
-                $department['department_status'] = $myts->htmlSpecialChars($department_status[$department['department_status']]);
-                $department['sort']         = $myts->htmlSpecialChars($department['sort']);
-                $department['tutor_sn']     = $myts->htmlSpecialChars(users_data($department['tutor_sn'])['name']);
-                $all   []              = $department;
+                $department['no']         = $i;
+                $department['sn']         = $myts->htmlSpecialChars($department['sn']);
+                $department['dep_name']   = $myts->htmlSpecialChars($department['dep_name']);
+                $department['dep_status'] = $myts->htmlSpecialChars($dep_stat[$department['dep_status']]);
+                $department['sort']       = $myts->htmlSpecialChars($department['sort']);
+                $all        []            = $department;
                 $i++;
         }
         $xoopsTpl->assign('all', $all);
@@ -404,7 +382,7 @@ switch ($op) {
         
         
         $SweetAlert = new SweetAlert();
-        $SweetAlert->render('cls_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=department_delete&sn=", 'sn','確定要刪除班級資料?','刪除後無法還原。');
+        $SweetAlert->render('dept_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=department_delete&sn=", 'sn','確定要刪除學程資料?','刪除後無法還原。');
 
 
     }
@@ -554,19 +532,30 @@ switch ($op) {
         $get_depts_user=$SchoolSet->get_depts_user('teacher');
         // print_r($get_depts_user );die();
         $htm='';
+
         foreach ($get_depts_user as $dep=>$v){
             $htm.=<<<HTML
-                <table class="table table-bordered">
-                    <thead class="table-info">
-                        <tr><th scope="col" class="text-center">{$dep}</th></tr>
-                    </thead>
-                    <tbody><tr><td>    
+                <div class="accordion" id="accordionExample">
+                    <div class="card">
+                        <div class="card-header bg-info" id="head{$dep}">
+                            <h2 class="mb-0">
+                            <button class="btn btn-block text-center text-black font-weight-bold" type="button" data-toggle="collapse" data-target="#{$dep}" aria-expanded="true" aria-controls="{$dep}">
+                                {$dep}
+                            </button>
+                            </h2>
+                        </div>
+                
+                        <div id="{$dep}" class="collapse" aria-labelledby="head{$dep}" data-parent="#accordionExample">
+                            <div class="card-body">
             HTML;
-                    $htm.=radio_htm($v,'teacher',$class['tutor_sn']);
+                                $htm.=radio_htm($v,'teacher',$class['tutor_sn']);
             $htm.=<<<HTML
-                    </td></tr></tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             HTML; 
+
         }
         $xoopsTpl->assign('tchhtm', $htm);
 
@@ -738,12 +727,12 @@ switch ($op) {
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "insert into `$tbl` (
                     `uid`,`dep_id`,`title`,`sex`,`phone`,
-                    `cell_phone`,`enable`,`isteacher`,`create_uid`,`create_time`,
+                    `cell_phone`,`enable`,`isteacher`,`create_uid`,`create_time`,`update_uid`,
                     `update_time`
                 )values(
                     '{$sn}','{$dept_id}','{$title}','{$sex}','{$phone}',
                     '{$cell_phone}','{$enable}','{$isteacher}','{$create_uid}', now(),
-                    now()
+                    '{$create_uid}',now()
                 )";
         // echo($sql);die();
 
@@ -806,8 +795,8 @@ switch ($op) {
     function teacher_form($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
-        if (!$xoopsUser) {
-            redirect_header('index.php', 3, '非會員，無操作權限!');
+        if(!(($xoopsUser->isAdmin()) or ($_SESSION['xoopsUserId']== $sn))){
+            redirect_header('index.php', 3, '非管理員或編輯本人資料，無操作權限!2104081741');
         }
 
 
@@ -929,7 +918,8 @@ switch ($op) {
                 ) ";
             $have_par='1';
         }
-        $sql.=" ORDER BY `update_time` DESC , `uname`";
+        if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+        $sql.=" ur.uid != '1' ORDER BY `dep_id`  , `name`";
         // echo($sql);  die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);

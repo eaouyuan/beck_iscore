@@ -56,11 +56,10 @@ function teacher_istch_edit($sn,$check_status){
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     } else {
         $sql = "insert into `$tbl` (
-                    `uid`,`enable`,`isteacher`,`sex`,`create_uid`,`create_time`,
+                    `uid`,`enable`,`isteacher`,`sex`,`create_uid`,`create_time`,`update_uid`,
                     `update_time`
                 )values(
-                    '{$sn}','1','{$check_status}','','{$_SESSION['xoopsUserId']}', now(),
-                    now()
+                    '{$sn}','1','{$check_status}','','{$_SESSION['xoopsUserId']}', now(),'{$_SESSION['xoopsUserId']}',now()
                 )";
         // echo($sql);die();
 

@@ -107,8 +107,8 @@
             var teacher_id=  $(this).val();;
             var XOOPS_TOKEN_REQUEST=  $('#XOOPS_TOKEN_REQUEST').val();;
             // console.log(XOOPS_TOKEN_REQUEST);
-            console.log(chk);
-            console.log(teacher_id);
+            // console.log(chk);
+            // console.log(teacher_id);
 
             $.ajax ({
             url: 'other_action.php',
@@ -123,7 +123,7 @@
 
             success: function(response){
                 alert(response.msg);
-                // console.log(response);
+                // console.log('response');
             },
             error: function (error) {
                 // console.log(error);

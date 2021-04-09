@@ -1,4 +1,5 @@
 <script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
+<link href="css/module.css" rel="stylesheet" type="text/css">
 <{$formValidator_code}>
 
 <form name="class_form" id="class_form" action="school_affairs.php" method="post" enctype='multipart/form-data'>
@@ -23,6 +24,7 @@
         <div class="col-lg-10">
             <{$tchhtm}>
         </div>
+ 
     </div>
 
     <div class="form-group row"></div>
