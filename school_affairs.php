@@ -621,8 +621,6 @@ switch ($op) {
 
     }
 // ----------------------------------
-
-
 // 教師列表    
     // sql-刪除 教師基本資料
     function teacher_delete($sn){
@@ -665,18 +663,21 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
+        // die();
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "update `$tbl` set 
-                    `uid`='{$sn}',
-                    `dep_id`='{$dept_id}',
-                    `title`='{$title}',
-                    `sex`='{$sex}',
-                    `phone`='{$phone}',
-                    `cell_phone`='{$cell_phone}',
-                    `enable`='{$enable}',
-                    `isteacher`='{$isteacher}',
-                    `create_uid`='{$create_uid}',
-                    `update_time`=now()
+                    `uid`         = '{$sn}',
+                    `dep_id`      = '{$dept_id}',
+                    `title`       = '{$title}',
+                    `sex`         = '{$sex}',
+                    `phone`       = '{$phone}',
+                    `cell_phone`  = '{$cell_phone}',
+                    `enable`      = '{$enable}',
+                    `isteacher`   = '{$isteacher}',
+                    `isguidance`  = '{$isguidance}',
+                    `issocial`    = '{$issocial}',
+                    `update_uid`  = '{$create_uid}',
+                    `update_time` = now()
                 where `uid`   = '{$sn}'";
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -727,11 +728,11 @@ switch ($op) {
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "insert into `$tbl` (
                     `uid`,`dep_id`,`title`,`sex`,`phone`,
-                    `cell_phone`,`enable`,`isteacher`,`create_uid`,`create_time`,`update_uid`,
+                    `cell_phone`,`enable`,`isteacher`,`isguidance`,`issocial`,`create_uid`,`create_time`,`update_uid`,
                     `update_time`
                 )values(
                     '{$sn}','{$dept_id}','{$title}','{$sex}','{$phone}',
-                    '{$cell_phone}','{$enable}','{$isteacher}','{$create_uid}', now(),
+                    '{$cell_phone}','{$enable}','{$isteacher}','{$isguidance}','{$issocial}','{$create_uid}', now(),
                     '{$create_uid}',now()
                 )";
         // echo($sql);die();
@@ -850,14 +851,22 @@ switch ($op) {
         $onoff=['0'=>'關','1'=>'開'];
         $en_chk = (!isset($tch['enable'])) ? '0' : $tch['enable'];
         $tch_en_htm=radio_htm($onoff,'enable',$en_chk);
+        $xoopsTpl->assign('tch_en_htm', $tch_en_htm);
 
         // 具備教師身份
         $ynary=['0'=>'否','1'=>'是'];
         $isteacher = (!isset($tch['isteacher'])) ? '0' : $tch['isteacher'];
         $tch_is_html=radio_htm($ynary,'isteacher',$isteacher);
-
-        $xoopsTpl->assign('tch_en_htm', $tch_en_htm);
         $xoopsTpl->assign('tch_is_html', $tch_is_html);
+        // 具備輔導教師身份
+        $isguidance = (!isset($tch['isguidance'])) ? '0' : $tch['isguidance'];
+        $gdc_is_html=radio_htm($ynary,'isguidance',$isguidance);
+        $xoopsTpl->assign('gdc_is_html', $gdc_is_html);
+        // 具備教師身份
+        $issocial = (!isset($tch['issocial'])) ? '0' : $tch['issocial'];
+        $scl_is_html=radio_htm($ynary,'issocial',$issocial);
+        $xoopsTpl->assign('scl_is_html', $scl_is_html);
+
 
         // //帶入使用者編號
         $xoopsTpl->assign('create_uid', $xoopsUser->uid());
@@ -901,7 +910,7 @@ switch ($op) {
 
         $tbl      = $xoopsDB->prefix('users');
         $tb2      = $xoopsDB->prefix('yy_teacher');
-        $sql      = "SELECT  ur.name,ur.uname,ur.email, tr.* ,ur.uid
+        $sql      = "SELECT  ur.name,ur.uname,ur.email, tr.* ,ur.uid,tr.sort
                     FROM $tbl as ur LEFT JOIN $tb2 as tr ON ur.uid=tr.uid" ;
         // die(var_dump($_REQUEST));
 
@@ -919,19 +928,19 @@ switch ($op) {
             $have_par='1';
         }
         if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        $sql.=" ur.uid != '1' ORDER BY `dep_id`  , `name`";
+        $sql.=" ur.uid != '1' ORDER BY `sort` ";
         // echo($sql);  die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        $PageBar = getPageBar($sql, 10, 10);
-        $bar     = $PageBar['bar'];
-        $sql     = $PageBar['sql'];
-        $total   = $PageBar['total'];
+        // $PageBar = getPageBar($sql, 10, 10);
+        // $bar     = $PageBar['bar'];
+        // $sql     = $PageBar['sql'];
+        // $total   = $PageBar['total'];
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
         if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=$g2p*10+1;}
-        $istch_chk=["0"=>'',"1"=>'checked'];
+        $is_chk=["0"=>'',"1"=>'checked'];
         while($tch= $xoopsDB->fetchArray($result)){
             $tch['sn']         = $i;
             $tch['uid']        = $myts->htmlSpecialChars($tch['uid']);
@@ -946,7 +955,9 @@ switch ($op) {
             $tch['enable']     = $myts->htmlSpecialChars($tch['enable']);
             // $tch['isteacher']  = $myts->htmlSpecialChars($tch['isteacher']);
             $tch['sort']       = $myts->htmlSpecialChars($tch['sort']);
-            $tch['istch_chk']  = $istch_chk[$tch['isteacher']];
+            $tch['istch_chk']  = $is_chk[$tch['isteacher']];
+            $tch['isgdc_chk']  = $is_chk[$tch['isguidance']];
+            $tch['isscl_chk']  = $is_chk[$tch['issocial']];
             $all []            = $tch;
             $i++;
         }
@@ -963,13 +974,8 @@ switch ($op) {
         // var_dump($ann_list);die();
 
         $xoopsTpl->assign('all', $all);
-        $xoopsTpl->assign('bar', $bar);
-        $xoopsTpl->assign('total', $total);
-        
-        // 這是sweet alert 舊的寫法
-        // include_once XOOPS_ROOT_PATH . "/modules/tadtools/sweet_alert.php";
-        // $sweet_alert = new sweet_alert();
-        // $sweet_alert->render("tch_del", "school_affairs.php?op=teacher_delete&sn=", 'sn');
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
 
         $SweetAlert = new SweetAlert();
         $SweetAlert->render('tch_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=teacher_delete&sn=", 'sn','確定要刪除教師基本資料','教師基本資料刪除，但保留帳號。');
