@@ -916,7 +916,7 @@ switch ($op) {
 
         $have_par='0';
         if(!empty($pars['dep_id'])){
-            $sql.=" WHERE `dep_id`='{$pars['dep_id']}'";
+            $sql.=" WHERE tr.dep_id='{$pars['dep_id']}'";
             $have_par='1';
         }
         if(!empty($pars['search'])){

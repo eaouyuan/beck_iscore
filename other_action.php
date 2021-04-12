@@ -50,7 +50,22 @@ switch ($op) {
 function teacher_sort($odr_ary){
     global $xoopsDB,$xoopsUser;
     $tbl   = $xoopsDB->prefix('yy_teacher');
+    foreach ($odr_ary as $sn) {
+        $sql      = "SELECT * FROM $tbl WHERE uid='{$sn}'";
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $tch_exist= $xoopsDB->fetchArray($result);
     
+        if (!$tch_exist) {
+            $sql = "insert into `$tbl` (
+                        `uid`,`enable`,`sex`,`create_uid`,`create_time`,`update_uid`,
+                        `update_time`
+                    )values(
+                        '{$sn}','1','','{$_SESSION['xoopsUserId']}', now(),'{$_SESSION['xoopsUserId']}',now()
+                    )";
+            // echo($sql);die();
+            $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+    }
     $sort = 1;
     // var_dump($odr_ary);die();
     foreach ($odr_ary as $sn) {

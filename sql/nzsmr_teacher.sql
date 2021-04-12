@@ -1,8 +1,8 @@
 -- DROP TABLE IF EXISTS `yy_teacher`;
 CREATE TABLE `yy_teacher` (
-    `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+    `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
     `uid` mediumint(8) unsigned NOT NULL COMMENT '教師uid',
-    `dep_id` smallint(5) unsigned  NOT NULL COMMENT '部門id',
+    `dep_id` mediumint(8) unsigned  NOT NULL COMMENT '部門id',
     `title` varchar(255)  NOT NULL COMMENT '教師職稱',
     `sex` enum('0','1')  NOT NULL COMMENT '0:女 1:男',
     `phone`varchar(65)  COMMENT '分機',
@@ -11,7 +11,7 @@ CREATE TABLE `yy_teacher` (
     `isteacher` enum('0','1') NOT NULL default '0' COMMENT '是教師',
     `isguidance` enum('0','1') NOT NULL default '0' COMMENT '是輔導教師',
     `issocial` enum('0','1') NOT NULL default '0' COMMENT '是社工師',
-    `sort` smallint(5) unsigned NOT NULL COMMENT '排序',
+    `sort` mediumint(8) unsigned NOT NULL COMMENT '排序',
     `create_uid` mediumint(8) unsigned NOT NULL COMMENT '建立者編號',
     `create_time` datetime NOT NULL,
     `update_uid` mediumint(8) NOT NULL COMMENT '修改者',
@@ -19,14 +19,13 @@ CREATE TABLE `yy_teacher` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 -- 教師編號不能重複
-ALTER TABLE `yy_teacher`
-ADD UNIQUE `uid` (`uid`);
+ALTER TABLE `yy_teacher` ADD UNIQUE `uid` (`uid`);
 
-
+-- 學程
 -- DROP TABLE IF EXISTS `yy_department`;
 CREATE TABLE `yy_department` (
-    `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-    `sort` tinyint(5) unsigned NOT NULL COMMENT '排序',
+    `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+    `sort` mediumint(8) unsigned NOT NULL COMMENT '排序',
     `dep_name` varchar(65) NOT NULL COMMENT '學程名稱',
     `dep_status` enum('0','1','2') NOT NULL COMMENT '學程狀態 0關閉 1啟用 2暫停',
     `create_uid` mediumint(8) NOT NULL COMMENT '建立者',
@@ -59,46 +58,65 @@ CREATE TABLE `beck_iscore_files_center` (
 PRIMARY KEY (`files_sn`)
 ) ENGINE=MyISAM;
 
--- DROP TABLE IF EXISTS `yy_student`;
 CREATE TABLE `yy_student` (
   `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-  `stu_sn` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學號',
-  `stu_name` varchar(65) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學生姓名',
+  `stu_id` varchar(8) NOT NULL COMMENT '學號',
+  `stu_no` varchar(8) NOT NULL COMMENT '入學編號',
+  `stu_name` varchar(65) NOT NULL COMMENT '學生姓名',
+  `national_id` varchar(20) NOT NULL DEFAULT '' COMMENT '身份證字號',
+  `sex` enum('0','1')  NOT NULL COMMENT '性別 0女 1男',
   `arrival_date` date NOT NULL COMMENT '入校日期',
   `birthday` date NOT NULL COMMENT '生日',
-  `national_id` varchar(20) NOT NULL DEFAULT '' COMMENT '身份證字號',
-  `ori_referral` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '原轉介單位',
-  `domicile` varchar(255) NOT NULL DEFAULT '' COMMENT '戶籍',
+  `orig_referral` varchar(255) NOT NULL DEFAULT '' COMMENT '原轉介單位',
+  `orig_school` varchar(255) NOT NULL DEFAULT '' COMMENT '原就學學校',
+  `orig_grade` enum('1','2','3','畢業或結業')  NOT NULL COMMENT '原就讀學校年級',
+  
+  `household_reg` varchar(255) NOT NULL DEFAULT '' COMMENT '戶籍',
+  `household_add` varchar(255) NOT NULL DEFAULT '' COMMENT '戶籍地址',
+  `address` varchar(255) NOT NULL DEFAULT '' COMMENT '居住地址',
   `ethnic_group` varchar(255) NOT NULL DEFAULT '' COMMENT '族群類別',
   `marital` varchar(255) NOT NULL DEFAULT '' COMMENT '婚姻狀況',
   `height` varchar(255) NOT NULL DEFAULT '' COMMENT '身高',
   `weight` varchar(255) NOT NULL DEFAULT '' COMMENT '體重',
-  `Low_income` varchar(255) NOT NULL DEFAULT '' COMMENT '低收入戶',
+  `Low_income` enum('0','1') NOT NULL COMMENT '低收入戶',
   `guardian_disability` varchar(255) NOT NULL DEFAULT '' COMMENT '監護人身心障礙',
   `referral_reason` varchar(255) NOT NULL DEFAULT '' COMMENT '轉介原因',
-  `original_education` varchar(255) NOT NULL DEFAULT '' COMMENT '原學歷',
-  `original_school` varchar(255) NOT NULL DEFAULT '' COMMENT '原就學學校',
   `family_profile` text NOT NULL COMMENT '家庭概況',
-  `residence_address` varchar(255) NOT NULL DEFAULT '' COMMENT '戶籍地址',
-  `address` varchar(255) NOT NULL DEFAULT '' COMMENT '居住地址',
+  `out_learn` enum('0','1') NOT NULL COMMENT '外學',
+
   `guardian1` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人1',
-  `guardian_relationship1` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人關係1',
-  `guardian_cellphone1` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人手機1',
+  `guardian1_relationship` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人1關係',
+  `guardian1_cellphone1` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人1手機1',
+  `guardian1_cellphone2` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人1手機2',
   `guardian2` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人2',
-  `guardian_relationship2` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人關係2',
-  `guardian_cellphone2` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人手機2',
-  `emergency_contact1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人1',
-  `emergency_contact_rel1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人關係1',
-  `emergency_cellphone1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人手機1',
-  `emergency_contact2` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人2',
-  `emergency_contact_rel2` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人關係2',
-  `emergency_cellphone2` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人手機2',
-  `sort` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `guardian2_relationship` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人2關係',
+  `guardian2_cellphone1` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人2手機1',
+  `guardian2_cellphone2` varchar(65) NOT NULL DEFAULT '' COMMENT '監護人2手機2',
+  `emergency1_contact1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人1',
+  `emergency1_contact_rel` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人1關係',
+  `emergency1_cellphone1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人1手機1',
+  `emergency1_cellphone2` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人1手機2',
+  `emergency2_contact1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人2',
+  `emergency2_contact_rel` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人2關係',
+  `emergency2_cellphone1` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人2手機1',
+  `emergency2_cellphone2` varchar(65) NOT NULL DEFAULT '' COMMENT '緊急聯絡人2手機2',
+
+  `social_id` mediumint(8) unsigned NOT NULL COMMENT '社工師',
+  `guidance_id` mediumint(8) unsigned NOT NULL COMMENT '輔導教師',
+  `rcv_guidance_id` mediumint(8) unsigned NOT NULL COMMENT '認輔老師',
+  `class_id` mediumint(8) unsigned NOT NULL COMMENT '班級',
+  `major_id` mediumint(8) unsigned NOT NULL COMMENT '學程',
+  `grade`  enum('1','2','3','畢業或結業')  NOT NULL COMMENT '年級',
+  `status` enum('0','1','2') NOT NULL COMMENT '0 在校 1 回歸/結案  2 逾假逃跑 ',
+  `audit` enum('0','1') NOT NULL COMMENT '隨班附讀',
+  `record` varchar(255) NOT NULL DEFAULT '' COMMENT '學程紀錄(回歸用)',
+
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
   `create_time` datetime NOT NULL,
   `update_time` datetime NOT NULL,
   PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- 公告消息
 -- DROP TABLE IF EXISTS `yy_announcement`;
@@ -115,16 +133,16 @@ CREATE TABLE `yy_announcement` (
   `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
   `update_date` datetime NOT NULL COMMENT '修改日期', 
   `top` enum('0','1') NOT NULL default '0' COMMENT '置頂',
-  `hit_count` int(8) unsigned NOT NULL DEFAULT '0' COMMENT '瀏覽次數',
+  `hit_count` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '瀏覽次數',
   `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
-  `sort` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- 學年度
 -- DROP TABLE IF EXISTS `yy_semester`;
 CREATE TABLE `yy_semester` (
-  `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
   `year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
   `term` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學期',
   `start_date` date NOT NULL COMMENT '開始時間',
@@ -134,7 +152,7 @@ CREATE TABLE `yy_semester` (
   `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
   `update_date` datetime NOT NULL COMMENT '修改日期', 
   `activity` enum('0','1') NOT NULL DEFAULT '0' COMMENT '目前學年度',
-  `sort` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 -- 修正學年度及學期不能重複
@@ -144,10 +162,10 @@ ADD UNIQUE `year_term` (`year`, `term`);
 -- 公告分類
 -- DROP TABLE IF EXISTS `yy_announcement_class`;
 CREATE TABLE `yy_announcement_class` (
-  `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
   `ann_class_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '公告分類名稱',
   `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
-  `sort` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
   `create_time` datetime NOT NULL,
   `update_time` datetime NOT NULL,
@@ -155,13 +173,13 @@ CREATE TABLE `yy_announcement_class` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
--- 部門
+-- 學校部門
 -- DROP TABLE IF EXISTS `yy_dept_school`;
 CREATE TABLE `yy_dept_school` (
-  `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
   `dept_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '處室名稱',
   `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
-  `sort` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
   `create_time` datetime NOT NULL,
   `update_time` datetime NOT NULL,
@@ -170,8 +188,8 @@ CREATE TABLE `yy_dept_school` (
 
 -- DROP TABLE IF EXISTS `yy_class`;
 CREATE TABLE `yy_class` (
-    `sn` smallint(5) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-    `sort` tinyint(5) unsigned NOT NULL COMMENT '排序',
+    `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+    `sort` mediumint(8) unsigned NOT NULL COMMENT '排序',
     `class_name` varchar(65) NOT NULL COMMENT '班級名稱',
     `class_status` enum('0','1','2') NOT NULL DEFAULT '1' COMMENT '班級狀態 0關閉 1啟用 2暫停',
     `tutor_sn` mediumint(8) unsigned NOT NULL COMMENT '導師編號',
@@ -193,11 +211,12 @@ INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`
 
 -- 學程
 INSERT INTO `yy_department` (`sn`, `sort`, `dep_name`, `dep_status`, `create_uid`, `create_time`, `update_uid`, `update_time`) VALUES
-(1,	0,	'國甲',	'1',	'1',	'2021-04-09 08:59:07',	'1',	'2021-04-09 08:59:07'),
-(2,	0,	'美容學程',	'1',	'1',	'2021-04-09 10:42:38',	'1',	'2021-04-09 10:42:38'),
-(3,	0,	'國乙',	'1',	'1',	'2021-04-09 09:18:04',	'1',	'2021-04-09 09:18:04'),
-(4,	0,	'餐旅技術學程',	'1',	'1',	'2021-04-09 10:42:27',	'1',	'2021-04-09 10:42:27'),
-(5,	0,	'資料處理學程',	'1',	'1',	'2021-04-09 10:41:26',	'1',	'2021-04-09 10:41:26');
+(1,	0,	'國甲',	'1',	1,	'2021-04-09 08:59:07',	1,	'2021-04-09 08:59:07'),
+(2,	0,	'國乙',	'1',	1,	'2021-04-09 09:18:04',	1,	'2021-04-09 09:18:04'),
+(3,	0,	'資料處理學程',	'1',	1,	'2021-04-09 10:41:26',	1,	'2021-04-09 10:41:26'),
+(4,	0,	'美容學程',	'1',	1,	'2021-04-09 10:42:38',	1,	'2021-04-09 10:42:38'),
+(5,	0,	'餐旅技術學程',	'1',	1,	'2021-04-09 10:42:27',	1,	'2021-04-09 10:42:27'),
+(6,	0,	'新生',	'1',	1,	'2021-04-11 17:52:46',	1,	'2021-04-11 17:52:46');
 
 
 -- 公告類別
@@ -225,37 +244,50 @@ INSERT INTO `yy_class` (`sn`, `sort`, `class_name`, `class_status`, `tutor_sn`, 
 
 -- 教師基本資料
 INSERT INTO `yy_teacher` (`sn`, `uid`, `dep_id`, `title`, `sex`, `phone`, `cell_phone`, `enable`, `isteacher`, `isguidance`, `issocial`, `sort`, `create_uid`, `create_time`, `update_uid`, `update_time`) VALUES
-(1,	13,	6,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 11:40:38',	1,	'2021-04-09 13:22:09'),
-(2,	40,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 11:40:49',	1,	'2021-04-09 13:22:18'),
-(3,	18,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	0,	1,	'2021-04-09 11:43:16',	1,	'2021-04-09 13:22:44'),
-(4,	37,	2,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 11:47:27',	1,	'2021-04-09 13:25:52'),
-(5,	15,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:04',	1,	'2021-04-09 13:22:50'),
-(6,	29,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:06',	1,	'2021-04-09 13:22:58'),
-(7,	41,	6,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	0,	1,	'2021-04-09 13:21:13',	1,	'2021-04-09 13:23:10'),
-(8,	24,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	0,	1,	'2021-04-09 13:21:14',	1,	'2021-04-09 13:23:18'),
-(9,	21,	2,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:16',	1,	'2021-04-09 13:23:25'),
-(10,	8,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:17',	1,	'2021-04-09 13:23:34'),
-(11,	14,	6,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:18',	1,	'2021-04-09 13:24:58'),
-(12,	12,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:21',	1,	'2021-04-09 13:26:11'),
-(13,	16,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:27',	1,	'2021-04-09 13:25:18'),
-(14,	11,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	0,	1,	'2021-04-09 13:21:32',	1,	'2021-04-09 13:32:00'),
-(15,	5,	1,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:33',	1,	'2021-04-09 13:26:19'),
-(16,	17,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	0,	1,	'2021-04-09 13:21:38',	1,	'2021-04-09 13:26:38'),
-(17,	26,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:39',	1,	'2021-04-09 13:26:29'),
-(18,	38,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:42',	1,	'2021-04-09 13:26:45'),
-(19,	20,	2,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:48',	1,	'2021-04-09 13:21:59'),
-(20,	6,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	0,	1,	'2021-04-09 13:21:49',	1,	'2021-04-09 13:32:10'),
-(21,	10,	1,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 13:24:20',	1,	'2021-04-09 13:24:20'),
-(22,	22,	2,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 13:24:29',	1,	'2021-04-09 13:24:29'),
-(23,	25,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 13:24:36',	1,	'2021-04-09 13:24:36'),
-(24,	19,	2,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 13:24:45',	1,	'2021-04-09 13:24:45'),
-(25,	23,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'1',	0,	1,	'2021-04-09 13:25:10',	1,	'2021-04-09 13:25:10'),
-(26,	43,	2,	'',	'1',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 13:25:31',	1,	'2021-04-09 13:25:31'),
-(27,	28,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'1',	0,	1,	'2021-04-09 13:25:41',	1,	'2021-04-09 13:25:41'),
-(28,	27,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'1',	0,	1,	'2021-04-09 13:26:00',	1,	'2021-04-09 13:26:00'),
-(29,	7,	6,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	0,	1,	'2021-04-09 13:26:59',	1,	'2021-04-09 13:26:59'),
-(30,	33,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	0,	1,	'2021-04-09 15:04:02',	1,	'2021-04-09 15:04:02');
-
+(31,	2,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	32,	1,	'2021-04-10 13:06:25',	1,	'2021-04-10 13:14:16'),
+(32,	3,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	33,	1,	'2021-04-10 13:06:27',	1,	'2021-04-10 13:13:56'),
+(33,	4,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	40,	1,	'2021-04-10 13:06:30',	1,	'2021-04-10 13:13:56'),
+(15,	5,	1,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	4,	1,	'2021-04-09 13:21:33',	1,	'2021-04-10 13:13:56'),
+(20,	6,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	13,	1,	'2021-04-09 13:21:49',	1,	'2021-04-10 13:13:56'),
+(29,	7,	6,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	29,	1,	'2021-04-09 13:26:59',	1,	'2021-04-10 13:13:56'),
+(10,	8,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	3,	1,	'2021-04-09 13:21:17',	1,	'2021-04-10 13:13:56'),
+(38,	9,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	35,	1,	'2021-04-10 13:07:27',	1,	'2021-04-10 13:13:56'),
+(21,	10,	1,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	6,	1,	'2021-04-09 13:24:20',	1,	'2021-04-10 13:13:56'),
+(14,	11,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	21,	1,	'2021-04-09 13:21:32',	1,	'2021-04-10 13:13:56'),
+(12,	12,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	2,	1,	'2021-04-09 13:21:21',	1,	'2021-04-10 13:13:56'),
+(1,	13,	6,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	27,	1,	'2021-04-09 11:40:38',	1,	'2021-04-10 13:13:56'),
+(11,	14,	6,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	26,	1,	'2021-04-09 13:21:18',	1,	'2021-04-10 13:13:56'),
+(5,	15,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	9,	1,	'2021-04-09 13:21:04',	1,	'2021-04-10 13:13:56'),
+(13,	16,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	1,	1,	'2021-04-09 13:21:27',	1,	'2021-04-10 13:13:56'),
+(16,	17,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	19,	1,	'2021-04-09 13:21:38',	1,	'2021-04-10 13:13:56'),
+(3,	18,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	18,	1,	'2021-04-09 11:43:16',	1,	'2021-04-10 13:13:56'),
+(24,	19,	2,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	14,	1,	'2021-04-09 13:24:45',	1,	'2021-04-10 13:13:56'),
+(19,	20,	2,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	7,	1,	'2021-04-09 13:21:48',	1,	'2021-04-10 13:13:56'),
+(9,	21,	2,	'',	'1',	'',	'',	'',	'1',	'0',	'0',	8,	1,	'2021-04-09 13:21:16',	1,	'2021-04-10 13:13:56'),
+(22,	22,	2,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	16,	1,	'2021-04-09 13:24:29',	1,	'2021-04-10 13:13:56'),
+(25,	23,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'1',	22,	1,	'2021-04-09 13:25:10',	1,	'2021-04-10 13:13:56'),
+(8,	24,	3,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	20,	1,	'2021-04-09 13:21:14',	1,	'2021-04-10 13:13:56'),
+(23,	25,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	23,	1,	'2021-04-09 13:24:36',	1,	'2021-04-10 13:13:56'),
+(17,	26,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	12,	1,	'2021-04-09 13:21:39',	1,	'2021-04-10 13:13:56'),
+(28,	27,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'1',	24,	1,	'2021-04-09 13:26:00',	1,	'2021-04-10 13:13:56'),
+(27,	28,	3,	'',	'0',	'',	'',	'',	'0',	'0',	'1',	25,	1,	'2021-04-09 13:25:41',	1,	'2021-04-10 13:13:56'),
+(6,	29,	1,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	5,	1,	'2021-04-09 13:21:06',	1,	'2021-04-10 13:13:56'),
+(44,	30,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	42,	1,	'2021-04-10 13:07:33',	1,	'2021-04-10 13:13:56'),
+(43,	31,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	41,	1,	'2021-04-10 13:07:32',	1,	'2021-04-10 13:13:56'),
+(42,	32,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	37,	1,	'2021-04-10 13:07:31',	1,	'2021-04-10 13:13:56'),
+(30,	33,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	44,	1,	'2021-04-09 15:04:02',	1,	'2021-04-10 13:13:56'),
+(41,	34,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	36,	1,	'2021-04-10 13:07:30',	1,	'2021-04-10 13:13:56'),
+(40,	35,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	31,	1,	'2021-04-10 13:07:30',	1,	'2021-04-10 13:14:17'),
+(39,	36,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	30,	1,	'2021-04-10 13:07:29',	1,	'2021-04-10 13:14:19'),
+(4,	37,	2,	'',	'0',	'',	'',	'',	'0',	'0',	'0',	17,	1,	'2021-04-09 11:47:27',	1,	'2021-04-10 13:13:56'),
+(18,	38,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	10,	1,	'2021-04-09 13:21:42',	1,	'2021-04-10 13:13:56'),
+(37,	39,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	38,	1,	'2021-04-10 13:07:26',	1,	'2021-04-10 13:13:56'),
+(2,	40,	2,	'',	'0',	'',	'',	'',	'1',	'0',	'0',	11,	1,	'2021-04-09 11:40:49',	1,	'2021-04-10 13:13:56'),
+(7,	41,	6,	'',	'0',	'',	'',	'',	'1',	'1',	'0',	28,	1,	'2021-04-09 13:21:13',	1,	'2021-04-10 13:13:56'),
+(35,	42,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	34,	1,	'2021-04-10 13:07:23',	1,	'2021-04-10 13:13:56'),
+(26,	43,	2,	'',	'1',	'',	'',	'',	'0',	'0',	'0',	15,	1,	'2021-04-09 13:25:31',	1,	'2021-04-10 13:13:56'),
+(34,	44,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	39,	1,	'2021-04-10 13:06:32',	1,	'2021-04-10 13:13:56'),
+(36,	45,	0,	'',	'',	NULL,	NULL,	'1',	'0',	'0',	'0',	43,	1,	'2021-04-10 13:07:25',	1,	'2021-04-10 13:13:56');
 
 -- 使用者資料
 -- INSERT INTO `xx_users` (`uid`, `name`, `uname`, `email`, `url`, `user_avatar`, `user_regdate`, `user_icq`, `user_from`, `user_sig`, `user_viewemail`, `actkey`, `user_aim`, `user_yim`, `user_msnm`, `pass`, `posts`, `attachsig`, `rank`, `level`, `theme`, `timezone_offset`, `last_login`, `umode`, `uorder`, `notify_method`, `notify_mode`, `user_occ`, `bio`, `user_intrest`, `user_mailok`) VALUES

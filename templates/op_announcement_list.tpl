@@ -1,47 +1,43 @@
-
-<div class="container">
-    <h2 style="float:left" class="mb-3">公告消息 ─ 列表</h2>
-    <div class="col row"></div>
-    <{if $show_add_button=='1'}>
-        <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
-        <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
-        </button>
-    <{/if}>
-    <form name="announcement_list" id="announcement_list" action="index.php" method="get">
-        <div class="form-group row">
-            <label for="ann_class_id" class="col-1.5 col-form-label text-sm-right px-0">分類：</label>
-            <div class="col-2 text-center px-0 mr-3">
-                <select class="custom-select" name="ann_class_id" id="ann_class_id">
-                    <{$ann_c_sel_htm}>
-                </select>
-            </div>
-
-            <label for="dept_id" class="col-1.5 col-form-label text-sm-right px-0">發佈處室：</label>
-            <div class="col-2 text-left px-0 mr-3">
-                <select class="custom-select" name="dept_id" id="dept_id">
-                    <{$dept_c_sel_htm}>
-                </select>
-            </div>
-
-            <label class="col-1 col-form-label text-sm-right px-0" for="search">關鍵字</label>
-            <div class="mx-sm-3 col-2 text-left px-0">
-                <input type="text" class="form-control" id="search" name="search" placeholder="search" value="<{$search}>">
-            </div>
-            <div>
-                <input name="op" id="op" value="<{$op}>" type="hidden">
-            </div>
-            <button type="submit" class="btn btn-outline-dark col-0.5 mr-1">搜尋</button>
-            <button type="button" id="clear" class="btn btn-outline-dark col-0.5">清空</button>
+<h2 style="float:left" class="mb-3">公告消息 ─ 列表</h2>
+<div class="col row"></div>
+<{if $show_add_button=='1'}>
+    <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
+    <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
+    </button>
+<{/if}>
+<form name="announcement_list" id="announcement_list" action="index.php" method="get">
+    <div class="form-group row">
+        <label for="ann_class_id" class="col-1.5 col-form-label text-sm-right px-0">分類：</label>
+        <div class="col-2 text-center px-0 mr-3">
+            <select class="custom-select" name="ann_class_id" id="ann_class_id">
+                <{$ann_c_sel_htm}>
+            </select>
         </div>
 
+        <label for="dept_id" class="col-1.5 col-form-label text-sm-right px-0">發佈處室：</label>
+        <div class="col-2 text-left px-0 mr-3">
+            <select class="custom-select" name="dept_id" id="dept_id">
+                <{$dept_c_sel_htm}>
+            </select>
+        </div>
+
+        <label class="col-1 col-form-label text-sm-right px-0" for="search">關鍵字</label>
+        <div class="mx-sm-3 col-2 text-left px-0">
+            <input type="text" class="form-control" id="search" name="search" placeholder="search" value="<{$search}>">
+        </div>
+        <div>
+            <input name="op" id="op" value="<{$op}>" type="hidden">
+        </div>
+        <button type="submit" class="btn btn-outline-dark col-0.5 mr-1">搜尋</button>
+        <button type="button" id="clear" class="btn btn-outline-dark col-0.5">清空</button>
+    </div>
 
 
-    </form>
+
+</form>
 
 
 
-</div>
-<!-- <div class=""> -->
 <{if $all}>
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead class="table-info">

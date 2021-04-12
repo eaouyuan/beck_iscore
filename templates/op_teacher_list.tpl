@@ -106,7 +106,7 @@
             var order = $(this).sortable('serialize')+'&op=teacher_sort';
             // console.log(order);
             $.post('other_action.php',  order, function(theResponse){
-                console.log(theResponse);
+                // console.log(theResponse);
                 $('#save_msg').html(theResponse);
             });
             }
@@ -147,7 +147,7 @@
             }),
 
             success: function(response){
-                alert(response.msg);
+                // alert(response.msg);
                 // console.log('response');
             },
             error: function (error) {
@@ -181,7 +181,7 @@
             }),
 
             success: function(response){
-                alert(response.msg);
+                // alert(response.msg);
                 // console.log('response');
             },
             error: function (error) {
@@ -215,7 +215,7 @@
             }),
 
             success: function(response){
-                alert(response.msg);
+                // alert(response.msg);
                 // console.log('response');
             },
             error: function (error) {
