@@ -169,7 +169,7 @@
 .table th ,.table td{
     vertical-align:middle;
     text-align:center;
-    border: 2px solid #000000;
+    border: 1px solid #000000;
     /* width:auto; */
     /* border-bottom: 2px solid #000000; */
 }

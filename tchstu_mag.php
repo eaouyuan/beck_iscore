@@ -647,6 +647,8 @@ switch ($op) {
 
     // 表單-新增、編輯 學生
     function student_form($sn){
+        
+
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
         if (!$xoopsUser) {
