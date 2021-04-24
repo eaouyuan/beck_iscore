@@ -36,9 +36,6 @@ if (!isset($_SESSION[$session_name])) {
 
 //模組後台
 if (power_chk("", 1)) {
-    $interface_menu['新增學生'] = "index.php?op=student_form";
-    $interface_icon['新增學生'] = "";
-
     $interface_menu['總表PDF'] = "pdf_all.php";
     $interface_icon['總表PDF'] = "";
 

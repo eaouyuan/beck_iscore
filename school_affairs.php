@@ -387,8 +387,6 @@ switch ($op) {
 
     }
 // ----------------------------------
-
-// ----------------------------------
 // 班級列表
     // sql-刪除 班級
     function class_delete($sn){
@@ -912,7 +910,7 @@ switch ($op) {
         $tb2      = $xoopsDB->prefix('yy_teacher');
         $sql      = "SELECT  ur.name,ur.uname,ur.email, tr.* ,ur.uid,tr.sort
                     FROM $tbl as ur LEFT JOIN $tb2 as tr ON ur.uid=tr.uid" ;
-        // die(var_dump($_REQUEST));
+        // echo($sql);die();
 
         $have_par='0';
         if(!empty($pars['dep_id'])){
@@ -923,7 +921,7 @@ switch ($op) {
             if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
             $sql.="(
                 (`name` like '%{$pars['search']}%') or (`uname` like '%{$pars['search']}%') or
-                (`email` like '%{$pars['search']}%') or (`title` like '%{$pars['search']}%')
+                (`email` like '%{$pars['search']}%') or (tr.title like '%{$pars['search']}%')
                 ) ";
             $have_par='1';
         }

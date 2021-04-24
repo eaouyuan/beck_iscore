@@ -3,7 +3,9 @@
 function xoops_module_update_beck_iscore(&$module, $old_version) {
     GLOBAL $xoopsDB;
 
-    mk_group('編輯群');
+    mk_group("學生增刪", "學生新增編輯刪除");
+    mk_group("課程管理", "課程管理");
+
 
     // if(!chk_chk1()) go_update1();
 

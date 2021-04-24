@@ -40,31 +40,31 @@ function Get_select_opt_htm($ary=[],$value='',$show_space='1')
 
 
 // 取得所有使用者資料 目前沒用
-function all_users_data($isteacher=null){
-    global $xoopsDB;
+// function all_users_data($isteacher=null){
+//     global $xoopsDB;
 
-    $tbl      = $xoopsDB->prefix('users');
-    $tb2      = $xoopsDB->prefix('yy_teacher');
-    $sql      = "SELECT  tr.*,ur.name,ur.uname,ur.email,ur.uid
-                FROM $tbl as ur left JOIN $tb2 as tr ON ur.uid=tr.uid" ;
-    if($isteacher){
-        $sql.=" where `isteacher`='1'";
-    }
-    $sql.=" ORDER BY `name` ";
+//     $tbl      = $xoopsDB->prefix('users');
+//     $tb2      = $xoopsDB->prefix('yy_teacher');
+//     $sql      = "SELECT  tr.*,ur.name,ur.uname,ur.email,ur.uid
+//                 FROM $tbl as ur left JOIN $tb2 as tr ON ur.uid=tr.uid" ;
+//     if($isteacher){
+//         $sql.=" where `isteacher`='1'";
+//     }
+//     $sql.=" ORDER BY `name` ";
 
-    $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    $all      = array();
+//     $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+//     $all      = array();
     
-    while($user= $xoopsDB->fetchArray($result)){
-        // $all[$user['uid']]['name']  = $user['name'];
-        // $all[$user['uid']]['uname'] = $user['uname'];
-        // $all[$user['uid']]['email'] = $user['email'];
-        // $all[$user['uid']]['uid']   = $user['uid'];
-        $all[]=$user;
-    }
-    // var_dump($all);die();
-    return $all;
-}
+//     while($user= $xoopsDB->fetchArray($result)){
+//         // $all[$user['uid']]['name']  = $user['name'];
+//         // $all[$user['uid']]['uname'] = $user['uname'];
+//         // $all[$user['uid']]['email'] = $user['email'];
+//         // $all[$user['uid']]['uid']   = $user['uid'];
+//         $all[]=$user;
+//     }
+//     // var_dump($all);die();
+//     return $all;
+// }
 
 // 取得使用者資料
 function users_data($uid){

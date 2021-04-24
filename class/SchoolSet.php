@@ -70,7 +70,8 @@ class SchoolSet
                     WHERE $tb1.uid !='1'
                 ";
         // echo($sql);
-        $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sqlall=$sql." ORDER BY {$tb2}.sort";
+        $result      = $xoopsDB->query($sqlall) or Utility::web_error($sql, __FILE__, __LINE__);
         $all=[];
         while($user= $xoopsDB->fetchArray($result)){
             $all[] = $user;
@@ -78,7 +79,7 @@ class SchoolSet
         $this->users=$all;
 
         // get all teachers 
-        $sql.= " AND $tb2.isteacher='1' ";
+        $sql.= " AND $tb2.isteacher='1' ORDER BY {$tb2}.sort";
         $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all    = [];
         while($tch= $xoopsDB->fetchArray($result)){
@@ -176,7 +177,7 @@ class SchoolSet
         return $data;
     }
 
-    // UID->name
+    // $a[uid]=name
     public function get_uid_name($cat='user'){
         $all=$this->users;
         $data=[];

@@ -4,7 +4,8 @@ function xoops_module_uninstall_beck_iscore(&$module) {
     GLOBAL $xoopsDB;
     $date=date("Ymd");
     
-    del_group("編輯群");
+    del_group("學生增刪");
+    del_group("課程管理");
 
     rename(XOOPS_ROOT_PATH."/uploads/beck_iscore",XOOPS_ROOT_PATH."/uploads/beck_iscore_bak_{$date}");
 

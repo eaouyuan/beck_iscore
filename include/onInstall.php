@@ -4,7 +4,8 @@ function xoops_module_install_beck_iscore(&$module) {
 
     mk_dir(XOOPS_ROOT_PATH."/uploads/beck_iscore");
     // mk_dir(XOOPS_ROOT_PATH."/uploads/beck_iscore/ann");
-    mk_group("編輯群", "校務行政系統-編輯群");
+    mk_group("學生增刪", "學生新增編輯刪除");
+    mk_group("課程管理", "課程管理");
 
     return true;
 }

@@ -1,9 +1,9 @@
 <?php
-use Xmf\Request;
+// use Xmf\Request;
 /*-----------引入檔案區--------------*/
-include_once "header.php";
-$xoopsOption['template_main'] = "beck_iscore_index.tpl";
-include_once XOOPS_ROOT_PATH . "/header.php";
+// include_once "header.php";
+// $xoopsOption['template_main'] = "beck_iscore_index.tpl";
+// include_once XOOPS_ROOT_PATH . "/header.php";
 
 
 function student_list(){
@@ -73,15 +73,15 @@ function student_list(){
 
 
 /*-----------執行動作判斷區----------*/
-include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
-$op = Request::getString('op');
-$sn = Request::getInt('sn');
-$TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+// include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
+// $op = Request::getString('op');
+// $sn = Request::getInt('sn');
+// $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
 // die(var_dump($_SESSION));
 // die(var_dump($xoopsUser));
-student_list();
-$op="student_sortable";
-get_jquery(true);
+// student_list();
+// $op="student_sortable";
+// get_jquery(true);
 
 
 
@@ -90,4 +90,4 @@ get_jquery(true);
 $xoopsTpl->assign('now_op', $op);
 // $xoopsTpl->assign("toolbar", toolbar_bootstrap($interface_menu));
 
-include_once XOOPS_ROOT_PATH . '/footer.php';
+// include_once XOOPS_ROOT_PATH . '/footer.php';

@@ -9,7 +9,7 @@
                 <th class="table-info" scope="row">姓名</th>
                 <td><input type="text" class="form-control validate[required]" name="stu_name" id="stu_name" value="<{$stu.stu_name}>"></td>
                 <th class="table-info" scope="row">身份證字號</th>
-                <td><input type="text" class="form-control validate[required]" name="national_id" id="national_id" value="<{$stu.national_id}>"></td>
+                <td><input type="text" class="form-control validate[required]" name="national_id" onblur="checkID(this)" id="national_id" value="<{$stu.national_id}>"></td>
             </tr>
             <tr>
                 <th  class="table-info" scope="row">學號</th>
@@ -50,7 +50,7 @@
             <tr>
                 <th class="table-info" scope="row">外學</th>
                 <td id="out_learn">
-                  <{$stu.out_learn_htm}>
+                    <{$stu.out_learn_htm}>
                 </td>
                 <th class="table-info" scope="row">隨班附讀</th>
                 <td id="audit">
@@ -117,7 +117,7 @@
 
     <div class="col-md-12 text-center mb-3">
         <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
-        <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/index.php">
+        <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=student_list">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
     </div>
 
@@ -126,6 +126,11 @@
 
 <script type="text/javascript">
     $(document).ready(function($){
+        let class_tutor=<{$class_tutor}>;
+        let class_id=$("#class_id" ).val();
+        let tutor_name=class_tutor[class_id];
+        $('#tutor').text(tutor_name);
+
         $('#out_learn').click(function(){
             if($('#out_learn_0').prop('checked')){　　
                 $('#out_learn_1').prop('checked',true);
@@ -156,13 +161,35 @@
             let class_tutor=<{$class_tutor}>;
             let class_id=$("#class_id" ).val();
             let tutor_name=class_tutor[class_id];
-            $('#tutor').text(tutor_name);
-            // $('#tutor').val(tutor_name);
-            // console.log(class_tutor);
-            // console.log(class_id);
-            // console.log(abc);
+            // console.log(class_id=='');
+            if(class_id==''){
+                $('#tutor').text("");
+            }else{
+                $('#tutor').text(tutor_name);
+            }
         });
-    })
+        // 學號末三碼為編號
+        $( "#stu_id" ).blur(function(e){
+            if($('#stu_no').val()==''){
+                $('#stu_no').val($("#stu_id" ).val().substring(3, 6));
+            }
+        });
+
+        //身份證字號大寫
+        $('#national_id').change(function(e){
+            let nastring=$('#national_id').val();
+            let naidnew=nastring.replace(/^./, nastring[0].toUpperCase());
+            $('#national_id').val(naidnew);
+        });
+
+    });
+
+function checkID(formElement) {
+        re = /^[A-Z]\d{9}$/;
+        if (!re.test(formElement.value))
+        alert("你的身份證號碼格式不對！")
+};
+
 </script>
 
 <style>
