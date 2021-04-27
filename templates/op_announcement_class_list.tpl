@@ -1,11 +1,11 @@
 
-<div class="container">
+<div class="col">
     <h2 style="float:left">公告分類 ─ 列表</h2>
    
-        <button type="button" class="btn btn-primary btn-sm" style="float:right" 
-            onclick="self.location.href='index.php?op=announcement_class_form';">
-            <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增分類"> 新增分類
-        </button>
+    <button type="button" class="btn btn-primary btn-sm" style="float:right" 
+        onclick="self.location.href='index.php?op=announcement_class_form';">
+        <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增分類"> 新增分類
+    </button>
 
 
 </div>
@@ -44,7 +44,7 @@
         </tbody>
     </table>   
 <{else}>
-    <div class="alert alert-danger row col-12">
+    <div class="alert alert-danger">
         尚無內容
     </div>
 <{/if}>

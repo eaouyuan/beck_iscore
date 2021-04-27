@@ -38,33 +38,16 @@ function Get_select_opt_htm($ary=[],$value='',$show_space='1')
     return ($return_htm);
 }
 
+//get bootstrap custom-switch
+function Get_bootstrap_switch_opt_htm($name,$sn='',$value='')
+{
+    $checked= ($value=='1')?'checked':'';
+    $return_htm=
+        "<input type='checkbox' class='custom-control-input' name='sw_{$name}' id='{$name}_{$sn}' value='{$sn}' {$checked}>
+        <label class='custom-control-label' for='{$name}_{$sn}'></label>";
+    return ($return_htm);
+}
 
-// 取得所有使用者資料 目前沒用
-// function all_users_data($isteacher=null){
-//     global $xoopsDB;
-
-//     $tbl      = $xoopsDB->prefix('users');
-//     $tb2      = $xoopsDB->prefix('yy_teacher');
-//     $sql      = "SELECT  tr.*,ur.name,ur.uname,ur.email,ur.uid
-//                 FROM $tbl as ur left JOIN $tb2 as tr ON ur.uid=tr.uid" ;
-//     if($isteacher){
-//         $sql.=" where `isteacher`='1'";
-//     }
-//     $sql.=" ORDER BY `name` ";
-
-//     $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-//     $all      = array();
-    
-//     while($user= $xoopsDB->fetchArray($result)){
-//         // $all[$user['uid']]['name']  = $user['name'];
-//         // $all[$user['uid']]['uname'] = $user['uname'];
-//         // $all[$user['uid']]['email'] = $user['email'];
-//         // $all[$user['uid']]['uid']   = $user['uid'];
-//         $all[]=$user;
-//     }
-//     // var_dump($all);die();
-//     return $all;
-// }
 
 // 取得使用者資料
 function users_data($uid){

@@ -9,18 +9,13 @@ use XoopsModules\Tadtools\TadDataCenter;
 use XoopsModules\Tadtools\TadUpFiles;
 use XoopsModules\Tadtools\Utility;
 
-//TadNews物件
-/*
-
-
-
- */
 class SchoolSet
 {
     private static $_instance;
     public $sem_sn; //學年度編號
     public $sem_year; //目前學年度
     public $sem_term; //目前學期
+    public $all_sems; //所有學年度資料
     public $users; //使用者資料
     public $teachers; //教師資料
     public $class; //班級資料
@@ -47,12 +42,20 @@ class SchoolSet
     private function get_semester(){
         global $xoopsDB;
         $tbl = $xoopsDB->prefix('yy_semester');
-        $sql         = "SELECT * FROM $tbl Where `activity`='1'";
-        $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $school_year = $xoopsDB->fetchArray($result);
-        $this->sem_sn=$school_year['sn'];
-        $this->sem_year=$school_year['year'];
-        $this->sem_term=$school_year['term'];
+        $sql            = "SELECT * FROM $tbl Where `activity`='1'";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $school_year    = $xoopsDB->fetchArray($result);
+        $this->sem_sn   = $school_year['sn'];
+        $this->sem_year = $school_year['year'];
+        $this->sem_term = $school_year['term'];
+
+        $sql            = "SELECT * FROM $tbl";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sem_all=[];
+        while($all= $xoopsDB->fetchArray($result)){
+            $sem_all[] = $all;
+        }
+        $this->all_sems = $sem_all;
     }
     // get 教師資料含處室
     private function get_teachers_data(){
@@ -188,8 +191,7 @@ class SchoolSet
     }
 
 
-
-
+    // php 單例模式 https://tw511.com/a/01/5633.html?fbclid=IwAR3TcfPeQaJslVc49aMbVbIN1pP8iXN8McbFUSv9KJNSFZPM0z8y9x-WAlM
     public static function aaa()
     {
         if (!(self::$_instance instanceof self)) {
@@ -198,62 +200,5 @@ class SchoolSet
         return self::$_instance;
 
     }
-
-    //Get學期 option html
-    public function Get_term_htm($term='',$show_space='1'){
-        global $xoopsDB, $xoopsTpl, $xoopsUser;
-
-        $terms=['1','2'];
-        if($show_space=='0'){
-            $return_htm='';
-        }else{
-            $return_htm='<option></option>';
-        }
-        foreach ($terms as $v){
-            $selected= ($term==$v)?'selected':'';
-            $return_htm.="<option value='{$v}' {$selected}>{$v}</option>";
-        }
-
-        // $tbl     = $xoopsDB->prefix('yy_dept_school');
-        // $sql     = "SELECT * FROM $tbl WHERE `enable` ='1' ORDER BY `sn`";
-        // $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-
-        // if($space=='0'){
-        //     $htm='<option selected></option>';
-        // }else{
-        //     $htm='';
-        // }
-
-        // while($Dept_cls= $xoopsDB->fetchArray($result)){
-        //     $selected= ($Dept_c_id==$Dept_cls['sn'])?'selected':'';
-        //     $htm.='<option value="'.$Dept_cls['sn'].'" '.$selected.'  >'.$Dept_cls['dept_name'].'</option>';
-        // }
-
-        // var_dump($htm);die();
-        return ($return_htm);
-    }
-
-     //Get現在學年度 option html
-    public function Get_activity_htm($value='0'){
-        global $xoopsDB, $xoopsTpl, $xoopsUser;
-        // 是否: 現在學年度
-        $default = (!isset($default)) ? '0' : $default;
-        $opt_ary=['0'=>'否','1'=>'是'];
-        $yn_option='';
-        foreach ($opt_ary as $k=>$v){
-            $chk= ($value==$k)?'checked':'';
-            $yn_option.=<<<HTML
-            <div class="form-check form-check-inline  m-2">
-                <input class="form-check-input" type="radio" name="activity" id="activity{$k}" title="{$v}" value="{$k}" {$chk}>
-                <label class="form-check-label" for="activity{$k}">{$v}</label>
-            </div>
-        HTML;
-        }
-        // die(var_dump($yn_option));
-        return ($yn_option);
-    }
-
-
-
 
 }

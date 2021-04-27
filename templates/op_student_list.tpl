@@ -72,8 +72,8 @@
             <!-- <td class="text-center"><{$its.rcv_guidance_id}></td> -->
             <{if $can_edit}>
             <td class="text-center">
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=student_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
-                <a href="javascript:stu_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
+                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=course_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
+                <a href="javascript:cos_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
             </td>
             <{/if}>
         </tr>
@@ -81,7 +81,7 @@
         </tbody>
     </table>
 <{else}>
-    <div class="alert alert-danger row">
+    <div class="alert alert-danger">
         尚無內容
     </div>
 <{/if}>

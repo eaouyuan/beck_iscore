@@ -11,9 +11,10 @@ $check_status = Request::getString('check_status');
 $odr_ary = Request::getArray('odr');
 
 
-if (!$xoopsUser->isAdmin()) {
-    die();
-}
+
+// if (!$xoopsUser->isAdmin()) {
+//     die();
+// }
 // var_dump($op);
 // var_dump($order_ary);
 // die();
@@ -21,24 +22,28 @@ if (!$xoopsUser->isAdmin()) {
 switch ($op) {
     // 是否為教師
     case "teacher_istch_edit":
-        // var_export($_REQUEST);
         teacher_identity_edit($sn,$check_status,'isteacher');
         exit;
     // 輔導教師
     case "teacher_isgdc_edit":
-        // var_export($_REQUEST);
         teacher_identity_edit($sn,$check_status,'isguidance');
         exit;
     // 社工師
     case "teacher_isscl_edit":
-        // var_export($_REQUEST);
         teacher_identity_edit($sn,$check_status,'issocial');
         exit;
     case "teacher_sort":
         teacher_sort($odr_ary);
         exit;
-
-        
+    case "course_sort":
+        course_sort($odr_ary);
+        exit;
+    case "course_ftest_sw":
+        course_test_sw($sn,$check_status,'first_test');
+        exit;
+    case "course_stest_sw":
+        course_test_sw($sn,$check_status,'second_test');
+        exit;
 
     default:
         echo('this is default switch in op_teacher.php');
@@ -47,8 +52,54 @@ switch ($op) {
 
 }
 
+function course_test_sw($sn,$check_status,$field){
+    global $xoopsDB,$xoopsUser;
+    if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+        $return['msg']='權限錯誤!';
+        echo json_encode($return);
+    } 
+
+    $myts = MyTextSanitizer::getInstance();
+    foreach ($_POST as $key => $value) {
+        $$key = $myts->addSlashes($value);
+        // echo "<p>\${$key}={$$key}</p>";
+        $return[$key]=$myts->addSlashes($value);
+    }
+    // var_dump($return);die();
+    $tbl = $xoopsDB->prefix('yy_course');
+    $sql = "update `$tbl` set 
+                `{$field}`='{$check_status}',
+                `update_user`='{$_SESSION['xoopsUserId']}',
+                `update_date`=now()
+            where `sn`   = '{$sn}'";
+    // var_dump($sql);die();
+    $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+  
+    $return['msg']='修改成功!';
+    echo json_encode($return);
+}
+function course_sort($odr_ary){
+    global $xoopsDB,$xoopsUser;
+    if (!$xoopsUser) {
+        die();
+    }
+    $tbl   = $xoopsDB->prefix('yy_course');
+    $sort = 1;
+    // var_dump($odr_ary);die();
+    foreach ($odr_ary as $sn) {
+        $sql = "update " . $tbl . " set `sort`='{$sort}'  where `sn`='{$sn}'";
+        // $xoopsDB->queryF($sql) or die(_TAD_SORT_FAIL . " (" . date("Y-m-d H:i:s") . ")" . $sql);
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo('</br>');
+        $sort++;
+    }
+}
 function teacher_sort($odr_ary){
     global $xoopsDB,$xoopsUser;
+    if (!$xoopsUser->isAdmin()) {
+        die();
+    }
     $tbl   = $xoopsDB->prefix('yy_teacher');
     foreach ($odr_ary as $sn) {
         $sql      = "SELECT * FROM $tbl WHERE uid='{$sn}'";
@@ -81,12 +132,14 @@ function teacher_sort($odr_ary){
 
 function teacher_identity_edit($sn,$check_status,$idtf){
     global $xoopsDB,$xoopsUser;
-
+    if (!$xoopsUser->isAdmin()) {
+        die();
+    }
     $myts = MyTextSanitizer::getInstance();
     foreach ($_POST as $key => $value) {
         $$key = $myts->addSlashes($value);
         // echo "<p>\${$key}={$$key}</p>";
-        $return[$$key]=$myts->addSlashes($value);
+        $return[$key]=$myts->addSlashes($value);
 
     }
     // var_export($_SESSION['xoopsUserId']);

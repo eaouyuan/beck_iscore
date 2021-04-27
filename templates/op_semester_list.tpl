@@ -1,5 +1,5 @@
 
-<div class="container">
+<div class="col">
     <h2 style="float:left" class="mb-3">學年度 ─ 列表</h2>
     <button type="button" class="btn btn-primary btn-sm mb-3" 
     onclick="self.location.href='school_affairs.php?op=semester_form';"style="float:right">
@@ -42,7 +42,7 @@
         </tbody>
     </table>
 <{else}>
-    <div class="alert alert-danger row col-12">
+    <div class="alert alert-danger">
         尚無內容
     </div>
 <{/if}>

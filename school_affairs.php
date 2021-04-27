@@ -1141,8 +1141,13 @@ switch ($op) {
         
         $SchoolSet= new SchoolSet;
         //取得學期及目前學年度
-        $Sems['term_htm']=$SchoolSet->Get_term_htm($Sems['term'],$is_new);
-        $Sems['activity']=$SchoolSet->Get_activity_htm($Sems['activity']);
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        $Sems['term_htm']=Get_select_opt_htm($terms,$Sems['term'],1);
+
+        // 目前學年度選項
+        $opt_ary=['0'=>'否','1'=>'是'];
+        $Sems['activity']=radio_htm($opt_ary,'activity',$Sems['activity']);
 
         $xoopsTpl->assign('Sems', $Sems);
 

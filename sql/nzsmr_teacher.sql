@@ -223,9 +223,9 @@ CREATE TABLE `yy_course` (
 
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
--- 修正學年度、學期、學程、教師 不能重複
+-- 修正學年度、學期、學程、教師、!課程名稱 不能重複
 ALTER TABLE `yy_course`
-ADD UNIQUE `cos_year_cos_term_dep_id_tea_id` (`cos_year`, `cos_term`, `dep_id`, `tea_id`);
+ADD UNIQUE `cos_year_cos_term_dep_id_tea_id` (`cos_year`, `cos_term`, `dep_id`, `tea_id`,`cos_name`);
 
 
 

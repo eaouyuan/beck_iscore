@@ -1,5 +1,4 @@
-
-<div class="container">
+<div class="col">
     <h2 style="float:left">學校處室 ─ 列表</h2>
 
     <button type="button" class="btn btn-primary btn-sm" style="float:right" 
@@ -45,7 +44,7 @@
         </tbody>
     </table>   
 <{else}>
-    <div class="alert alert-danger row col-12">
+    <div class="alert alert-danger">
         尚無內容
     </div>
 <{/if}>
