@@ -15,6 +15,8 @@
             <tr>
                 <th scope="col" class="text-center">編號</th>
                 <th scope="col" class="text-center">學程名稱</th>
+                <th scope="col" class="text-center">平時考佔比</th>
+                <th scope="col" class="text-center">段考佔比</th>
                 <th scope="col" class="text-center">學程狀態</th>
                 <th scope="col" class="text-center">功能</th>
             </tr>
@@ -26,6 +28,8 @@
             <tr>    
                 <th class="text-center" scope="row"><{$its.no}></th>
                 <td class="text-center"><{$its.dep_name}></td>
+                <td class="text-center"><{$its.normal_exam}></td>
+                <td class="text-center"><{$its.section_exam}></td>
                 <td class="text-center"><{$its.dep_status}></td>
                 <td class="text-center">
                     <a href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=department_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2"><i class="fa fa-pencil"></i> 編輯</a>

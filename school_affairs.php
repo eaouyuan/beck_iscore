@@ -227,10 +227,12 @@ switch ($op) {
         // die();
         $tbl = $xoopsDB->prefix('yy_department');
         $sql = "update `$tbl` set 
-                    `dep_name`   = '{$dep_name}',
-                    `dep_status`= '{$dep_status}',
-                    `update_uid` = '{$operator_uid}', 
-                    `update_time` = now()
+                    `dep_name`     = '{$dep_name}',
+                    `normal_exam`  = '{$normal_exam}',
+                    `section_exam` = '{$section_exam}',
+                    `dep_status`   = '{$dep_status}',
+                    `update_uid`   = '{$operator_uid}',
+                    `update_time`  = now()
                 where `sn`   = '{$sn}'";
 
         // echo($sql);die();
@@ -265,8 +267,8 @@ switch ($op) {
 
         $tbl = $xoopsDB->prefix('yy_department');
         $sql = "insert into `$tbl` (
-            `dep_name`,`dep_status`,`create_uid`,`create_time`,`update_uid`,`update_time`) 
-            values('{$dep_name}','{$dep_status}','{$operator_uid}',now(),'{$operator_uid}', now())";
+            `dep_name`,`dep_status`,`create_uid`,`create_time`,`update_uid`,`update_time`,`normal_exam` , `section_exam`) 
+            values('{$dep_name}','{$dep_status}','{$operator_uid}',now(),'{$operator_uid}', now(), '{$normal_exam}', '{$section_exam}')";
         // echo($sql);die();
         $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
@@ -309,14 +311,16 @@ switch ($op) {
             $tbl        = $xoopsDB->prefix('yy_department');
             $sql        = "SELECT * FROM $tbl Where `sn`='{$sn}'";
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            $department      = $xoopsDB->fetchArray($result);
+            $department = $xoopsDB->fetchArray($result);
         }
         $xoopsTpl->assign('form_title', $form_title);
         // var_dump($department);die();
         // 給預設值
-        $department['sn']         = (!isset($department['sn'])) ? '' : $department['sn'];
-        $department['dep_name']   = (!isset($department['dep_name'])) ? '' : $department['dep_name'];
-        $department['dep_status'] = (!isset($department['dep_status'])) ? '1' : $department['dep_status'];
+        $department['sn']           = (!isset($department['sn'])) ? '' : $department['sn'];
+        $department['dep_name']     = (!isset($department['dep_name'])) ? '' : $department['dep_name'];
+        $department['dep_status']   = (!isset($department['dep_status'])) ? '1' : $department['dep_status'];
+        $department['normal_exam']  = (!isset($department['normal_exam'])) ? '' : $department['normal_exam'];
+        $department['section_exam'] = (!isset($department['section_exam'])) ? '1' : $department['section_exam'];
 
         $xoopsTpl->assign('department', $department);
         // 學程狀態，預計啟用
@@ -368,12 +372,14 @@ switch ($op) {
 
         $dep_stat=['0'=>'關閉','1'=>'啟用','2'=>'暫停'];
         while(  $department= $xoopsDB->fetchArray($result)){
-                $department['no']         = $i;
-                $department['sn']         = $myts->htmlSpecialChars($department['sn']);
-                $department['dep_name']   = $myts->htmlSpecialChars($department['dep_name']);
-                $department['dep_status'] = $myts->htmlSpecialChars($dep_stat[$department['dep_status']]);
-                $department['sort']       = $myts->htmlSpecialChars($department['sort']);
-                $all        []            = $department;
+                $department['no']           = $i;
+                $department['sn']           = $myts->htmlSpecialChars($department['sn']);
+                $department['dep_name']     = $myts->htmlSpecialChars($department['dep_name']);
+                $department['normal_exam']  = $myts->htmlSpecialChars($department['normal_exam']);
+                $department['section_exam'] = $myts->htmlSpecialChars($department['section_exam']);
+                $department['dep_status']   = $myts->htmlSpecialChars($dep_stat[$department['dep_status']]);
+                $department['sort']         = $myts->htmlSpecialChars($department['sort']);
+                $all        []              = $department;
                 $i++;
         }
         $xoopsTpl->assign('all', $all);

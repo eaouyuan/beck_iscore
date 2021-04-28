@@ -47,11 +47,13 @@
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead class="table-info">
             <tr>
+                <th scope="col" class="text-center">編號</th>
                 <th scope="col" class="text-center">學年度/學期</th>
-                <th scope="col" class="text-center">教師</th>
                 <th scope="col" class="text-center">學程</th>
                 <th scope="col" class="text-center">課程名稱</th>
+                <th scope="col" class="text-center">教師</th>
                 <th scope="col" class="text-center">課程群組</th>
+                <th scope="col" class="text-center">學分</th>
                 <th scope="col" class="text-center">段考一</th>
                 <th scope="col" class="text-center">段考二</th>
                 <{if $can_edit}>
@@ -63,11 +65,13 @@
         <tbody id="sort">
     <{foreach from=$all key=i item=its}>
         <tr id="odr_<{$its.sn}>"> 
-            <th class="text-center" scope="row"><{$its.year_term}></th>
-            <td class="text-center" ><{$its.teacher_name}></td>
-            <td class="text-center" ><{$its.dep_name}></td>
-            <td class="text-center" ><{$its.cos_name}></td>
-            <td class="text-center" ><{$its.cos_name_grp}></td>
+            <th class="text-center"><{$its.i}></th>
+            <th class="text-center"><{$its.year_term}></th>
+            <td class="text-center"><{$its.dep_name}></td>
+            <td class="text-center"><{$its.cos_name}></td>
+            <td class="text-center"><{$its.teacher_name}></td>
+            <td class="text-center"><{$its.cos_name_grp}></td>
+            <td class="text-center"><{$its.cos_credits}></td>
             <{if $can_edit}>
             <td class="text-center"><div class="custom-control custom-switch"><{$its.first_chk}></div></td>
             <td class="text-center"><div class="custom-control custom-switch"><{$its.second_chk}></div></td>
@@ -89,6 +93,8 @@
         尚無內容
     </div>
 <{/if}>
+<h4 class="mb-3 text-center">------ 學分數總計:<{$credit_sun}> -----</h4>
+
 <{$bar}>
 
 <script type="text/javascript">

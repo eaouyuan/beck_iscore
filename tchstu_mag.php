@@ -73,19 +73,19 @@ switch ($op) {
 
     // 新增 課程
     case "course_insert":
-        course_insert();
-        header("location:tchstu_mag.php?op=course_list");
+        $re=course_insert();
+        header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
         exit;//離開，結束程式
 
     // 更新 課程
     case "course_update":
-        course_update($sn);
-        header("location:tchstu_mag.php?op=course_list");
+        $re=course_update($sn);
+        header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
         exit;
     // 刪除 課程
     case "course_delete":
-        course_delete($sn);
-        header("location:tchstu_mag.php?op=course_list");
+        $re=course_delete($sn);
+        header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
         exit;
 
     default:
@@ -106,11 +106,21 @@ switch ($op) {
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
             redirect_header("tchstu_mag.php?op=course_form&sn={$sn}", 3, '無course_delete!error:2104270940');
         }       
-        
-        $tbl = $xoopsDB->prefix('yy_course');
-        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
-        // echo($sql);die();
-        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+       
+        $tbl   = $xoopsDB->prefix('yy_course');
+        $sql      = "SELECT * FROM $tbl WHERE `sn` = '{$sn}'";
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $cos_exist= $xoopsDB->fetchArray($result);
+        // var_dump($cos_exist);die();
+        if($cos_exist){
+            $tbl = $xoopsDB->prefix('yy_course');
+            $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }else{
+            redirect_header("tchstu_mag.php?op=course_list", 3, '無course_delete!error:2104270940');
+        }
+        return $cos_exist;
     }
 
     // 列表- 課程
@@ -156,15 +166,16 @@ switch ($op) {
         // echo($sql);die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        $PageBar = getPageBar($sql, 30, 10);
-        $bar     = $PageBar['bar'];
-        $sql     = $PageBar['sql'];
-        $total   = $PageBar['total'];
+        // $PageBar = getPageBar($sql, 30, 10);
+        // $bar     = $PageBar['bar'];
+        // $sql     = $PageBar['sql'];
+        // $total   = $PageBar['total'];
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
 
         if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*30+1;}
+        $credit_sun=0;
         // var_dump($cos= $xoopsDB->fetchArray($result));die();
         $star_icon=['0'=>'','1'=>'<i class="fa fa-star" aria-hidden="true"></i>'];
         while($cos= $xoopsDB->fetchArray($result)){
@@ -180,10 +191,12 @@ switch ($op) {
             $cos['f_icon']       = $star_icon[$cos['first_test']];
             $cos['second_chk']   = Get_bootstrap_switch_opt_htm('second_test',$cos['sn'],$cos['second_test']);
             $cos['s_icon']       = $star_icon[$cos['second_test']];
+            $credit_sun=$credit_sun+$cos['cos_credits'];
             $all []              = $cos;
             $i++;
         }
-        
+        $xoopsTpl->assign('credit_sun', $credit_sun);
+        // var_dump($credit_sun);die();
         // 學年度select
         foreach ($SchoolSet->all_sems as $k=>$v){
             $sems_year[$v['year']]=$v['year'];
@@ -204,8 +217,8 @@ switch ($op) {
         $xoopsTpl->assign('major_htm', $major_htm);
 
         $xoopsTpl->assign('all', $all);
-        $xoopsTpl->assign('bar', $bar);
-        $xoopsTpl->assign('total', $total);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
 
         $SweetAlert = new SweetAlert();
         $SweetAlert->render('cos_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=course_delete&sn=", 'sn','確定要刪除課程資料','課程資料資料刪除。');
@@ -253,8 +266,8 @@ switch ($op) {
                     `cos_term`='{$cos_term}',
                     `dep_id`='{$dep_id}',
                     `tea_id`='{$tea_id}',
-                    `cos_name`='{$cos_name}',
-                    `cos_name_grp`='{$cos_name_grp}',
+                    `cos_name`=trim('{$cos_name}'),
+                    `cos_name_grp`=trim('{$cos_name_grp}'),
                     `cos_credits`='{$cos_credits}',
                     `scoring`='{$scoring}',
                     `first_test`='{$first_test}',
@@ -265,11 +278,14 @@ switch ($op) {
                 where `sn`   = '{$sn}'";
 
         // echo($sql);die();
+        $re_val['cos_year']=$cos_year;
+        $re_val['cos_term']=$cos_term;
+        $re_val['dep_id']=$dep_id;
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        return $sn;
+        return $re_val;
     }
 
-    // sql-新增 學生
+    // sql-新增 學程
     function course_insert(){
         global $xoopsDB,$xoopsUser;
 
@@ -294,6 +310,11 @@ switch ($op) {
         $scoring     = $scoring ?? '0' ;
         
         $tbl   = $xoopsDB->prefix('yy_course');
+
+        $sql_count = "SELECT max(sn)+1 as count FROM $tbl ";
+        $result   = $xoopsDB->query($sql_count) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sql_count_result= $xoopsDB->fetchArray($result);
+
         $sql      = "SELECT * FROM $tbl WHERE `cos_year`='{$cos_year}' AND `cos_term`='{$cos_term}'
                     AND `dep_id`='{$dep_id}' AND `tea_id`='{$tea_id}' AND `cos_name`='{$cos_name}'";
         // echo($sql);die();
@@ -305,11 +326,11 @@ switch ($op) {
             $sql = "insert into `$tbl` (
                         `cos_year`,`cos_term`,`dep_id`,`tea_id`,`cos_name`,
                         `cos_name_grp`,`cos_credits`,`scoring`,`first_test`, `second_test`,
-                        `status`,`update_user`,`update_date`
+                        `status`,`update_user`,`update_date`,`sort`
                     )values(
-                        '{$cos_year}','{$cos_term}','{$dep_id}','{$tea_id}', '{$cos_name}',
-                        '{$cos_name_grp}','{$cos_credits}','{$scoring}','{$first_test}','{$second_test}',
-                        '{$status}','{$uid}',now()
+                        '{$cos_year}','{$cos_term}','{$dep_id}','{$tea_id}', trim('{$cos_name}'),
+                        trim('{$cos_name_grp}'),'{$cos_credits}','{$scoring}','{$first_test}','{$second_test}',
+                        '{$status}','{$uid}',now(),'{$sql_count_result['count']}'
                     )";
             // echo($sql);die();
             $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -317,8 +338,12 @@ switch ($op) {
             redirect_header('tchstu_mag.php?op=course_form', 3, '此課程已存在!error:2104242225');
         }
 
+        $re_val['cos_year']=$cos_year;
+        $re_val['cos_term']=$cos_term;
+        $re_val['dep_id']=$dep_id;
+
         $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
-        return $sn;
+        return $re_val;
     }
 
     // 表單 課程

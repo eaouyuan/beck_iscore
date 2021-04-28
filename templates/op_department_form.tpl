@@ -17,6 +17,16 @@
 
         </div>
     </div>
+    <div class="form-group row">
+        <label for="dep_name" class="col-2 col-form-label text-sm-right">平時考佔比</label>
+        <div class="col-lg-4">
+            <input class="form-control validate[required]" type="text" name="normal_exam" id="normal_exam" value="<{$department.normal_exam}>">
+        </div>
+        <label for="dep_status" class="col-lg-2 col-form-label text-sm-right">段考佔比</label>
+        <div class="col-lg-4">
+            <input class="form-control validate[required]" type="text" name="section_exam" id="section_exam" value="<{$department.section_exam}>">
+        </div>
+    </div>
 
     <div class="form-group row"></div>
 
