@@ -31,7 +31,7 @@
             </tr>
             <tr>
                 <th  class="table-info" scope="row">入校日期</th>
-                <td><input class="form-control" type="text" name="arrival_date" id="arrival_date" id="arrival_date" value="<{$stu.arrival_date}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})"></td>
+                <td><input class="form-control" type="text" name="arrival_date" id="arrival_date" value="<{$stu.arrival_date}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})"></td>
                 <th  class="table-info" scope="row">生日</th>
                 <td><input class="form-control" type="text" name="birthday" id="birthday" value="<{$stu.birthday}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})"></td>
             </tr>

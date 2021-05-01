@@ -176,6 +176,34 @@ switch ($op) {
         department_delete($sn);
         header("location:school_affairs.php?op=department_list");
         exit;
+        
+// 成績keyin日期 管理
+    case "exam_keyindate_list":
+        exam_keyindate_list();
+        break;//跳出迴圈,往下執行
+
+    // 新增、編輯 成績keyin日期表單
+    case "exam_keyindate_form":
+        exam_keyindate_form($sn);
+        break;//跳出迴圈,往下執行
+
+    // 新增 成績keyin日期
+    case "exam_keyindate_insert":
+        exam_keyindate_insert();
+        header("location:school_affairs.php?op=exam_keyindate_list");
+        exit;//離開，結束程式
+
+    // 更新 成績keyin日期
+    case "exam_keyindate_update":
+        exam_keyindate_update($sn);
+        header("location:school_affairs.php?op=exam_keyindate_list");
+        exit;
+
+    // 刪除 成績keyin日期
+    case "exam_keyindate_delete":
+        exam_keyindate_delete($sn);
+        header("location:school_affairs.php?op=exam_keyindate_list");
+        exit;
 
     default:
         semester_list();
@@ -186,6 +214,264 @@ switch ($op) {
 }
 
 /*-----------function區--------------*/
+
+// ----------------------------------
+// 成績keyin日期 管理
+    // sql-成績keyin日期
+    function exam_keyindate_delete($sn){
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無student_delete權限!error:2104210936');
+        } 
+        
+        $tbl = $xoopsDB->prefix('yy_exam_keyin_daterange');
+        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+    }
+
+    // sql-更新 成績keyin日期
+    function exam_keyindate_update($sn){
+
+        global $xoopsDB,$xoopsUser;
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, 'exam_keyindate_update! error:2105010830');
+        } 
+
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=dept_school_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // die();
+        $tbl = $xoopsDB->prefix('yy_exam_keyin_daterange');
+        $sql = "update `$tbl` set 
+                    `exam_year`   = '{$exam_year}',
+                    `exam_term`= '{$exam_term}',
+                    `exam_name` = '{$exam_name}', 
+                    `start_date` = '{$start_date}', 
+                    `end_date` = '{$end_date}', 
+                    `status` = '{$status}', 
+                    `update_user` = '{$uid}', 
+                    `update_date` = now() 
+                where `sn`   = '{$sn}'";
+
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        return $sn;
+    }
+
+    // sql-新增 成績keyin日期
+    function exam_keyindate_insert(){
+
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, 'exam_keyindate_insert! error:2104301036');
+        } 
+
+        // 安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=student_form", 3, '新增學生，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+                
+        $tbl   = $xoopsDB->prefix('yy_exam_keyin_daterange');
+
+        $sql      = "SELECT * FROM $tbl WHERE `exam_year`='{$exam_year}' AND `exam_term`='{$exam_term}'
+                    AND `exam_name`='{$exam_name}' AND `status`='{$status}' ";
+        // echo($sql);die();
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $data_exist= $xoopsDB->fetchArray($result);
+        // die(var_dump($cos_exist));
+    
+        if (!$data_exist) {
+            $sql = "insert into `$tbl` (
+                        `exam_year`,`exam_term`,`exam_name`,`start_date`,`end_date`,
+                        `status`,`update_user`,`update_date`
+                    )values(
+                        '{$exam_year}','{$exam_term}','{$exam_name}','{$start_date}', '{$end_date}',
+                        '{$status	}','{$uid}',now()
+                    )";
+            // echo($sql);die();
+            $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }else{
+            redirect_header('school_affairs.php?op=exam_keyindate_list', 3, '此段考設定已存在!error:2104302257');
+
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        return $sn;
+        }
+        
+    }
+
+    // 表單-新增、編輯 成績keyin日期
+    function exam_keyindate_form($sn){
+        // var_dump(power_chk("tchstu_mag", "1"));die();
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, 'exam_keyindate_form!error:2104301507');
+        }        
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("school_affairs.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#exam_keyindate_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $form_title = '新增成績登錄日期';
+        $stu   = array();
+
+        if($sn){
+            $form_title = '編輯成績登錄日期';
+            $tbl     = $xoopsDB->prefix('yy_exam_keyin_daterange');
+            $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $exam_date = $xoopsDB->fetchArray($result);
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+
+        $exam_date['exam_year']  = $exam_date['exam_year'] ?? '' ;
+        $exam_date['exam_term']  = $exam_date['exam_term'] ?? '' ;
+        $exam_date['exam_name']  = $exam_date['exam_name'] ?? '' ;
+        $exam_date['start_date'] = $exam_date['start_date'] ?? '';
+        $exam_date['end_date']   = $exam_date['end_date']?? '' ;
+        $exam_date['status']     = $exam_date['status'] ?? '';
+        
+        $SchoolSet= new SchoolSet;
+        // 學年度select
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        $exam_year_htm=Get_select_opt_htm($sems_year,$exam_date['exam_year'],'1');
+        $xoopsTpl->assign('exam_year_htm', $exam_year_htm);
+
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        $exam_term_htm=Get_select_opt_htm($terms,$exam_date['exam_term'],1);
+        $xoopsTpl->assign('exam_term_htm', $exam_term_htm);
+
+        // 成績登錄考試類型	
+        foreach ($SchoolSet->exam_name as $k=>$v){
+            $exam_name_ary[$v]=$v;
+        }
+        $exam_name_htm=Get_select_opt_htm($exam_name_ary,$exam_date['exam_name'],'1');
+        $xoopsTpl->assign('exam_name_htm', $exam_name_htm);
+
+        // 目前狀況
+        $status_ary=['0'=>'關閉','1'=>'啟用','2'=>'暫停'] ;
+        $status_htm=Get_select_opt_htm($status_ary,$exam_date['status'],'1');
+        $xoopsTpl->assign('status_htm', $status_htm);
+
+        $xoopsTpl->assign('exam_date', $exam_date);
+
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $exam_date['update_user'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
+
+        // //下個動作
+        if ($sn) {
+            $op='exam_keyindate_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='exam_keyindate_insert';
+        }
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+
+    // 列表- 成績keyin日期
+    function exam_keyindate_list($pars=[],$g2p=''){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, 'exam_keyindate_list!error:2104301500');
+        } 
+
+        // var_dump($_SESSION);die();
+        $myts = MyTextSanitizer::getInstance();
+
+        $tb1      = $xoopsDB->prefix('yy_exam_keyin_daterange');
+        $sql      = "SELECT  * FROM $tb1
+                    ORDER BY sort,exam_year desc, exam_term desc, exam_name 
+                        " ;
+        
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        $Item=24;//每頁幾筆
+        $PageBar = getPageBar($sql, $Item, 10);
+        $bar     = $PageBar['bar'];
+        $sql     = $PageBar['sql'];
+        $total   = $PageBar['total'];
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+
+        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*$Item+1;}
+
+        // var_dump($stu= $xoopsDB->fetchArray($result));die();
+        // 目前狀況
+        $status_ary=['0'=>'關閉 ','1'=>'啟用','2'=>'暫停'] ;
+
+        while($exam_data= $xoopsDB->fetchArray($result)){
+            $exam_data['i']          = $i;
+            $exam_data['exam_year']  = $myts->htmlSpecialChars($exam_data['exam_year']);   //學號
+            $exam_data['exam_term']  = $myts->htmlSpecialChars($exam_data['exam_term']);   //姓名
+            $exam_data['exam_name']  = $myts->htmlSpecialChars($exam_data['exam_name']);
+            $exam_data['start_date'] = $myts->htmlSpecialChars($exam_data['start_date']);
+            $exam_data['end_date']   = $myts->htmlSpecialChars($exam_data['end_date']);
+            $exam_data['status']     = $myts->htmlSpecialChars($status_ary[$exam_data['status']]);
+            $all       []            = $exam_data;
+            $i++;
+        }
+
+        // var_dump($all);die();
+
+        $xoopsTpl->assign('all', $all);
+        $xoopsTpl->assign('bar', $bar);
+        $xoopsTpl->assign('total', $total);
+
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('examdate_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=exam_keyindate_delete&sn=", 'sn','確定要刪除考試成績登入時間基本資料','考試成績登入時間基本資料刪除。');
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+
+        $xoopsTpl->assign('op', "exam_keyindate_list");
+
+    }
 
 // ----------------------------------
 // 學程 管理 0409

@@ -228,6 +228,25 @@ CREATE TABLE `yy_course` (
 ALTER TABLE `yy_course`
 ADD UNIQUE `cos_year_cos_term_dep_id_tea_id` (`cos_year`, `cos_term`, `dep_id`, `tea_id`,`cos_name`);
 
+-- 段考輸入日期設定
+CREATE TABLE `yy_exam_keyin_daterange` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `exam_year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
+  `exam_term` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學期',
+  `exam_name` varchar(65) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '段考名稱',
+  `start_date` date NOT NULL COMMENT '起始日期',
+  `end_date` date NOT NULL COMMENT '結束日期',
+  `status` enum('0','1','2') NOT NULL COMMENT '段考日期狀態 0關閉 1啟用 2暫停',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+-- 修正學年度、學期、段考名稱 不能重複
+ALTER TABLE `yy_exam_keyin_daterange`
+ADD UNIQUE `exam_year_exam_term_exam_name_status` (`exam_year`, `exam_term`, `exam_name`, `status`);
+
+
 
 
 
@@ -236,13 +255,13 @@ INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`
 (1,	'109',	'2',	'2021-02-01',	'2021-07-04',	1,	'2021-04-09 13:09:58',	1,	'2021-04-09 13:09:58',	'1',	0);
 
 -- 學程
-INSERT INTO `yy_department` (`sn`, `sort`, `dep_name`, `dep_status`, `create_uid`, `create_time`, `update_uid`, `update_time`) VALUES
-(1,	0,	'國甲',	'1',	1,	'2021-04-09 08:59:07',	1,	'2021-04-09 08:59:07'),
-(2,	0,	'國乙',	'1',	1,	'2021-04-09 09:18:04',	1,	'2021-04-09 09:18:04'),
-(3,	0,	'資料處理學程',	'1',	1,	'2021-04-09 10:41:26',	1,	'2021-04-09 10:41:26'),
-(4,	0,	'美容學程',	'1',	1,	'2021-04-09 10:42:38',	1,	'2021-04-09 10:42:38'),
-(5,	0,	'餐旅技術學程',	'1',	1,	'2021-04-09 10:42:27',	1,	'2021-04-09 10:42:27'),
-(6,	0,	'新生',	'1',	1,	'2021-04-11 17:52:46',	1,	'2021-04-11 17:52:46');
+INSERT INTO `yy_department` (`sn`, `sort`, `dep_name`, `normal_exam`, `section_exam`, `dep_status`, `create_uid`, `create_time`, `update_uid`, `update_time`) VALUES
+(1,	0,	'國甲',	0.60,	0.40,	'1',	1,	'2021-04-09 08:59:07',	1,	'2021-04-28 16:10:07'),
+(2,	0,	'國乙',	0.60,	0.40,	'1',	1,	'2021-04-09 09:18:04',	1,	'2021-04-28 16:10:14'),
+(3,	0,	'資料處理學程',	0.30,	0.70,	'1',	1,	'2021-04-09 10:41:26',	1,	'2021-04-28 16:10:35'),
+(4,	0,	'美容學程',	0.30,	0.70,	'1',	1,	'2021-04-09 10:42:38',	1,	'2021-04-28 16:10:41'),
+(5,	0,	'餐旅技術學程',	0.30,	0.70,	'1',	1,	'2021-04-09 10:42:27',	1,	'2021-04-28 16:10:48'),
+(6,	0,	'新生',	0.00,	0.00,	'1',	1,	'2021-04-11 17:52:46',	1,	'2021-04-11 17:52:46');
 
 
 -- 公告類別

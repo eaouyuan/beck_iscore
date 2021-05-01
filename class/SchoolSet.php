@@ -23,6 +23,7 @@ class SchoolSet
     public $deptofsch; //處室資料
     public $isguidance; //輔導老師
     public $issocial; //社工師
+    public $exam_name; //段考名稱
     // public $tch_sex; //性別
  
 
@@ -36,6 +37,7 @@ class SchoolSet
         $this->get_dept();  //學程
         $this->get_deptofsch();//get 學校處室
         $this->get_social_guidance();// get 社工師及輔導老師
+        $this->exam_name=[  '第一次段考前平時考','第一次段考','第二次段考前平時考','第二次段考','第三次段考前平時考','期末考'];
 
     }
     // get 學期資料

@@ -98,7 +98,7 @@ switch ($op) {
 
 /*-----------function區--------------*/
 // ----------------------------------
-//課程 管理
+// 課程 管理
     // sql-刪除處室
     function course_delete($sn){
         global $xoopsDB,$xoopsUser;
@@ -445,7 +445,7 @@ switch ($op) {
 
 // ----------------------------------
 // 學生 管理
-    // sql-刪除處室
+    // sql-刪除學生
     function student_delete($sn){
         global $xoopsDB,$xoopsUser;
 
@@ -461,7 +461,7 @@ switch ($op) {
 
     }
 
-    // sql-更新處室
+    // sql-更新學
     function student_update($sn){
 
         global $xoopsDB,$xoopsUser;
