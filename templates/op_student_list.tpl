@@ -59,7 +59,7 @@
 
         <tbody id="sort">
     <{foreach from=$all key=i item=its}>
-        <tr id="odr_<{$its.uid}>" <{if $its.status=='0'}> class="text-danger"<{/if}>> 
+        <tr id="odr_<{$its.sn}>" <{if $its.status=='0'}> class="text-danger"<{/if}>> 
             <th class="text-center" scope="row"><{$its.i}></th>
             <td class="text-center"><{$its.stu_id}></td>
             <td class="text-center"><{$its.stu_name}></td>
@@ -110,6 +110,15 @@
             document.forms["student_list"].submit();
         });
 
+        $('#sort').sortable({ opacity: 0.6, cursor: 'move', update: function() {
+            var order = $(this).sortable('serialize')+'&op=student_sort';
+            // console.log(order);
+            $.post('other_action.php',  order, function(theResponse){
+                // console.log(theResponse);
+                $('#save_msg').html(theResponse);
+            });
+            }
+        });
 
 
 
@@ -118,4 +127,3 @@
 <style type="text/css">
     [data-href] { cursor: pointer; }
 </style>
-

@@ -735,23 +735,25 @@ switch ($op) {
         // echo($sql);die();
         // var_dump($pars['status']);
         // var_dump($pars['status']!='');die();
-        $have_par='0';
+        // $have_par='0';
         if($pars['status']!=''){
             $sql.=" WHERE status='{$pars['status']}'";
-            $have_par='1';
+            // $have_par='1';
+        }else{
+            $sql.=" WHERE status != '2'";
         }
         if($pars['major_id']!=''){
-            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-            $sql.="`major_id`='{$pars['major_id']}'";
-            $have_par='1';
+            // if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.=" AND `major_id`='{$pars['major_id']}'";
+            // $have_par='1';
         }
         if(!empty($pars['search'])){
-            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-            $sql.="(`stu_name` like '%{$pars['search']}%')";
-            $have_par='1';
+            // if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.=" AND (`stu_name` like '%{$pars['search']}%')";
+            // $have_par='1';
         }
-        if($have_par=='1'){$sql.=" ";}else{$sql.=" WHERE status != '2'";};
-        $sql.=" ORDER BY `stu_no` DESC ";
+        // if($have_par=='1'){$sql.=" AND status != '2'";}else{$sql.=" WHERE status != '2'";};
+        $sql.=" ORDER BY `sort` ,`stu_no` DESC";
         // echo($sql);  die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
