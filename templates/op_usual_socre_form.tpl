@@ -47,17 +47,34 @@
         <a class="btn btn-secondary" href="javascript:history.back()">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
         <!-- <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=course_list"><i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a> -->
-        <a href="javascript:cosss_del(<{$sn}>)" class="btn btn-danger">
+        <a href="javascript:uscr_del(<{$uscore.dep_id}>,<{$uscore.course_id}>,<{$uscore.exam_stage}>,<{$uscore.exam_number}>)" class="btn btn-danger">
                 <i class="fa fa-trash-o mr-2" aria-hidden="true"></i>刪除</a>
     </div>
 
 </form>
 
-
+<script src="http://localhost/modules/tadtools/sweet-alert/sweet-alert.js" type="text/javascript"></script>
+<link rel="stylesheet" href="http://localhost/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css" />
 <script type="text/javascript">
+    function uscr_del(dep_id,courseid,stage,number){
+        let xtoken=$("#XOOPS_TOKEN_REQUEST").val();
+        // console.log(xtoken);
+        swal({
+                title: '確定要刪除此次平時成績嗎',
+                text: '平時成績刪除。',
+                type: 'warning',
+                showCancelButton: 1,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: '確定刪除！',
+                closeOnConfirm: false ,
+                allowOutsideClick: true
+            },
+            function(){
+                location.href='http://localhost/modules/beck_iscore/tchstu_mag.php?op=usual_socre_delete&dep_id='+dep_id+'&course_id='+courseid+'&exam_stage='+ stage+'&exam_number='+number+'&XOOPS_TOKEN_REQUEST='+xtoken;
+            });
+        }
+            
     $(document).ready(function($){
-      
-
     });
  
 

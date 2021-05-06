@@ -17,18 +17,6 @@
                     <{$course.course_htm}>
                 </select>
             </div>
-<!-- 
-            <div class="input-group mb-3 col-5">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">新增</span>
-                </div>
-                <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2">
-                <div class="input-group-append">
-                    <button class="btn btn-outline-primary" type="button" id="button-addon2" >確定</button>
-                </div>
-            </div> -->
-
-          
         </div>
     </div>
     <button type="submit" style="display:none;"></button>
@@ -36,55 +24,66 @@
 
 </form>
 <{$XOOPS_TOKEN}>
+<{if $all}>
 
+<{foreach from=$all key=exam_stage item=v1}>
 
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead>
             <tr>
-                <th scope="col" colspan="4" class="">
+                <th scope="col" colspan="<{$score_count.$exam_stage.score_count+2}>">
                     <div class="d-flex justify-content-between">
                         <div class="p-2 bd-highlight"></div>
-                        <div class="p-2 bd-highlight"><{$usual_exam_name.1}></div>
+                        <div class="p-2 bd-highlight"><{$usual_exam_name.$exam_stage}></div>
                         <div class="p-2 bd-highlight">
-                            <button type="button" class="btn btn-primary btn-sm" onclick="self.location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_socre_form&dep_id=<{$course.dep_id}>&course_id=<{$course.course_id}>&exam_stage=1';">新增成績</button>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="self.location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_socre_form&dep_id=<{$course.dep_id}>&course_id=<{$course.course_id}>&exam_stage=<{$exam_stage}>';">新增成績</button>
                         </div>
                     </div>
                 </th>
             </tr>
             <tr  class="table-info">
                 <th scope="col" class="text-center">姓名</th>
-                <th scope="col" class="text-center">第幾次</th>
+                <{foreach from=$score_count.$exam_stage.test_ary key=k item=exam_number}>
+                        <th scope="col" class="text-center">第<{$exam_number}>次
+                            <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_socre_form&dep_id=<{$course.dep_id}>&course_id=<{$course.course_id}>&exam_stage=<{$exam_stage}>&exam_number=<{$exam_number}>" class="btn btn-warning btn-sm mr-2">
+                                    <i class="fa fa-pencil"></i>
+                            </a></th>
+                <{/foreach}>
                 <th scope="col" class="text-center">平均</th>
             </tr>
         </thead>
         
 
         <tbody id="sort">
-        <{foreach from=$all key=i item=its}>
+            <{foreach from=$v1 key=student_sn item=v2}>
+            <tr id="odr_<{$its.sn}>"> 
 
-        <tr id="odr_<{$its.sn}>" <{if $its.status=='0'}> class="text-danger"<{/if}>> 
-            <th class="text-center" scope="row"><{$its.i}></th>
-            <td class="text-center"><{$its.stu_id}></td>
-            <td class="text-center"><{$its.stu_name}></td>
-            <td class="text-center"><{$its.birthday}></td>
-            <td class="text-center"><{$its.class_name}></td>
-            <td class="text-center"><{$its.dep_name}></td>
-            <td class="text-center"><{$its.social_id}></td>
-            <td class="text-center"><{$its.guidance_id}></td>
-        
-            <td class="text-center">
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=student_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
-                <a href="javascript:cos_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
-            </td>
-        </tr>
-        <{/foreach}>
-  
+                <th class="text-center"><{$v2.name}></th>
+
+                <{foreach from=$v2.score key=k item=score}>
+                <th class="text-center"><{$score}></th>
+                <{/foreach}>
+                
+                <td class="text-center">
+                    <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=student_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
+                    <a href="javascript:cos_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
+                </td>
+                
+            </tr>
+            <{/foreach}>
+
+            
+            
         </tbody>
     </table>
+<{/foreach}>
 
+<{else}>
     <div class="alert alert-danger">
-        尚無內容ss
+        尚無內容
     </div>
+<{/if}>
+
 
 <script type="text/javascript">
     $(document).ready(function($){

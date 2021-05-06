@@ -101,42 +101,13 @@ switch ($op) {
             header("location:index.php?op=announcement_list");
             exit;
 
-    case "student_form":
-        student_form($sn);
-        break;
-
-    case "student_insert":
-        $sn=student_insert();
-        header("location:index.php?sn={$sn}&op=student_show");
-        exit;//離開，結束程式
-    
-    case "student_update":
-        student_update($sn);
-        header("location:index.php?sn={$sn}&op=student_show");
-        exit;
-
-    case "student_show":
-        if($sn){
-            student_show($sn);
-        }else{
-            // student_list();
-            // $op="student_list";
-        }
-        break;
-
     //下載檔案
-    case "tufdl":
-        $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
-        $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
-        $TadUpFiles->add_file_counter($files_sn,false,false);
-        exit;
-
-    case "student_delete":
-        student_delete($sn);
-        header("location: index.php");
-        exit;
-
-    
+        case "tufdl":
+            $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+            $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
+            $TadUpFiles->add_file_counter($files_sn,false,false);
+            exit;
+        
     default:
         // if($sn){
         //     teacher_show($sn);

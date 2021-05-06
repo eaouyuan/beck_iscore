@@ -109,21 +109,16 @@ switch ($op) {
         usual_socre_form($uscore);
         break;//跳出迴圈,往下執行
 
-    // 新增 平時成績
+    // 新增、更新 平時成績
     case "usual_socre_insert":
-        $re=usual_socre_insert();
-        header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
+        usual_socre_insert($uscore);
+        header("location:tchstu_mag.php?op=usual_socre_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         exit;//離開，結束程式
 
-    // 更新 平時成績
-    case "usual_socre_update":
-        $re=usual_socre_update($sn);
-        header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
-        exit;
     // 刪除 平時成績'
     case "usual_socre_delete":
-        $re=usual_socre_delete($sn);
-        header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
+        $re=usual_socre_delete($uscore);
+        header("location:tchstu_mag.php?op=usual_socre_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         exit;
 
 
@@ -864,84 +859,34 @@ switch ($op) {
 // ----------------------------------
 // 平時成績 管理
     // sql-平時成績
-    function usual_socre_delete($sn){
+    function usual_socre_delete($pars=[]){
         global $xoopsDB,$xoopsUser;
 
-        if(!power_chk("beck_iscore", "1")){
-            redirect_header('tchstu_mag.php', 3, '無student_delete權限!error:2104210936');
-        } 
-
-        
-        $tbl = $xoopsDB->prefix('yy_student');
-        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
-        // echo($sql);die();
-        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-
-    }
-
-    // sql-更新 平時成績
-    function usual_socre_update($sn){
-
-        global $xoopsDB,$xoopsUser;
-        if(!power_chk("beck_iscore", "1")){
-            redirect_header('index.php', 3, '無student_update權限!error:2104201500');
-        } 
-
-        
-        //安全判斷 儲存 更新都要做
+        if (!$xoopsUser) {
+            redirect_header('index.php', 3, 'usual_socre_insert! error:2105052140');
+        }
+        // die(var_dump($pars));
+        // 安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("school_affairs.php?op=dept_school_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            redirect_header("tchstu_mag.php?op=usual_socre_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'usual_socre_delete錯誤! 檢查結果:'.$GLOBALS['xoopsSecurity']->check());
             throw new Exception($error);
         }
-        
-        $myts = MyTextSanitizer::getInstance();
-        foreach ($_POST as $key => $value) {
-            $$key = $myts->addSlashes($value);
-            echo "<p>\${$key}={$$key}</p>";
-        }
-        // die();
-        $tbl = $xoopsDB->prefix('yy_student');
-        $sql = "update `$tbl` set 
-                    `stu_name`   = '{$stu_name}',
-                    `national_id`= '{$national_id}',
-                    `stu_id` = '{$stu_id}', 
-                    `stu_no` = '{$stu_no}', 
-                    `class_id` = '{$class_id}', 
-                    `major_id` = '{$major_id}', 
-                    `grade` = '{$grade}', 
-                    `arrival_date` = '{$arrival_date}', 
-                    `birthday` = '{$birthday}', 
-                    `orig_school` = '{$orig_school}', 
-                    `household_add` = '{$household_add}', 
-                    `address` = '{$address}', 
-                    `out_learn` = '{$out_learn}', 
-                    `audit` = '{$audit}', 
-                    `status` = '{$status}', 
-                    `record` = '{$record}', 
-                    `social_id` = '{$social_id}', 
-                    `guidance_id` = '{$guidance_id}', 
-                    `rcv_guidance_id` = '{$rcv_guidance_id}', 
-                    `guardian1` = '{$guardian1}', 
-                    `guardian1_relationship` = '{$guardian1_relationship}', 
-                    `guardian1_cellphone1` = '{$guardian1_cellphone1}', 
-                    `guardian1_cellphone2` = '{$guardian1_cellphone2}', 
-                    `emergency1_contact1` = '{$emergency1_contact1}', 
-                    `emergency1_contact_rel` = '{$emergency1_contact_rel}', 
-                    `emergency1_cellphone1` = '{$emergency1_cellphone1}', 
-                    `emergency1_cellphone2` = '{$emergency1_cellphone2}', 
-                    `emergency1_cellphone2` = '{$emergency1_cellphone2}', 
-                    `uid` = '{$uid}', 
-                    `update_time` = now()
-                where `sn`   = '{$sn}'";
 
+        $tbl = $xoopsDB->prefix('yy_usual_score');
+        $sql = "DELETE FROM `$tbl` 
+            WHERE `course_id`   = '{$pars['course_id']}'
+            AND   `exam_stage`  = '{$pars['exam_stage']}'
+            AND   `exam_number` = '{$pars['exam_number']}'
+            ";
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        return $sn;
+        
+
     }
 
     // sql-新增 平時成績
-    function usual_socre_insert(){
+    function usual_socre_insert($pars=[]){
 
         global $xoopsDB,$xoopsUser;
 
@@ -952,7 +897,7 @@ switch ($op) {
         // 安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("tchstu_mag.php?op=usual_socre_form", 3, '新增學生，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
+            redirect_header("tchstu_mag.php?op=usual_socre_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'usual_socre_insert! 檢查結果:'.!$GLOBALS['xoopsSecurity']->check());
             throw new Exception($error);
         }
         
@@ -961,6 +906,7 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
+        // die();
         $student_sn  = Request::getArray('student_sn');//學生編號=>平時成績
 
         $tbl = $xoopsDB->prefix('yy_usual_score');
@@ -1002,6 +948,8 @@ switch ($op) {
         $uscore['dep_id'] = $SchoolSet->all_course[$pars['course_id']]['dep_id'];
         $uscore['course_id'] = $pars['course_id'];
         $uscore['exam_stage'] = $pars['exam_stage'];
+        $uscore['exam_number'] = $pars['exam_number'];
+    
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $uscore['tea_id']==$_SESSION['xoopsUserId'])){
             redirect_header('tchstu_mag.php?op=usual_socre_list', 3, 'usual_socre_form! error:2105051000');
@@ -1045,11 +993,17 @@ switch ($op) {
                 $stu_data[$v]['score']='';
             }
         }else{
-            $sql        = "SELECT * FROM $tbl  Where 
-                                    `course_id`='{$pars["course_id"]}' 
+            $tb2        = $xoopsDB->prefix('yy_student');
+
+            $sql        = "SELECT * FROM $tbl
+                            LEFT JOIN $tb2 as stu on $tbl.student_sn=stu.sn
+                            
+                            Where `course_id`='{$pars["course_id"]}' 
                                 AND `exam_stage`='{$pars["exam_stage"]}'
                                 AND `exam_number`='{$pars["exam_number"]}'
+                                ORDER BY stu.sort
                             ";
+            // echo($sql);die();
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     
             while($stu= $xoopsDB->fetchArray($result)){
@@ -1070,11 +1024,7 @@ switch ($op) {
         
 
         //下個動作
-        if ($pars['exam_number']=='') {
-            $op='usual_socre_insert';
-        } else {
-            $op='usual_socre_update';
-        }
+        $op='usual_socre_insert';
         $xoopsTpl->assign('op', $op);
 
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
@@ -1116,98 +1066,48 @@ switch ($op) {
         }
         $xoopsTpl->assign('course', $course);
         $xoopsTpl->assign('usual_exam_name', $SchoolSet->usual_exam_name);
+        if($course['dep_id']!='' AND  $course['course_id']!=''){
+            $myts = MyTextSanitizer::getInstance();
+            $tb1      = $xoopsDB->prefix('yy_usual_score');
+            $tb2      = $xoopsDB->prefix('yy_student');
+            $sql        = "SELECT * FROM $tb1  as sco
+                            LEFT JOIN $tb2 as stu ON sco.student_sn=stu.sn
+                            Where `course_id`='{$course["course_id"]}' 
+                            ORDER BY `exam_stage`,`exam_number`,stu.sort  
+                        ";
+            // echo($sql);die();
+            $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $stu_uscore=array();
+            while($data= $xoopsDB->fetchArray($result)){
+                // $stu_uscore [$data['course_id']][$data['exam_stage']][$data['student_sn']]['name']= $myts->htmlSpecialChars($data['stu_name']);
+                // $stu_uscore [$data['course_id']][$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
+                $stu_uscore [$data['exam_stage']][$data['student_sn']]['name']= $myts->htmlSpecialChars($data['stu_name']);
+                $stu_uscore [$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
+            }
+            // print_r($stu_uscore);die();
 
-        $myts = MyTextSanitizer::getInstance();
-        $tb1      = $xoopsDB->prefix('yy_usual_score');
-        $tb2      = $xoopsDB->prefix('yy_department');
-        $tb3      = $xoopsDB->prefix('yy_course');
-        $tb4      = $xoopsDB->prefix('yy_student');
-        $tb5      = $xoopsDB->prefix('users');
-        $sql      = "SELECT  * 
-                    FROM $tb1 as us 
-                        LEFT JOIN $tb2 as dep ON us.dep_id=dep.sn
-                        LEFT JOIN $tb3 as cor ON us.course_id=cor.sn
-                        LEFT JOIN $tb4 as st ON us.student_sn=st.sn
-                        LEFT JOIN $tb5 as ur ON cor.tea_id=ur.uid
-                        " ;
-
-
-        // echo($sql);die();
-        // var_dump($pars['status']);
-        // var_dump($pars['status']!='');die();
-        // $have_par='0';
-        // if($pars['status']!=''){
-        //     $sql.=" WHERE status='{$pars['status']}'";
-        //     // $have_par='1';
-        // }else{
-        //     $sql.=" WHERE status != '2'";
-        // }
-        // if($pars['major_id']!=''){
-        //     // if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        //     $sql.=" AND `major_id`='{$pars['major_id']}'";
-        //     // $have_par='1';
-        // }
-        // if(!empty($pars['search'])){
-        //     // if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        //     $sql.=" AND (`stu_name` like '%{$pars['search']}%')";
-        //     // $have_par='1';
-        // }
-        // if($have_par=='1'){$sql.=" AND status != '2'";}else{$sql.=" WHERE status != '2'";};
-        // $sql.=" ORDER BY `sort` ,`stu_no`";
-        // echo($sql);  die();
-
-        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        // $PageBar = getPageBar($sql, 30, 10);
-        // $bar     = $PageBar['bar'];
-        // $sql     = $PageBar['sql'];
-        // $total   = $PageBar['total'];
-
-        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all      = array();
-
-        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*30+1;}
-        $SchoolSet= new SchoolSet;
-
-        // $is_chk=["0"=>'',"1"=>'checked'];
-        // var_dump($stu= $xoopsDB->fetchArray($result));die();
-
-        while($stu= $xoopsDB->fetchArray($result)){
-            $stu['i']              = $i;
-            $stu['stu_id']          = $myts->htmlSpecialChars($stu['stu_id']);           //學號
-            $stu['stu_name']        = $myts->htmlSpecialChars($stu['stu_name']);         //姓名
-            $stu['birthday']        = $myts->htmlSpecialChars($stu['birthday']);
-            $stu['class_name']      = $myts->htmlSpecialChars($stu['class_name']);
-            $stu['dep_name']        = $myts->htmlSpecialChars($stu['dep_name']);
-            $stu['tutor_name']      = $myts->htmlSpecialChars($stu['tutor_name']);
-            $stu['social_id']       = $myts->htmlSpecialChars($SchoolSet->uid2name[$stu['social_id']]);        //社工
-            $stu['guidance_id']     = $myts->htmlSpecialChars($SchoolSet->uid2name[$stu['guidance_id']]);      //輔導老師
-            $stu['rcv_guidance_id'] = $myts->htmlSpecialChars($SchoolSet->uid2name[$stu['rcv_guidance_id']]);  //認輔教師
-            $all []            = $stu;
-            $i++;
+            foreach($stu_uscore as $exam_stage=>$v2){
+                foreach($v2 as $student_sn=>$v3){
+                    $i=$sum=0;
+                    foreach($v3['score'] as $exam_number=>$val_score){
+                        if(is_numeric($val_score)){
+                            $i++;
+                            $sum=$sum+ (float)$val_score;
+                        }
+                        
+                    }
+                }
+                $score_count[$exam_stage]['score_count'] = count($stu_uscore[$exam_stage][$student_sn]['score']);
+                $score_count[$exam_stage]['test_ary']    = array_keys($v3['score']);
+            }
+            
         }
-
-        // var_dump($all);die();
-
-        // 目前狀況
-        $status_ary=['0'=>'逾假逃跑','1'=>'在校','2'=>'回歸/結案'] ;
-        $status_htm=Get_select_opt_htm($status_ary,$pars['status'],'1');
-        $xoopsTpl->assign('status_htm', $status_htm);
-
-        // 學程列表
-        // $major_name=[];
-        // foreach ($SchoolSet->dept as $k=>$v){
-        //     $major_name[$v['sn']]=$v['dep_name'];
-        // }
-        // $major_htm=Get_select_opt_htm($major_name,$pars['major_id'],'1');
-        // $xoopsTpl->assign('major_htm', $major_htm);
-
-        // 關鍵字傳到樣版
-        $parameter['search'] = (!isset($pars['search'])) ? '' : $pars['search'];
-        $xoopsTpl->assign('search', $pars['search']);
-
-        $xoopsTpl->assign('all', $all);
-        $xoopsTpl->assign('bar', $bar);
-        $xoopsTpl->assign('total', $total);
+        // var_dump($score_count);die();
+        
+        $xoopsTpl->assign('all', $stu_uscore);
+        $xoopsTpl->assign('score_count', $score_count);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
 
         $SweetAlert = new SweetAlert();
         $SweetAlert->render('stu_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=student_delete&sn=", 'sn','確定要刪除學生基本資料','學生基本資料刪除。');
