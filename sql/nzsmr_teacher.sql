@@ -140,6 +140,33 @@ CREATE TABLE `yy_announcement` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+-- 公告分類
+-- DROP TABLE IF EXISTS `yy_announcement_class`;
+CREATE TABLE `yy_announcement_class` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `ann_class_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '公告分類名稱',
+  `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+
+-- 學校處室
+-- DROP TABLE IF EXISTS `yy_dept_school`;
+CREATE TABLE `yy_dept_school` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `dept_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '處室名稱',
+  `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
+  `create_time` datetime NOT NULL,
+  `update_time` datetime NOT NULL,
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
 -- 學年度
 -- DROP TABLE IF EXISTS `yy_semester`;
 CREATE TABLE `yy_semester` (
@@ -160,32 +187,6 @@ CREATE TABLE `yy_semester` (
 ALTER TABLE `yy_semester`
 ADD UNIQUE `year_term` (`year`, `term`);
 
--- 公告分類
--- DROP TABLE IF EXISTS `yy_announcement_class`;
-CREATE TABLE `yy_announcement_class` (
-  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-  `ann_class_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '公告分類名稱',
-  `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
-  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
-  `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
-  `create_time` datetime NOT NULL,
-  `update_time` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
-
--- 學校部門
--- DROP TABLE IF EXISTS `yy_dept_school`;
-CREATE TABLE `yy_dept_school` (
-  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-  `dept_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' COMMENT '處室名稱',
-  `enable` enum('0','1') NOT NULL default '1' COMMENT '開關',
-  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
-  `uid` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '建立者',
-  `create_time` datetime NOT NULL,
-  `update_time` datetime NOT NULL,
-  PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- DROP TABLE IF EXISTS `yy_class`;
 CREATE TABLE `yy_class` (
@@ -245,6 +246,29 @@ CREATE TABLE `yy_exam_keyin_daterange` (
 -- 修正學年度、學期、段考名稱 不能重複
 ALTER TABLE `yy_exam_keyin_daterange`
 ADD UNIQUE `exam_year_exam_term_exam_name_status` (`exam_year`, `exam_term`, `exam_name`, `status`);
+
+-- 平時考成績
+CREATE TABLE `yy_usual_score` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
+  `term` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學期',
+  `dep_id` mediumint(8) unsigned NOT NULL COMMENT '學程編號',
+  `course_id` mediumint(8) unsigned NOT NULL COMMENT '課程編號',
+  `exam_stage` enum('1','2','3') NOT NULL COMMENT '第幾次段考前平時考',
+  `exam_number` smallint(5) unsigned NOT NULL default '0' COMMENT '第幾次平時考',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `score` varchar(5) NULL COMMENT '平時考成績',
+  `usual_average_sn` mediumint(8) unsigned NOT NULL COMMENT '平時考加總平均對映編號',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- 修正學年度、學期、段考名稱、第幾次段考前、第幾次平時成績  不能重複
+ALTER TABLE `yy_usual_score`
+ADD UNIQUE `year_term_course_id_exam_stage_exam_number_student_sn` (`year`, `term`, `course_id`, `exam_stage`, `exam_number`, `student_sn`);
+
 
 
 
@@ -432,3 +456,11 @@ INSERT INTO `yy_course` (`sn`, `cos_year`, `cos_term`, `dep_id`, `tea_id`, `cos_
 (123,	'109',	'2',	5,	38,	'餐飲專題實作',	'餐飲專題實作',	2,	'1',	'0',	'0',	20,	'1',	1,	'2021-04-28 10:48:01'),
 (124,	'109',	'2',	5,	38,	'烘焙實務',	'烘焙實務',	4,	'1',	'1',	'1',	18,	'1',	1,	'2021-04-28 10:48:25'),
 (125,	'109',	'2',	5,	38,	'蔬果切雕實習',	'蔬果切雕實習',	1,	'1',	'0',	'0',	21,	'1',	1,	'2021-04-28 10:50:17');
+
+INSERT INTO `yy_exam_keyin_daterange` (`sn`, `exam_year`, `exam_term`, `exam_name`, `start_date`, `end_date`, `status`, `sort`, `update_user`, `update_date`) VALUES
+(1,	'109',	'2',	'第一次段考',	'2021-04-01',	'2021-04-01',	'1',	2,	1,	'2021-05-01 08:30:47'),
+(2,	'109',	'2',	'第一次段考前平時考',	'2021-05-03',	'2021-05-07',	'1',	1,	1,	'2021-05-01 08:31:43'),
+(3,	'109',	'2',	'第二次段考前平時考',	'2021-05-04',	'2021-05-14',	'1',	3,	1,	'2021-05-01 08:32:00'),
+(4,	'109',	'2',	'第二次段考',	'2021-05-06',	'2021-05-19',	'1',	4,	1,	'2021-05-01 08:32:16'),
+(5,	'109',	'2',	'第三次段考前平時考',	'2021-05-07',	'2021-05-19',	'1',	6,	1,	'2021-05-01 08:32:33'),
+(6,	'109',	'2',	'期末考',	'2021-05-06',	'2021-05-13',	'1',	5,	1,	'2021-05-01 08:42:46');

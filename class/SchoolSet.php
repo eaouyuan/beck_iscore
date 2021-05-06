@@ -19,11 +19,21 @@ class SchoolSet
     public $users; //使用者資料
     public $teachers; //教師資料
     public $class; //班級資料
-    public $dept; //學程資料
+    public $dept; //所有學程資料
+    public $depsnname; //學程 sn map name
     public $deptofsch; //處室資料
     public $isguidance; //輔導老師
     public $issocial; //社工師
-    public $exam_name; //段考名稱
+    public $exam_name; //考試名稱
+    public $usual_exam_name; //平時考名稱
+    public $sectional_exam_name; //段考名稱
+    public $tea_course; //教師課表 教師  學程 課程
+    public $dep2course; //學程對課程
+    public $courese_chn; //課程中文名稱
+    public $all_course; //所有課程 sn-> data
+    public $uid2name; // uid name
+    public $major_stu; // 學程map 學生們sn
+    public $stu_name; //  學生sn map name
     // public $tch_sex; //性別
  
 
@@ -37,9 +47,40 @@ class SchoolSet
         $this->get_dept();  //學程
         $this->get_deptofsch();//get 學校處室
         $this->get_social_guidance();// get 社工師及輔導老師
-        $this->exam_name=[  '第一次段考前平時考','第一次段考','第二次段考前平時考','第二次段考','第三次段考前平時考','期末考'];
+        $this->get_course();// get 社工師及輔導老師
+        $this->get_uid_name();// get uid 2 name
+        $this->get_stu_data();// get stu data
+        $this->exam_name=['1'=>'第一次段考前平時考','2'=>'第一次段考','3'=>'第二次段考前平時考','4'=>'第二次段考','5'=>'第三次段考前平時考','6'=>'期末考'];
+        $this->usual_exam_name=['1'=>'第一次段考前平時考','2'=>'第二次段考前平時考','3'=>'第三次段考前平時考'];
+        $this->sectional_exam_name=['1'=>'第一次段考','2'=>'第二次段考','3'=>'期末考'];
 
     }
+
+    // get 目前課程資料
+    private function get_course(){
+        global $xoopsDB;
+        $tbl = $xoopsDB->prefix('yy_course');
+        $sql            = "SELECT * FROM $tbl 
+                            Where `cos_year`='{$this->sem_year}' 
+                                AND `cos_term`='{$this->sem_term}' 
+                                AND `status`='1' 
+                                order by sort,tea_id ,dep_id 
+                        ";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $tea_course=$dep2course=$courese_chn=$all_course=[];
+        while($all= $xoopsDB->fetchArray($result)){
+            $tea_course[$all['tea_id']][$all['dep_id']][]= $all['sn'];
+            $dep2course[$all['dep_id']][]= $all['sn'];
+            $courese_chn[$all['sn']]=$all['cos_name'];
+            $courese_chn[$all['sn']]=$all['cos_name'];
+            $all_course[$all['sn']]=$all;
+        }
+        $this->tea_course = $tea_course;
+        $this->dep2course = $dep2course;
+        $this->courese_chn = $courese_chn;
+        $this->all_course = $all_course;
+    }
+    
     // get 學期資料
     private function get_semester(){
         global $xoopsDB;
@@ -77,7 +118,7 @@ class SchoolSet
         // echo($sql);
         $sqlall=$sql." ORDER BY {$tb2}.sort";
         $result      = $xoopsDB->query($sqlall) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all=[];
+        $all=$uid2data=[];
         while($user= $xoopsDB->fetchArray($result)){
             $all[] = $user;
         }
@@ -116,10 +157,12 @@ class SchoolSet
         $sql = "SELECT * FROM $tb1 WHERE dep_status='1'";
         // echo($sql);
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all=[];
+        $all=$major_ary=[];
         while($rut= $xoopsDB->fetchArray($result)){
+            $major_ary[$rut['sn']]=$rut['dep_name'];
             $all[] = $rut;
         }
+        $this->depsnname=$major_ary;
         $this->dept=$all;
     }
     //get 學校處室
@@ -166,6 +209,36 @@ class SchoolSet
         $this->issocial=$all;
     }
 
+    // $a[uid]=name
+    private function get_uid_name($cat='user'){
+        $all=$this->users;
+        $data=[];
+        foreach ($all as $k=>$v){
+            $data[$v['uid']]=$v['name'];
+        }
+        $this->uid2name=$data;
+
+    }
+
+    // get 學程 map 學生sn $a['dep_id']=stu_sn
+    // get 學生sn map 中文姓名;
+    private function get_stu_data(){
+        global $xoopsDB;
+        $tb1 = $xoopsDB->prefix('yy_student');
+        $sql = "SELECT * FROM $tb1 
+                WHERE `status` !='2'
+                ORDER BY `sort`
+                ";
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $stu_name=$major_stu=[];
+        while($user= $xoopsDB->fetchArray($result)){
+            $major_stu[$user['major_id']][] = $user['sn'];
+            $stu_name[$user['sn']] = $user['stu_name'];
+        }
+        $this->major_stu=$major_stu;
+        $this->stu_name=$stu_name;
+    }
+
     // 部門名稱->user
     public function get_depts_user($cat='user'){
         if($cat=='user'){
@@ -182,15 +255,7 @@ class SchoolSet
         return $data;
     }
 
-    // $a[uid]=name
-    public function get_uid_name($cat='user'){
-        $all=$this->users;
-        $data=[];
-        foreach ($all as $k=>$v){
-            $data[$v['uid']]=$v['name'];
-        }
-        return $data;
-    }
+
 
 
     // php 單例模式 https://tw511.com/a/01/5633.html?fbclid=IwAR3TcfPeQaJslVc49aMbVbIN1pP8iXN8McbFUSv9KJNSFZPM0z8y9x-WAlM
