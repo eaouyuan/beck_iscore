@@ -55,6 +55,38 @@ class SchoolSet
         $this->sectional_exam_name=['1'=>'第一次段考','2'=>'第二次段考','3'=>'期末考'];
 
     }
+  
+
+    // get 目前考試keyin日期
+    public function exam_date_check($name=''){
+        global $xoopsDB;
+        $tbl        = $xoopsDB->prefix('yy_exam_keyin_daterange');
+        $sql        = "SELECT * FROM $tbl 
+                        Where `exam_year`='{$this->sem_year}'
+                        AND `exam_term`='{$this->sem_term}'
+                        AND `exam_name` ='$name'
+                        ORDER BY sort
+                        ";
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo($sql);die();
+        $data= $xoopsDB->fetchArray($result);
+        $today= date("Y-m-d");
+
+        if($data['status']=='0'){
+            return true;
+        }elseif (((strtotime($data['start_date']))<=(strtotime($today)))&&((strtotime($data['end_date']))>=(strtotime($today)))){
+            return true;
+        }else{
+            return false;
+        }
+        
+        // var_dump('name:'.$name);
+        // var_dump('sdate:'.$data['start_date']);
+        // var_dump('edate:'.$data['end_date']);
+        // var_dump('today:'.$today);
+        // var_dump('a:'.$a);
+        // die();
+    }
 
     // get 目前課程資料
     private function get_course(){

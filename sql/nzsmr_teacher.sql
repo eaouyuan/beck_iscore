@@ -240,12 +240,11 @@ CREATE TABLE `yy_exam_keyin_daterange` (
   `status` enum('0','1','2') NOT NULL COMMENT '段考日期狀態 0關閉 1啟用 2暫停',
   `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
-  `update_date` datetime NOT NULL COMMENT '修改日期', 
-  PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
--- 修正學年度、學期、段考名稱 不能重複
-ALTER TABLE `yy_exam_keyin_daterange`
-ADD UNIQUE `exam_year_exam_term_exam_name_status` (`exam_year`, `exam_term`, `exam_name`, `status`);
+  `update_date` datetime NOT NULL COMMENT '修改日期',
+  PRIMARY KEY (`sn`),
+  UNIQUE KEY `exam_year_exam_term_exam_name` (`exam_year`,`exam_term`,`exam_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
 
 -- 平時考成績
 CREATE TABLE `yy_usual_score` (

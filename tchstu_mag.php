@@ -1064,9 +1064,33 @@ switch ($op) {
             }
             $course['course_htm']=Get_select_opt_htm($course_ary,$course['course_id'],'1');
         }
-        $xoopsTpl->assign('course', $course);
-        $xoopsTpl->assign('usual_exam_name', $SchoolSet->usual_exam_name);
+
+
+        // die(var_dump($SchoolSet->usual_exam_name));
         if($course['dep_id']!='' AND  $course['course_id']!=''){
+            // 三次平時成績時段，是否可keyin
+            $addEdit=[];
+            foreach($SchoolSet->usual_exam_name as $k=>$name){
+                // 判斷新增、修改平時成績權限 
+                if((power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+                    $addEdit[$k]=true;
+                }else{
+                    $addEdit[$k]=$SchoolSet->exam_date_check($name);
+                }
+            }
+            $xoopsTpl->assign('addEdit', $addEdit);
+
+            // 依三次平時成績時段結果，產生新增平時成績欄位下拉選單
+            foreach($addEdit as $k=>$name){
+                if($name==true){
+                    $add_uscore_select[$k]=$SchoolSet->usual_exam_name[$k];
+                    $xoopsTpl->assign('show_select', true);
+                }
+            }
+            // die(var_dump($add_uscore_select));
+            $course['exam_number_htm']=Get_select_opt_htm($add_uscore_select,'','0');
+
+            $xoopsTpl->assign('showtable', true);
             $myts = MyTextSanitizer::getInstance();
             $tb1      = $xoopsDB->prefix('yy_usual_score');
             $tb2      = $xoopsDB->prefix('yy_student');
@@ -1102,12 +1126,12 @@ switch ($op) {
             }
             
         }
-        // var_dump($score_count);die();
-        
+
+        $xoopsTpl->assign('course', $course);
+        $xoopsTpl->assign('usual_exam_name', $SchoolSet->usual_exam_name);
         $xoopsTpl->assign('all', $stu_uscore);
         $xoopsTpl->assign('score_count', $score_count);
-        // $xoopsTpl->assign('bar', $bar);
-        // $xoopsTpl->assign('total', $total);
+
 
         $SweetAlert = new SweetAlert();
         $SweetAlert->render('stu_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=student_delete&sn=", 'sn','確定要刪除學生基本資料','學生基本資料刪除。');
