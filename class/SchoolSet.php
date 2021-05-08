@@ -75,13 +75,20 @@ class SchoolSet
         }
         foreach($all as $stu_sn=>$score_ary){
             $i=$sum=0;
+            
             foreach($score_ary as $seq=>$score){
                 if(is_numeric($score)){
                     $i++;
                     $sum=$sum+ (float)$score;
                 }
             }
-            $all[$stu_sn]['avg']=(float)($sum/$i);
+            // var_dump($sum);die();
+            if($i==0){
+                $all[$stu_sn]['avg']='-';
+            }else{
+                $all[$stu_sn]['avg']=(float)($sum/$i);
+            }
+
         }
         // die(var_dump($all));
 

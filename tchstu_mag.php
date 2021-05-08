@@ -1095,38 +1095,37 @@ switch ($op) {
             // die(var_dump($add_uscore_select));
             $course['exam_number_htm']=Get_select_opt_htm($add_uscore_select,'','0');
 
+            // get 每次平時成績
             $xoopsTpl->assign('showtable', true);
             $myts = MyTextSanitizer::getInstance();
-            // $tb1      = $xoopsDB->prefix('yy_usual_score');
-            // $tb2      = $xoopsDB->prefix('yy_student');
-            // $sql      = "SELECT * FROM $tb1  as sco
-            //                 LEFT  JOIN $tb2 as stu ON sco.student_sn       = stu.sn
-            //                 Where sco.course_id= '{$course["course_id"]}'
-            //                 ORDER BY `exam_stage`,`exam_number`,stu.sort  
-            //             ";
-
-
             $tb1      = $xoopsDB->prefix('yy_usual_score');
             $tb2      = $xoopsDB->prefix('yy_student');
-            $tb3      = $xoopsDB->prefix('yy_uscore_avg');
-            $sql      = "SELECT * FROM $tb1  as sco
-                        LEFT JOIN $tb2 as stu ON sco.student_sn=stu.sn
-                        LEFT JOIN $tb3 as avg ON sco.usual_average_sn=avg.sn
-                        Where sco.course_id='{$course["course_id"]}' 
-                        ORDER BY sco.exam_stage,sco.exam_number,stu.sort  
-                ";
-
-
+            $sql      = "SELECT sco.* ,stu.stu_name  , stu.sort  FROM $tb1  as sco
+                            LEFT  JOIN $tb2 as stu ON sco.student_sn       = stu.sn
+                            Where sco.course_id= '{$course["course_id"]}'
+                            ORDER BY `exam_stage`,`exam_number`,stu.sort  
+                        ";
             // echo($sql);die();
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             $stu_uscore=array();
             while($data= $xoopsDB->fetchArray($result)){
                 $stu_uscore [$data['exam_stage']][$data['student_sn']]['name']= $myts->htmlSpecialChars($data['stu_name']);
                 $stu_uscore [$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
+            }
+
+            // 撈出每次段考前平時考的加總平均
+            $tb1      = $xoopsDB->prefix('yy_uscore_avg');
+            $sql      = "SELECT * FROM $tb1  as sco
+                        Where sco.course_id='{$course["course_id"]}' 
+                        ORDER BY exam_stage,student_sn
+                ";
+            // echo($sql);die();
+            $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            while($data= $xoopsDB->fetchArray($result)){
                 // 增加 算平均
                 $stu_uscore [$data['exam_stage']][$data['student_sn']]['avg']= $myts->htmlSpecialChars($data['avgscore']);
-                // print_r($data);die();
             }
+
 
             foreach($stu_uscore as $exam_stage=>$v2){
                 foreach($v2 as $student_sn=>$v3){
@@ -1139,18 +1138,12 @@ switch ($op) {
             // print_r($stu_uscore);
             // print_r($score_count);
             // die();
-
-            
         }
 
         $xoopsTpl->assign('course', $course);
         $xoopsTpl->assign('usual_exam_name', $SchoolSet->usual_exam_name);
         $xoopsTpl->assign('all', $stu_uscore);
         $xoopsTpl->assign('score_count', $score_count);
-
-
-        $SweetAlert = new SweetAlert();
-        $SweetAlert->render('stu_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=student_delete&sn=", 'sn','確定要刪除學生基本資料','學生基本資料刪除。');
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
