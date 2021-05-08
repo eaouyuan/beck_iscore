@@ -55,7 +55,78 @@ class SchoolSet
         $this->sectional_exam_name=['1'=>'第一次段考','2'=>'第二次段考','3'=>'期末考'];
 
     }
-  
+
+    // 計算平時成績 平均
+    public function uscore_avg($coursid='',$stage=''){
+        global $xoopsDB,$xoopsUser;
+
+        // 算出每位學生總平均
+        $tb1      = $xoopsDB->prefix('yy_usual_score');
+        $sql      = "SELECT * FROM $tb1  
+                        Where `course_id`='{$coursid}' 
+                        AND `exam_stage` = '{$stage}'
+                        ORDER BY `exam_stage`,`exam_number` 
+                    ";
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo($sql);die();
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']][]=$data['score'];
+        }
+        foreach($all as $stu_sn=>$score_ary){
+            $i=$sum=0;
+            foreach($score_ary as $seq=>$score){
+                if(is_numeric($score)){
+                    $i++;
+                    $sum=$sum+ (float)$score;
+                }
+            }
+            $all[$stu_sn]['avg']=(float)($sum/$i);
+        }
+        // die(var_dump($all));
+
+        // 刪除學生平均成績
+        $tbl = $xoopsDB->prefix('yy_uscore_avg');
+        $sql = "DELETE FROM `$tbl` 
+            WHERE `course_id`   = '{$coursid}'
+            AND   `exam_stage`  = '{$stage}'
+            ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        // 新增學生平均成績
+        $tbl = $xoopsDB->prefix('yy_uscore_avg');
+        foreach($all as $stusn=>$v){
+            $sql_1 = "insert into `$tbl` (
+                `course_id`,`exam_stage`,`student_sn`,`avgscore`,`update_user`,
+                `update_date`
+                ) 
+                values(
+                '{$coursid}','{$stage}','{$stusn}','{$v['avg']}','{$xoopsUser->uid()}',
+                now()
+                )";
+                // echo($sql_1);die();
+            $xoopsDB->queryF($sql_1) or Utility::web_error($sql, __FILE__, __LINE__);
+            $all[$stusn]['avg_sn'] = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+        }
+        // die(var_dump($all));
+
+        // 學生平時成績修改欄位"usual_average_sn" 對映到 平均成績資料表 sn
+        foreach($all as $stusn=>$v){
+            $tbl = $xoopsDB->prefix('yy_usual_score');
+            $sql = "update `$tbl` set `usual_average_sn`   = '{$v['avg_sn']}'
+                        where `course_id`   = '{$coursid}'
+                        AND `exam_stage`   = '{$stage}'
+                        AND `student_sn`   = '{$stusn}'
+                        ";
+    
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+
+
+        
+    }
 
     // get 目前考試keyin日期
     public function exam_date_check($name=''){
@@ -80,12 +151,8 @@ class SchoolSet
             return false;
         }
         
-        // var_dump('name:'.$name);
-        // var_dump('sdate:'.$data['start_date']);
-        // var_dump('edate:'.$data['end_date']);
-        // var_dump('today:'.$today);
-        // var_dump('a:'.$a);
-        // die();
+        // var_dump('name:'.$name);// var_dump('sdate:'.$data['start_date']);// var_dump('edate:'.$data['end_date']);// var_dump('today:'.$today);
+        // var_dump('a:'.$a);// die();
     }
 
     // get 目前課程資料

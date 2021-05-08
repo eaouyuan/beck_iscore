@@ -47,7 +47,7 @@ $modversion['tables'][]         = 'yy_class';                  //班級
 $modversion['tables'][]         = 'yy_course';                 //課程
 $modversion['tables'][]         = 'yy_exam_keyin_daterange';   //成績輸入日期
 $modversion['tables'][]         = 'yy_usual_score';            //平時成績
-$modversion['tables'][]         = 'yy_usual_score_avg';        //平時成績平均
+$modversion['tables'][]         = 'yy_uscore_avg';             //平時成績平均
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

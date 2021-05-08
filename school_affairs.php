@@ -296,7 +296,7 @@ switch ($op) {
         $tbl   = $xoopsDB->prefix('yy_exam_keyin_daterange');
 
         $sql      = "SELECT * FROM $tbl WHERE `exam_year`='{$exam_year}' AND `exam_term`='{$exam_term}'
-                    AND `exam_name`='{$exam_name}' AND `status`='{$status}' ";
+                    AND `exam_name`='{$exam_name}' ";
         // echo($sql);die();
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $data_exist= $xoopsDB->fetchArray($result);

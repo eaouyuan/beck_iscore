@@ -269,7 +269,20 @@ ALTER TABLE `yy_usual_score`
 ADD UNIQUE `year_term_course_id_exam_stage_exam_number_student_sn` (`year`, `term`, `course_id`, `exam_stage`, `exam_number`, `student_sn`);
 
 
-
+-- 平時考成績的平均
+CREATE TABLE `yy_uscore_avg` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `course_id` mediumint(8) unsigned NOT NULL COMMENT '課程編號',
+  `exam_stage` enum('1','2','3') NOT NULL COMMENT '第幾次段考前平時考',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `avgscore` varchar(5) NULL COMMENT '平時考平均',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+ALTER TABLE `yy_uscore_avg`
+ADD UNIQUE `course_id_exam_stage_student_sn` (`course_id`, `exam_stage`, `student_sn`);
 
 
 

@@ -883,6 +883,9 @@ switch ($op) {
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         
 
+        // 重新計算平時考平均
+        $SchoolSet= new SchoolSet;
+        $SchoolSet->uscore_avg($pars['course_id'],$pars['exam_stage']);
     }
 
     // sql-新增 平時成績
@@ -927,10 +930,12 @@ switch ($op) {
                 '{$year}','{$term}','{$dep_id}','{$course_id}','{$exam_stage}',
                 '{$exam_number}','{$k}','{$v}','{$update_user}',now()
                 )";
-                $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            }
-        // echo($sql);die();
-        // return $sn;
+            $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+
+        // 重新計算平時考平均
+        $SchoolSet= new SchoolSet;
+        $SchoolSet->uscore_avg($course_id,$exam_stage);
     }
 
     // 表單-新增、編輯 平時成績
@@ -1092,38 +1097,49 @@ switch ($op) {
 
             $xoopsTpl->assign('showtable', true);
             $myts = MyTextSanitizer::getInstance();
+            // $tb1      = $xoopsDB->prefix('yy_usual_score');
+            // $tb2      = $xoopsDB->prefix('yy_student');
+            // $sql      = "SELECT * FROM $tb1  as sco
+            //                 LEFT  JOIN $tb2 as stu ON sco.student_sn       = stu.sn
+            //                 Where sco.course_id= '{$course["course_id"]}'
+            //                 ORDER BY `exam_stage`,`exam_number`,stu.sort  
+            //             ";
+
+
             $tb1      = $xoopsDB->prefix('yy_usual_score');
             $tb2      = $xoopsDB->prefix('yy_student');
-            $sql        = "SELECT * FROM $tb1  as sco
-                            LEFT JOIN $tb2 as stu ON sco.student_sn=stu.sn
-                            Where `course_id`='{$course["course_id"]}' 
-                            ORDER BY `exam_stage`,`exam_number`,stu.sort  
-                        ";
+            $tb3      = $xoopsDB->prefix('yy_uscore_avg');
+            $sql      = "SELECT * FROM $tb1  as sco
+                        LEFT JOIN $tb2 as stu ON sco.student_sn=stu.sn
+                        LEFT JOIN $tb3 as avg ON sco.usual_average_sn=avg.sn
+                        Where sco.course_id='{$course["course_id"]}' 
+                        ORDER BY sco.exam_stage,sco.exam_number,stu.sort  
+                ";
+
+
             // echo($sql);die();
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             $stu_uscore=array();
             while($data= $xoopsDB->fetchArray($result)){
-                // $stu_uscore [$data['course_id']][$data['exam_stage']][$data['student_sn']]['name']= $myts->htmlSpecialChars($data['stu_name']);
-                // $stu_uscore [$data['course_id']][$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
                 $stu_uscore [$data['exam_stage']][$data['student_sn']]['name']= $myts->htmlSpecialChars($data['stu_name']);
                 $stu_uscore [$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
+                // 增加 算平均
+                $stu_uscore [$data['exam_stage']][$data['student_sn']]['avg']= $myts->htmlSpecialChars($data['avgscore']);
+                // print_r($data);die();
             }
-            // print_r($stu_uscore);die();
 
             foreach($stu_uscore as $exam_stage=>$v2){
                 foreach($v2 as $student_sn=>$v3){
-                    $i=$sum=0;
-                    foreach($v3['score'] as $exam_number=>$val_score){
-                        if(is_numeric($val_score)){
-                            $i++;
-                            $sum=$sum+ (float)$val_score;
-                        }
-                        
-                    }
+                    $score_count[$exam_stage]['score_count'] = count($v3['score']);
+                    $score_count[$exam_stage]['test_ary']    = array_keys($v3['score']);
                 }
-                $score_count[$exam_stage]['score_count'] = count($stu_uscore[$exam_stage][$student_sn]['score']);
-                $score_count[$exam_stage]['test_ary']    = array_keys($v3['score']);
+                // $score_count[$exam_stage]['score_count'] = count($stu_uscore[$exam_stage][$student_sn]['score']);
             }
+
+            // print_r($stu_uscore);
+            // print_r($score_count);
+            // die();
+
             
         }
 
