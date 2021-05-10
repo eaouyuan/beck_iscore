@@ -37,7 +37,6 @@ $uscore['exam_number'] = Request::getString('exam_number');
 // $exam_number = Request::getInt('exam_number');
 // $update_user = Request::getString('update_user');
 
-
 // die(var_dump($_POST));
 // die(var_dump($_GET));
 // die(var_dump($_REQUEST));
@@ -349,18 +348,8 @@ switch ($op) {
         if (!$xoopsUser) {
             redirect_header('index.php', 3, '無操作權限');
         }
-
-        // 依課程找 任課教師id、學年、學期、學程
-        $sscore['tea_id']    = $SchoolSet->all_course[$pars['course_id']]['tea_id'];
-        $sscore['year']      = $SchoolSet->all_course[$pars['course_id']]['cos_year'];
-        $sscore['term']      = $SchoolSet->all_course[$pars['course_id']]['cos_term'];
-        $sscore['dep_id']    = $SchoolSet->all_course[$pars['course_id']]['dep_id'];
-        $sscore['course_id'] = $pars['course_id'];
-        $sscore['tea_name']  = $SchoolSet->uid2name[$sscore['tea_id']];
-
-
-
-
+            
+    
         //套用formValidator驗證機制
         if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
             redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
@@ -375,6 +364,7 @@ switch ($op) {
         $myts = MyTextSanitizer::getInstance();
 
         if((power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+        
             // 全部學程列表
             $course['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['dep_id'],'1');
             // 全部課程列表
@@ -400,6 +390,14 @@ switch ($op) {
 
         if($pars['dep_id']!='' AND  $pars['course_id']!=''){
             $xoopsTpl->assign('showtable', true);
+            // 依課程找 任課教師id、學年、學期、學程
+            $sscore['tea_id']    = $SchoolSet->all_course[$pars['course_id']]['tea_id'];
+            $sscore['year']      = $SchoolSet->all_course[$pars['course_id']]['cos_year'];
+            $sscore['term']      = $SchoolSet->all_course[$pars['course_id']]['cos_term'];
+            $sscore['dep_id']    = $SchoolSet->all_course[$pars['course_id']]['dep_id'];
+            $sscore['course_id'] = $pars['course_id'];
+            $sscore['tea_name']  = $SchoolSet->uid2name[$sscore['tea_id']];
+
             // 判斷是否為教師本人 或管理員
             if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $sscore['tea_id']==$_SESSION['xoopsUserId'])){
                 redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$pars['dep_id']}", 3, 'stage_score_list! error:2105091300');
@@ -484,17 +482,17 @@ switch ($op) {
 
             // die(var_dump($score));
             // die(var_dump($sscore));
+            $uid = $_SESSION['beck_iscore_adm'] ? $sscore['tea_id'] : $xoopsUser->uid();
+            $xoopsTpl->assign('uid', $uid);
+            $xoopsTpl->assign('sscore', $sscore);
+            $xoopsTpl->assign('all', $stu_data);
     
         }
         // //帶入使用者編號
-        $uid = $_SESSION['beck_iscore_adm'] ? $sscore['tea_id'] : $xoopsUser->uid();
 
         $xoopsTpl->assign('op', "stage_score_insert");
-        $xoopsTpl->assign('uid', $uid);
         $xoopsTpl->assign('course', $course);
-        $xoopsTpl->assign('sscore', $sscore);
         $xoopsTpl->assign('exam_name', $SchoolSet->exam_name);
-        $xoopsTpl->assign('all', $stu_data);
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");

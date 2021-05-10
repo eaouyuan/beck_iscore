@@ -1,7 +1,7 @@
 <h2 style="float:left" class="mb-3">學生─基本資料列表</h2>
 <div class="col row"></div>
 <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=student_form';" style="float:right">
-    <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增學生">新增學生
+    <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增學生">新增學生
 </button>
 <form name="student_list" id="student_list" action="tchstu_mag.php" method="get">
     <div class="form-group row">

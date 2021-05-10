@@ -88,18 +88,22 @@
         尚無內容
     </div>
 <{/if}>
+
 </form>
 <script type="text/javascript">
     $(document).ready(function($){
+        // let abc='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id;
+        // console.log(abc);
         $('#dep_id').change(function(e){
             $('#course_id').val('');
             let dep_id=$('#dep_id').val();
-            location.href='http://localhost/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id;
+            location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id;
+
         });
         $('#course_id').change(function(e){
             let dep_id=$('#dep_id').val();
             let course_id=$('#course_id').val();
-            location.href='http://localhost/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
+            location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
 
     })

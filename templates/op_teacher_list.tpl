@@ -3,7 +3,7 @@
 <h2 style="float:left" class="mb-3">教師─基本資料列表</h2>
 <div class="col row"></div>
 <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='../system/admin.php?fct=users';" style="float:right">
-    <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增教師">新增教師
+    <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增教師">新增教師
 </button>
 <form name="teacher_list" id="teacher_list" action="school_affairs.php" method="get">
     <div class="form-group row">
