@@ -26,12 +26,12 @@ class SchoolSet
     public $issocial; //社工師
     public $exam_name; //考試名稱
     public $usual_exam_name; //平時考名稱
-    public $sectional_exam_name; //段考名稱
+    public $stage_exam_name; //段考名稱
     public $tea_course; //教師課表 教師  學程 課程
     public $dep2course; //學程對課程
     public $courese_chn; //課程中文名稱
     public $all_course; //所有課程 sn-> data
-    public $uid2name; // uid name
+    public $uid2name; // uid map 中文姓名
     public $major_stu; // 學程map 學生們sn
     public $stu_name; //  學生sn map name
     // public $tch_sex; //性別
@@ -51,8 +51,138 @@ class SchoolSet
         $this->get_uid_name();// get uid 2 name
         $this->get_stu_data();// get stu data
         $this->exam_name=['1'=>'第一次段考前平時考','2'=>'第一次段考','3'=>'第二次段考前平時考','4'=>'第二次段考','5'=>'第三次段考前平時考','6'=>'期末考'];
-        $this->usual_exam_name=['1'=>'第一次段考前平時考','2'=>'第二次段考前平時考','3'=>'第三次段考前平時考'];
-        $this->sectional_exam_name=['1'=>'第一次段考','2'=>'第二次段考','3'=>'期末考'];
+        $this->usual_exam_name=['1'=>'第一次段考前平時考','3'=>'第二次段考前平時考','5'=>'第三次段考前平時考'];
+        $this->stage_exam_name=['2'=>'第一次段考','4'=>'第二次段考','6'=>'期末考'];
+
+    }
+
+    // 計算段考及平時考成績 加總 平均
+    public function sscore_calculate( $dep_id='',$coursid=''){
+        global $xoopsDB,$xoopsUser;
+        //找出學程對映 成績分配比例
+        $tb1      = $xoopsDB->prefix('yy_department');
+        $sql      = "SELECT * FROM $tb1 Where `sn`='{$dep_id}' ";
+        // echo($sql);die();
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $score_rate= $xoopsDB->fetchArray($result);
+        // die(var_dump($score_rate));
+
+        // 算出學生 平時考加總 平均
+        $tb1      = $xoopsDB->prefix('yy_uscore_avg');
+        $sql      = "SELECT * FROM $tb1  
+                        Where `course_id`='{$coursid}' 
+                        ORDER BY `student_sn` ,`exam_stage`
+                    ";
+        // echo($sql);die();
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']]['uscore'][]=$data['avgscore'];
+        }
+        
+        foreach($all as $stu_sn=>$score_ary){
+            $i=$sum=0;
+            foreach($score_ary['uscore'] as $seq=>$score){
+                if(is_numeric($score)){
+                    $i++;
+                    $sum=$sum+ (float)$score;
+                }
+            }
+            if($i==0){
+                $all[$stu_sn]['uavg']='-';
+                $all[$stu_sn]['usum']='-';
+            }else{
+                $all[$stu_sn]['usum']=$sum;
+                $all[$stu_sn]['uavg']=round((float)(($sum/$i)*(float)$score_rate['normal_exam']),2);
+            }
+        }
+        
+
+
+        // var_dump($all);
+        // 算出學生 段考成績加總 平均
+        $tb1      = $xoopsDB->prefix('yy_stage_score');
+        $sql      = "SELECT * FROM $tb1  
+                        Where `course_id`='{$coursid}' 
+                        ORDER BY `student_sn` ,`exam_stage`
+                    ";
+        // echo($sql);die();
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']]['sscore'][]=$data['score'];
+        }
+        // var_dump($all);die();
+        foreach($all as $stu_sn=>$score_ary){
+            $i=$sum=0;
+            foreach($score_ary['sscore'] as $seq=>$score){
+                if(is_numeric($score)){
+                    $i++;
+                    $sum=$sum+ (float)$score;
+                }
+            }
+            if($i==0){
+                $all[$stu_sn]['savg']='-';
+                $all[$stu_sn]['ssum']='-';
+            }else{
+                $all[$stu_sn]['ssum']=$sum;
+                $all[$stu_sn]['savg']=round((float)(($sum/$i)*(float)$score_rate['section_exam']),2);
+            }
+        }
+        // var_dump($all);die();
+        // 平時考+段考
+        foreach($all as $stu_sn=>$score_ary){
+            $all[$stu_sn]['uavg_savg_sum']=(float)$score_ary['uavg']+ (float)$score_ary['savg'];
+        }
+
+
+        // 刪除學生 總成績
+        $tbl = $xoopsDB->prefix('yy_stage_sum');
+        $sql = "DELETE FROM `$tbl` WHERE `course_id` = '{$coursid}'";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // die(var_dump($all));
+        
+
+        // 新增學生總成績
+        $tbl = $xoopsDB->prefix('yy_stage_sum');
+        foreach($all as $stusn=>$v){
+            $sql_1 = "insert into `$tbl` (
+                `course_id`,`student_sn`,`uscore_sum`,`uscore_avg`,`sscore_sum`,
+                `sscore_avg`,`sum_usual_stage_avg`,`update_user`,`update_date`
+                ) 
+                values(
+                '{$coursid}','{$stusn}','{$v['usum']}','{$v['uavg']}','{$v['ssum']}',
+                '{$v['savg']}','{$v['uavg_savg_sum']}','{$xoopsUser->uid()}',now()
+                )";
+                // echo($sql_1);die();
+            $xoopsDB->queryF($sql_1) or Utility::web_error($sql, __FILE__, __LINE__);
+            $all[$stusn]['final_sum_sn'] = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+        }
+        // die(var_dump($all));
+
+        foreach($all as $stusn=>$v){
+            // 段考成績欄位"final_score_sn" 對映到 yy_stage_sum  sn
+            $tbl = $xoopsDB->prefix('yy_stage_score');
+            $sql = "update `$tbl` set `final_score_sn`   = '{$v['final_sum_sn']}'
+                        where `course_id`   = '{$coursid}'
+                        AND `student_sn`   = '{$stusn}'
+                        ";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+        // die(var_dump($all));
+        
+        // 段考成績欄位"final_score_sn" 對映到 yy_stage_sum  sn
+        foreach($all as $stusn=>$v){
+            $tbl = $xoopsDB->prefix('yy_uscore_avg');
+            $sql = "update `$tbl` set `final_score_sn`   = '{$v['final_sum_sn']}'
+                        where `course_id`   = '{$coursid}'
+                        AND `student_sn`   = '{$stusn}'
+                        ";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
 
     }
 
@@ -130,9 +260,6 @@ class SchoolSet
             // echo($sql);die();
             $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         }
-
-
-        
     }
 
     // get 目前考試keyin日期
@@ -266,7 +393,7 @@ class SchoolSet
         $all=$major_ary=[];
         while($rut= $xoopsDB->fetchArray($result)){
             $major_ary[$rut['sn']]=$rut['dep_name'];
-            $all[] = $rut;
+            $all[$rut['sn']] = $rut;
         }
         $this->depsnname=$major_ary;
         $this->dept=$all;

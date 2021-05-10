@@ -17,8 +17,8 @@ define('_MI_SNEWS_SHOW_NUM', '首頁顯示的文章數量');
 define('_MI_SNEWS_SHOW_NUM_DESC', '請填數字');
 
 
-define('_MI_BECK_ISOCRE_BLOCK_FOCUS', '精選文章');
-define('_MI_BECK_ISOCRE_BLOCK_FOCUS_DESC', '精選文章列表');
+define('s_MI_BECK_ISCORE_BLOCK_FOCUS', '精選文章');
+define('s_MI_BECK_ISCORE_BLOCK_FOCUS_DESC', '精選文章列表');
 
 
 

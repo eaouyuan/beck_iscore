@@ -4,7 +4,7 @@
 
 <{$formValidator_code}>
 
-<form name="usual_socre_form" id="usual_socre_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
+<form name="usual_score_form" id="usual_score_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
 
     
     <div class="alert alert-primary" role="alert">
@@ -70,7 +70,7 @@
                 allowOutsideClick: true
             },
             function(){
-                location.href='http://localhost/modules/beck_iscore/tchstu_mag.php?op=usual_socre_delete&dep_id='+dep_id+'&course_id='+courseid+'&exam_stage='+ stage+'&exam_number='+number+'&XOOPS_TOKEN_REQUEST='+xtoken;
+                location.href='http://localhost/modules/beck_iscore/tchstu_mag.php?op=usual_score_delete&dep_id='+dep_id+'&course_id='+courseid+'&exam_stage='+ stage+'&exam_number='+number+'&XOOPS_TOKEN_REQUEST='+xtoken;
             });
         }
             

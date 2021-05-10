@@ -48,6 +48,8 @@ $modversion['tables'][]         = 'yy_course';                 //課程
 $modversion['tables'][]         = 'yy_exam_keyin_daterange';   //成績輸入日期
 $modversion['tables'][]         = 'yy_usual_score';            //平時成績
 $modversion['tables'][]         = 'yy_uscore_avg';             //平時成績平均
+$modversion['tables'][]         = 'yy_stage_score';            //段考成績
+$modversion['tables'][]         = 'yy_stage_sum';              //段考成績加總
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;
@@ -109,11 +111,11 @@ $modversion['search']['func'] = "beck_iscore_search";
 $modversion['blocks'] = array();
 $i=1;
 $modversion['blocks'][$i]['file']        = "beck_iscore_block_focus.php";
-$modversion['blocks'][$i]['name']        = _MI_BECK_ISOCRE_BLOCK_FOCUS;
-$modversion['blocks'][$i]['description'] = _MI_BECK_ISOCRE_BLOCK_FOCUS_DESC;
-$modversion['blocks'][$i]['show_func']   = "beck_isocre_block_focus";
-$modversion['blocks'][$i]['template']    = "beck_isocre_block_focus.tpl";
-$modversion['blocks'][$i]['edit_func']   = "beck_isocre_block_focus_edit";
+$modversion['blocks'][$i]['name']        = _MI_BECK_ISCORE_BLOCK_FOCUS;
+$modversion['blocks'][$i]['description'] = _MI_BECK_ISCORE_BLOCK_FOCUS_DESC;
+$modversion['blocks'][$i]['show_func']   = "beck_iscore_block_focus";
+$modversion['blocks'][$i]['template']    = "beck_iscore_block_focus.tpl";
+$modversion['blocks'][$i]['edit_func']   = "beck_iscore_block_focus_edit";
 $modversion['blocks'][$i]['options']     = "2|240";
 
 $i++;

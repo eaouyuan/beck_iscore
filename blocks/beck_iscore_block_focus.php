@@ -1,12 +1,12 @@
 <?php
-function beck_isocre_block_focus(){
+function beck_iscore_block_focus(){
 
 
 
 }
 
 
-function beck_isocre_block_focus_edit(){
+function beck_iscore_block_focus_edit(){
 
     
 }
