@@ -36,11 +36,11 @@ if (!isset($_SESSION[$session_name])) {
 
 //模組後台
 if (power_chk("", 1)) {
-    $interface_menu['總表PDF'] = "pdf_all.php";
-    $interface_icon['總表PDF'] = "";
+    // $interface_menu['總表PDF'] = "pdf_all.php";
+    // $interface_icon['總表PDF'] = "";
 
-    $interface_menu['滑動文章'] = "sortable.php";
-    $interface_icon['滑動文章'] = "";
+    // $interface_menu['滑動文章'] = "sortable.php";
+    // $interface_icon['滑動文章'] = "";
 }
 
 //管理介面
