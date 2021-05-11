@@ -1,7 +1,7 @@
 <{$formValidator_code}>
-<h2 class="mb-3">段考成績登錄</h2>
+<h2 class="mb-3 notprint">段考成績登錄</h2>
 <form name="stage_score_list" id="stage_score_list" action="tchstu_mag.php" method="post">
-   
+
     <div class="col">
         <div class="form-group row">
         
@@ -23,25 +23,25 @@
             </div>
         </div>
     </div>
-
 <{if $showtable}>
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead>
             <tr class="table-info">
                 
-                <th class="text-center">姓名</th>
+                <th style="border: 2px solid #000000;"class="text-center" width="10%" >姓名</th>
                 <{foreach from=$exam_name key=exam_sn item=exam_chnname}>
-                    <th scope="col" class="text-center"><{$exam_chnname}></th>
+                    <th scope="col" class="text-center" width="8%"><{$exam_chnname}></th>
                 <{/foreach}>
-                <th scope="col" class="text-center">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
-                <th scope="col" class="text-center">段考成績<br>(<{$course.section_exam_rate}>%)</th>
-                <th scope="col" class="text-center">總成績</th>
-                <th scope="col" class="text-center">質性描述</th>
+                <th scope="col" class="text-center" width="8%">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
+                <th scope="col" class="text-center" width="8%">段考成績<br>(<{$course.section_exam_rate}>%)</th>
+                <th scope="col" class="text-center" width="10%">總成績</th>
+                <th scope="col" class="text-center" width="16%">質性<br>描述</th>
             </tr>
         </thead>
+
         <tbody>
             <{foreach from=$all key=stu_sn item=v1}>
-            <tr> 
+            <tr class=""> 
                 <th class="text-center"><{$v1.name}></th>
                 <{foreach from=$v1.score key=k item=score}>
                     <{if $addEdit.$k}>
@@ -66,7 +66,6 @@
                 </th>
             </tr>
             <{/foreach}>
-
         </tbody>
     </table>
     <br>
@@ -82,6 +81,7 @@
         <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
         <a class="btn btn-secondary" href="javascript:history.back()">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
+        <button type="button" class="btn btn-success" onclick="onprint();"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
     </div>
 <{else}>
     <div class="alert alert-danger">
@@ -90,10 +90,57 @@
 <{/if}>
 
 </form>
+
+<div id="printArea">
+    <h1 class="mb-3" align="center">段考成績登錄</h1>
+    <br>
+    <h3><{$sscore.year}>學年度 第<{$sscore.term}>學期</h3>
+    <h3>學程名稱：<{$sscore.dep_name}>／課程名稱：<{$sscore.course_name}>／教師姓名：<{$sscore.tea_name}></h3>
+    <hr>
+    <!-- <table border=3 cellpadding="10"; width="100%" border-color="black"> -->
+    <table style="font-family:serif;" width="100%" cellpadding="5">
+        <thead>
+            <tr>
+                <th class="text-center" width="14%"><font size="6">姓  名</font></th>
+                <{foreach from=$exam_name key=exam_sn item=exam_chnname}>
+                    <th class="text-center" width="7%"><{$exam_chnname}></th>
+                <{/foreach}>
+                <th class="text-center" width="7%">平時成績(<{$course.normal_exam_rate}>%)</th>
+                <th class="text-center" width="7%">段考成績(<{$course.section_exam_rate}>%)</th>
+                <th class="text-center" width="7%">總成績</th>
+                <th class="text-center" width="20%">質性描述</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <{foreach from=$all key=stu_sn item=v1}>
+            <tr> 
+                <th class="text-center"><font size="6"><{$v1.name}></font></th>
+                <{foreach from=$v1.score key=k item=score}>
+                    <th class="text-center"><{$score}></th>
+                <{/foreach}>
+                <th class="text-center"><{$v1.f_usual}></th>
+                <th class="text-center"><{$v1.f_stage}></th>
+                <th class="text-center"><{$v1.f_sum}></th>
+                <th class="text-center"><{$v1.desc}></th>
+            </tr>
+            <{/foreach}>
+        </tbody>
+    </table>
+    <hr>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <h3>教師簽名:_______________________</h3>
+
+</div>
+
 <script type="text/javascript">
     $(document).ready(function($){
-        // let abc='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id;
-        // console.log(abc);
         $('#dep_id').change(function(e){
             $('#course_id').val('');
             let dep_id=$('#dep_id').val();
@@ -103,24 +150,74 @@
         $('#course_id').change(function(e){
             let dep_id=$('#dep_id').val();
             let course_id=$('#course_id').val();
+            console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
 
     })
-</script>
-<style type="text/css">
-.table th ,.table td, table.table-bordered > thead > tr > th{
-    vertical-align:middle;
-    text-align:center;
-    border: 1px solid #000000;
-    /* width:auto; */
-    /* border-bottom: 2px solid #000000; */
-}
+    function printHtml(html) {
+        var bodyHtml = document.body.innerHTML;
+        document.body.innerHTML = html;
+        window.print();
+        document.body.innerHTML = bodyHtml;
+    }
 
-input , select{
-    /* width:auto; */
-    position: relative;
-    vertical-align:middle;
-    text-align:center;
+    function onprint() {
+        // var html =$("#printArea").html();
+        // printHtml(html);
+        // let dep_id=$('#dep_id').val();
+        // let course_id=$('#course_id').val();
+        // location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
+        window.print();
+        return false;
+
+    }
+</script>
+
+<style type="text/css">
+@media screen 
+{
+    table th, .table th ,.table td, table.table-bordered > thead > tr > th{
+        vertical-align:middle;
+        text-align:center;
+        border: 2px solid #000000;
+        line-height:2.5em;
+        /* width:auto; */
+        /* border-bottom: 2px solid #000000; */
+    }
+
+    input , select{
+        /* width:auto; */
+        position: relative;
+        vertical-align:middle;
+        text-align:center;
+    }
+}
+@page  {margin: 1cm;c /*print邊界*/          /* size:210mm 148mm; 列印紙張大小  */ }
+
+@media print 
+{
+    #printArea { 
+        font-size: 24px;
+    }
+    table th, th, td {
+        vertical-align:middle;
+        text-align:center;
+        border: 4px solid black;
+    }   
 }
 </style>
+<!-- link, style可用media="mediaType"宣告適用時機 -->
+<style type="text/css" media="screen">
+    /* 顯示時隱藏 */
+    #printArea { display: none; }
+</style>
+<style type="text/css" media="print">
+    /* 列印時隱藏 */
+    #stage_score_list,.notprint,#footer-container-display { display: none; }
+</style>
+
+
+
+
+

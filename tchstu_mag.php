@@ -397,6 +397,9 @@ switch ($op) {
             $sscore['dep_id']    = $SchoolSet->all_course[$pars['course_id']]['dep_id'];
             $sscore['course_id'] = $pars['course_id'];
             $sscore['tea_name']  = $SchoolSet->uid2name[$sscore['tea_id']];
+            $sscore['dep_name']  = $SchoolSet->depsnname[$sscore['dep_id']];
+            $sscore['course_name']  = $SchoolSet->courese_chn[$sscore['course_id']];
+            // die(var_dump($sscore));
 
             // 判斷是否為教師本人 或管理員
             if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $sscore['tea_id']==$_SESSION['xoopsUserId'])){
@@ -404,7 +407,6 @@ switch ($op) {
             }     
             $course['normal_exam_rate']=$SchoolSet->dept[$sscore['dep_id']]['normal_exam']*100;
             $course['section_exam_rate']=$SchoolSet->dept[$sscore['dep_id']]['section_exam']*100;
-            // die(var_dump($SchoolSet->dept[$sscore['dep_id']]['normal_exam']));
 
             // 列出該學程內所有學生sn, name 不含回歸結案
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
