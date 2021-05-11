@@ -155,7 +155,7 @@ switch ($op) {
 // ----------------------------------
 // 段考成績 管理
     // sql- 段考成績 刪除
-    function stage_score_delete($pars=[]){
+    function stage_score_delete1($pars=[]){
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser) {
@@ -243,7 +243,7 @@ switch ($op) {
     }
 
     // 表單-新增、編輯 段考成績
-    function stage_score_form($pars=[]){
+    function stage_score_form1($pars=[]){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
         if (!$xoopsUser) {
@@ -1371,7 +1371,7 @@ switch ($op) {
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
             foreach ($major_stu as $k=>$v){
                 $stu_data[$v]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$v]);
-                $stu_data[$v]['score']='';
+                $stu_data[$v]['score']='-';
             }
         }else{
             $tb2        = $xoopsDB->prefix('yy_student');

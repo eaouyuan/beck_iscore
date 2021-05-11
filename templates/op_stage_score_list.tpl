@@ -81,7 +81,7 @@
         <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
         <a class="btn btn-secondary" href="javascript:history.back()">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
-        <button type="button" class="btn btn-success" onclick="onprint();"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
+        <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
     </div>
 <{else}>
     <div class="alert alert-danger">
@@ -170,8 +170,27 @@
         // location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         window.print();
         return false;
-
     }
+
+    $(function(){
+    var dataformInit = $("#stage_score_list").serializeArray();
+    var jsonTextInit = JSON.stringify({ dataform: dataformInit });
+    $("#print_web").click(function(){
+            var dataform = $("#stage_score_list").serializeArray();
+            var jsonText = JSON.stringify({ dataform: dataform });
+            if(jsonTextInit==jsonText) {
+                onprint();
+                return false;
+            }else{
+                alert("表單改變，請先按儲存！");
+                return false;
+            }
+        })
+    })
+
+
+
+
 </script>
 
 <style type="text/css">
