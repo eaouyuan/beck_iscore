@@ -990,8 +990,8 @@ switch ($op) {
     // 列表- 學生
     function student_list($pars=[],$g2p=''){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
-
-        if(!power_chk("beck_iscore", "2")){
+        // if(!power_chk("beck_iscore", "2")){
+        if (!$xoopsUser) {
             redirect_header('index.php', 3, 'student_list!error:210420115');
         } 
         if(power_chk("beck_iscore", "1")){
