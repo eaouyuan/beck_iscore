@@ -1242,7 +1242,7 @@ switch ($op) {
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
             foreach ($major_stu as $k=>$v){
                 $stu_data[$v]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$v]);
-                $stu_data[$v]['score']='-';
+                $stu_data[$v]['score']='';
             }
         }else{
             $tb2        = $xoopsDB->prefix('yy_student');
