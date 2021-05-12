@@ -46,7 +46,7 @@
                 <{foreach from=$v1.score key=k item=score}>
                     <{if $addEdit.$k}>
                     <th class="text-center">
-                        <input type="text" class="form-control validate[required]" name="stu_score[<{$stu_sn}>][score][<{$k}>]" id="stu_<{$stu_sn}>" value="<{$score}>">
+                        <input type="text" class="form-control validate[required] score_jug" name="stu_score[<{$stu_sn}>][score][<{$k}>]" id="stu_<{$stu_sn}>" value="<{$score}>">
                     </th>
                     <{else}>
                         <th class="text-center"><{$score}></th>
@@ -78,7 +78,8 @@
     </div>
 
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <!-- <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
         <a class="btn btn-secondary" href="javascript:history.back()">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
         <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
@@ -153,6 +154,20 @@
             console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
+        // 判斷表單是否有改變，沒變才能按列印
+        var dataformInit = $("#stage_score_list").serializeArray();
+        var jsonTextInit = JSON.stringify({ dataform: dataformInit });
+        $("#print_web").click(function(){
+            var dataform = $("#stage_score_list").serializeArray();
+            var jsonText = JSON.stringify({ dataform: dataform });
+            if(jsonTextInit==jsonText) {
+                onprint();
+                return false;
+            }else{
+                alert("表單改變，請先按儲存！");
+                return false;
+            }
+        })
 
     })
     function printHtml(html) {
@@ -172,21 +187,20 @@
         return false;
     }
 
-    $(function(){
-    var dataformInit = $("#stage_score_list").serializeArray();
-    var jsonTextInit = JSON.stringify({ dataform: dataformInit });
-    $("#print_web").click(function(){
-            var dataform = $("#stage_score_list").serializeArray();
-            var jsonText = JSON.stringify({ dataform: dataform });
-            if(jsonTextInit==jsonText) {
-                onprint();
-                return false;
-            }else{
-                alert("表單改變，請先按儲存！");
+    function check_num(){
+        let formstatus=true;
+        // $('input[type=text]').each(function(i){
+        $(".score_jug").each(function(i){ //取得開頭name=student_sn
+
+            if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
+            {
+                alert("成績格式有錯，請確認！");
+                formstatus=false;
                 return false;
             }
         })
-    })
+        if(formstatus==true){document.forms["stage_score_list"].submit();}
+    }
 
 
 

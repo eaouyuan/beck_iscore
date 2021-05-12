@@ -43,7 +43,7 @@
     </div>
 
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <button class="btn btn-primary" type="button" onclick="check_num()";><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
         <a class="btn btn-secondary" href="javascript:history.back()">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
         <!-- <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=course_list"><i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a> -->
@@ -72,11 +72,24 @@
             function(){
                 location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_score_delete&dep_id='+dep_id+'&course_id='+courseid+'&exam_stage='+ stage+'&exam_number='+number+'&XOOPS_TOKEN_REQUEST='+xtoken;
             });
-        }
-            
+    }
+    function check_num(){
+        let formstatus=true;
+        // $('input[name^="student_sn"]').each(function(i){ //取得開頭name=student_sn
+        $('input[type=text]').each(function(i){
+            if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
+            {
+                alert("成績格式有錯，請確認！");
+                formstatus=false;
+                return false;
+            }
+        })
+        if(formstatus==true){document.forms["usual_score_form"].submit();}
+    }
+
     $(document).ready(function($){
+
     });
- 
 
 </script>
 
