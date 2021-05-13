@@ -212,8 +212,8 @@ switch ($op) {
         $SchoolSet= new SchoolSet;
         $SchoolSet->sscore_calculate( $dep_id,$course_id);
 
-        redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}", 3, '存檔成功！');
-        // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
+        // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}", 3, '存檔成功！');
+        redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
 
     }
 
