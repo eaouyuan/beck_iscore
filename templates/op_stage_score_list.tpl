@@ -116,7 +116,7 @@
         <tbody>
             <{foreach from=$all key=stu_sn item=v1}>
             <tr> 
-                <th class="text-center"><font size="6"><{$v1.name}></font></th>
+                <th class="text-center"><font size="6"><{$v1.stu_anonymous}></font></th>
                 <{foreach from=$v1.score key=k item=score}>
                     <th class="text-center"><{$score}></th>
                 <{/foreach}>

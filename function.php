@@ -8,6 +8,14 @@ if (!file_exists(XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php")) {
 include_once XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php";
 // require_once XOOPS_ROOT_PATH."/modules/tadtools/TadUpFiles.php" ;
 
+// 姓名改為匿名
+function name_substr_cut($user_name){
+    $strlen     = mb_strlen($user_name, 'utf-8');
+    $firstStr     = mb_substr($user_name, 0, 1, 'utf-8');
+    $lastStr     = mb_substr($user_name, -1, 1, 'utf-8');
+    return $strlen == 2 ? $firstStr . str_repeat('*', mb_strlen($user_name, 'utf-8') - 1) : $firstStr . str_repeat("*", $strlen - 2) . $lastStr;
+}
+
 // Get radio html
 function radio_htm($ary=[],$name,$value='0'){
     $htm='';

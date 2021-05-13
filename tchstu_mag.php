@@ -298,6 +298,7 @@ switch ($op) {
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
             foreach ($major_stu as $dep_id=>$stu_sn){
                 $stu_data[$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$stu_sn]);
+                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous[$stu_sn]);
                 // 列出學生及考試成績 空白表格
                 foreach ($SchoolSet->exam_name as $k=>$exam_name){
                     $stu_data[$stu_sn]['score'][$k]='';
@@ -778,6 +779,8 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
         // die();
+        $stu_anonymous=name_substr_cut($stu_name);
+
         $tbl = $xoopsDB->prefix('yy_student');
         $sql = "update `$tbl` set 
                     `stu_name`   = '{$stu_name}',
@@ -809,7 +812,8 @@ switch ($op) {
                     `emergency1_cellphone2` = '{$emergency1_cellphone2}', 
                     `emergency1_cellphone2` = '{$emergency1_cellphone2}', 
                     `uid` = '{$uid}', 
-                    `update_time` = now()
+                    `update_time` = now(),
+                    `stu_anonymous`='{$stu_anonymous}'
                 where `sn`   = '{$sn}'";
 
         // echo($sql);die();
@@ -839,7 +843,7 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
         // die();
-        
+        $stu_anonymous=name_substr_cut($stu_name);
 
         $tbl = $xoopsDB->prefix('yy_student');
         $sql = "insert into `$tbl` (
@@ -848,14 +852,14 @@ switch ($op) {
             `household_add`,`address`,`out_learn`,`audit`,`status`,
             `record`,`social_id`,`guidance_id`,`rcv_guidance_id`,`guardian1`,
             `guardian1_relationship`,`guardian1_cellphone1`,`guardian1_cellphone2`,`emergency1_contact1`,`emergency1_contact_rel`,
-            `emergency1_cellphone1`,`emergency1_cellphone2`,`uid`,`create_time`,`update_time`) 
+            `emergency1_cellphone1`,`emergency1_cellphone2`,`uid`,`create_time`,`update_time`,`stu_anonymous`) 
             values(
             '{$stu_name}','{$national_id}','{$stu_id}','{$stu_no}','{$class_id}',
             '{$major_id}','{$grade}','{$arrival_date}','{$birthday}','{$orig_school}',
             '{$household_add}','{$address}','{$out_learn}','{$audit}','{$status}',
             '{$record}','{$social_id}','{$guidance_id}','{$rcv_guidance_id}','{$guardian1}',
             '{$guardian1_relationship}','{$guardian1_cellphone1}','{$guardian1_cellphone2}','{$emergency1_contact1}','{$emergency1_contact_rel}',
-            '{$emergency1_cellphone1}','{$emergency1_cellphone2}','{$uid}',now(),now()
+            '{$emergency1_cellphone1}','{$emergency1_cellphone2}','{$uid}',now(),now(),'{$stu_anonymous}'
             )";
         // echo($sql); 
         $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -904,6 +908,7 @@ switch ($op) {
         $stu['stu_id']                 = $stu_ifo['stu_id'] ?? '' ;
         $stu['stu_no']                 = $stu_ifo['stu_no'] ?? '' ;
         $stu['stu_name']               = $stu_ifo['stu_name'] ?? '' ;
+        $stu['stu_anonymous']          = $stu_ifo['stu_anonymous'] ?? '' ;
         $stu['national_id']            = $stu_ifo['national_id'] ?? '';
         $stu['sex']                    = $stu_ifo['sex']?? '0' ;
         $stu['arrival_date']           = $stu_ifo['arrival_date'] ?? '';

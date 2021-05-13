@@ -34,6 +34,7 @@ class SchoolSet
     public $uid2name; // uid map 中文姓名
     public $major_stu; // 學程map 學生們sn
     public $stu_name; //  學生sn map name
+    public $stu_anonymous; //  學生sn map 學生匿名
     // public $tch_sex; //性別
  
 
@@ -471,9 +472,11 @@ class SchoolSet
         while($user= $xoopsDB->fetchArray($result)){
             $major_stu[$user['major_id']][] = $user['sn'];
             $stu_name[$user['sn']] = $user['stu_name'];
+            $stu_anonymous[$user['sn']] = $user['stu_anonymous'];
         }
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;
+        $this->stu_anonymous=$stu_anonymous;
     }
 
     // 部門名稱->user
