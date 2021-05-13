@@ -728,37 +728,6 @@ switch ($op) {
 
 // ----------------------------------
 
-//顯示教師基本資料
-    // function teacher_show($sn)
-    // {
-    //     global $xoopsTpl,$xoopsDB;
-
-    //     $tbl = $xoopsDB->prefix('yy_teacher');
-    //     $sql="SELECT * FROM $tbl Where `sn`='{$sn}'";
-    //     $result=$xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-    //     $teachers=$xoopsDB->fetchArray($result);//fetchrow
-
-    //     $TadUpFiles=new TadUpFiles("beck_iscore","/teacher",$file="/file",$image="/image",$thumbs="/image/.thumbs");
-    //     $TadUpFiles->set_col('sn',$sn);
-    //     $teachers['cover'] = $TadUpFiles->show_files('pic',true,'',true,null,null,null,false);
-    //     // $teachers['cover'] = $TadUpFiles->show_files('pic', true, '', true, null, null, null, true);
-
-    //     $TadUpFiles->set_col('tea_attached',$sn);
-    //     $teachers['files'] = $TadUpFiles->show_files();
-
-    //     // die(var_dump($teachers));
-    //     $xoopsTpl->assign('teachers', $teachers);
-    // }
-
-    // //顯示教師列表
-    // function teacher_list()
-    // {
-    //     global $xoopsTpl;
-
-    //     $main = "模組開發中";
-    //     $xoopsTpl->assign('content', $main);
-    // }
-
 // 新增學生表單
 function student_form($sn){
     global $xoopsTpl,$xoopsUser,$xoopsDB;

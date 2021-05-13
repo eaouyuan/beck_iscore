@@ -125,24 +125,34 @@ switch ($op) {
     case "stage_score_list":
         stage_score_list($uscore);
         break;//跳出迴圈,往下執行
-    // 表單 段考成績
-    case "stage_score_form":
-        stage_score_form($uscore);
-        break;//跳出迴圈,往下執行
-
     // 新增、更新 段考成績
     case "stage_score_insert":
         stage_score_insert($uscore);
-      
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}");
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         // exit;//離開，結束程式
         break;
-    // 刪除 段考成績'
-    case "stage_score_delete":
-        $re=stage_score_delete($uscore);
+//段考成績 查詢
+    //平時成績 列表
+    case "query_stage_score":
+        usual_score_list($uscore);
+        break;//跳出迴圈,往下執行
+    // 表單 平時成績
+    // case "usual_score_form":
+    //     usual_score_form($uscore);
+    //     break;//跳出迴圈,往下執行
+
+    // 新增、更新 平時成績
+    case "query_stage_score_insert":
+        usual_score_insert($uscore);
         header("location:tchstu_mag.php?op=usual_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
-        exit;
+        exit;//離開，結束程式
+
+    // // 刪除 平時成績'
+    // case "usual_score_delete":
+    //     $re=usual_score_delete($uscore);
+    //     header("location:tchstu_mag.php?op=usual_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
+    //     exit;
 
 
 
