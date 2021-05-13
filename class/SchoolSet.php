@@ -131,7 +131,11 @@ class SchoolSet
         // var_dump($all);die();
         // 平時考+段考
         foreach($all as $stu_sn=>$score_ary){
-            $all[$stu_sn]['uavg_savg_sum']=(float)$score_ary['uavg']+ (float)$score_ary['savg'];
+            if($score_ary['uavg']=='-' AND $score_ary['savg']=='-'){
+                $all[$stu_sn]['uavg_savg_sum']='-';
+            }else{
+                $all[$stu_sn]['uavg_savg_sum']=(float)$score_ary['uavg']+ (float)$score_ary['savg'];
+            }
         }
 
 

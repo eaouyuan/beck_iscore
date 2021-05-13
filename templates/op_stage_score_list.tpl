@@ -46,7 +46,7 @@
                 <{foreach from=$v1.score key=k item=score}>
                     <{if $addEdit.$k}>
                     <th class="text-center">
-                        <input type="text" class="form-control validate[required] score_jug" name="stu_score[<{$stu_sn}>][score][<{$k}>]" id="stu_<{$stu_sn}>" value="<{$score}>">
+                        <input type="text" class="form-control validate[required,min[0],max[100]] score_jug" name="stu_score[<{$stu_sn}>][score][<{$k}>]" id="stu_<{$stu_sn}>" value="<{$score}>">
                     </th>
                     <{else}>
                         <th class="text-center"><{$score}></th>
