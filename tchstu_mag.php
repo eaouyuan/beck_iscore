@@ -17,6 +17,7 @@ include_once XOOPS_ROOT_PATH . "/header.php";
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
 $op = Request::getString('op');
 $sn = Request::getInt('sn');
+
 $stu_list['status']   = Request::getString('status');
 $stu_list['major_id'] = Request::getString('major_id');
 $stu_list['search']   = Request::getString('search');
@@ -132,9 +133,11 @@ switch ($op) {
     // 新增、更新 段考成績
     case "stage_score_insert":
         stage_score_insert($uscore);
-        header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
-        exit;//離開，結束程式
-
+      
+        // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}");
+        // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
+        // exit;//離開，結束程式
+        break;
     // 刪除 段考成績'
     case "stage_score_delete":
         $re=stage_score_delete($uscore);
@@ -157,7 +160,7 @@ switch ($op) {
     // sql-新增 段考成績
     function stage_score_insert($pars=[]){
 
-        global $xoopsDB,$xoopsUser;
+        global $xoopsDB,$xoopsUser,$xoopsTpl;
 
         if (!$xoopsUser) {
             redirect_header('index.php', 3, 'stage_score_insert! error:2105091725');
@@ -205,10 +208,12 @@ switch ($op) {
             }
         }
         // die();
-
         // 重新計算段考及平時考平均
         $SchoolSet= new SchoolSet;
         $SchoolSet->sscore_calculate( $dep_id,$course_id);
+
+        redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}", 3, '存檔成功！');
+        // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
 
     }
 
@@ -285,11 +290,11 @@ switch ($op) {
                 $stu_data[$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$stu_sn]);
                 // 列出學生及考試成績 空白表格
                 foreach ($SchoolSet->exam_name as $k=>$exam_name){
-                    $stu_data[$stu_sn]['score'][$k]='-';
+                    $stu_data[$stu_sn]['score'][$k]='';
                 }
-                $stu_data[$stu_sn]['f_usual']='-';
-                $stu_data[$stu_sn]['f_stage']='-';
-                $stu_data[$stu_sn]['f_sum']='-';
+                $stu_data[$stu_sn]['f_usual']='';
+                $stu_data[$stu_sn]['f_stage']='';
+                $stu_data[$stu_sn]['f_sum']='';
                 $stu_data[$stu_sn]['desc']='-';
             }
             // 三次平時成績時段，是否可keyin

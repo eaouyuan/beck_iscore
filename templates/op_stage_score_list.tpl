@@ -151,7 +151,7 @@
         $('#course_id').change(function(e){
             let dep_id=$('#dep_id').val();
             let course_id=$('#course_id').val();
-            console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
+            // console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
         // 判斷表單是否有改變，沒變才能按列印
