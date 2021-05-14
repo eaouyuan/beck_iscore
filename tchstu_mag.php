@@ -275,7 +275,7 @@ switch ($op) {
             // stuid>courseid>score 學生段考成績
             $stu_score=$SchoolSet->dept_exam_course_score($pars['dep_id'],$pars['exam_stage'],array_keys($dep_exam_course));
 
-            if($pars['exam_stage']!='';
+            // if($pars['exam_stage']!='';     
 
 
             $i=1;
