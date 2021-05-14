@@ -50,6 +50,7 @@ $modversion['tables'][]         = 'yy_usual_score';            //平時成績
 $modversion['tables'][]         = 'yy_uscore_avg';             //平時成績平均
 $modversion['tables'][]         = 'yy_stage_score';            //段考成績
 $modversion['tables'][]         = 'yy_stage_sum';              //段考成績加總
+$modversion['tables'][]         = 'yy_query_stage_score';      //段考成績查詢
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

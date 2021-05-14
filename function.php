@@ -8,6 +8,34 @@ if (!file_exists(XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php")) {
 include_once XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php";
 // require_once XOOPS_ROOT_PATH."/modules/tadtools/TadUpFiles.php" ;
 
+//判斷成績等弟
+function score_range($score=0,$exam_stage='2'){
+    $number=(int)(round($score,0));
+
+    if($exam_stage=='8'){
+        if($number>=90){
+            $msg = "｢狀元獎｣獎狀一張、嘉獎一支。";
+        } elseif($number>=85){
+            $msg = "｢榜眼獎｣獎狀一張、嘉獎一支。";
+        } elseif($number>=80){
+            $msg = "｢探花獎｣獎狀一張、白鴿3支。";
+        } else {
+            $msg = "";
+        }
+    }else{
+        if($number>=90){
+            $msg = "｢狀元獎｣獎狀一張、嘉獎一支。";
+        } elseif($number>=85){
+            $msg = "｢榜眼獎｣獎狀一張、白鴿3支。";
+        } elseif($number>=80){
+            $msg = "｢探花獎｣獎狀一張、白鴿2支。";
+        } else {
+            $msg = "";
+        }
+    }
+    return $msg;
+}
+
 // 姓名改為匿名
 function name_substr_cut($user_name){
     $strlen     = mb_strlen($user_name, 'utf-8');

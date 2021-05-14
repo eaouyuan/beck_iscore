@@ -99,7 +99,7 @@
     <h3>學程名稱：<{$sscore.dep_name}>／課程名稱：<{$sscore.course_name}>／教師姓名：<{$sscore.tea_name}></h3>
     <hr>
     <!-- <table border=3 cellpadding="10"; width="100%" border-color="black"> -->
-    <table style="font-family:serif;" width="100%" cellpadding="5">
+    <table style="font-family:serif;"  cellpadding="5">
         <thead>
             <tr>
                 <th class="text-center" width="14%"><font size="6">姓  名</font></th>
@@ -109,7 +109,7 @@
                 <th class="text-center" width="7%">平時成績(<{$course.normal_exam_rate}>%)</th>
                 <th class="text-center" width="7%">段考成績(<{$course.section_exam_rate}>%)</th>
                 <th class="text-center" width="7%">總成績</th>
-                <th class="text-center" width="20%">質性描述</th>
+                <th class="text-center" width="18%">質性描述</th>
                 
             </tr>
         </thead>
@@ -226,18 +226,26 @@
         text-align:center;
     }
 }
-@page  {margin: 1cm;c /*print邊界*/          /* size:210mm 148mm; 列印紙張大小  */ }
+@page  {
+    size:A4;
+    margin:10mm;
 
+   
+}
 @media print 
 {
+
     #printArea { 
         font-size: 24px;
+
     }
     table th, th, td {
         vertical-align:middle;
         text-align:center;
         border: 4px solid black;
     }   
+
+
 }
 </style>
 <!-- link, style可用media="mediaType"宣告適用時機 -->
