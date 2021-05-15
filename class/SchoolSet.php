@@ -30,14 +30,14 @@ class SchoolSet
     public $stage_exam_name; //段考名稱
     public $tea_course; //教師課表 教師  學程 課程
     public $dep2course; //學程對課程
-    public $dep_exam_course; //[學程id] [段考[ [課程]=[課程中文名]
+    public $dep_exam_course; //[學程id][段考ID][課程id] = [課程中文名]
     public $courese_chn; //課程中文名稱
     public $all_course; //所有課程 sn-> data
     public $uid2name; // uid map 中文姓名
-    public $major_stu; // 學程map 學生們sn
-    public $stu_name; //  學生sn map name
-    public $stu_anonymous; //  學生sn map 學生匿名
-    public $stu_sn_classid; //  學生sn map 班級id
+    public $major_stu; // [學程id][]= stu sn 
+    public $stu_name; //  //[stu sn]=name   , 學生sn map name
+    public $stu_anonymous; //  [stu sn]=stu_anonymous , 學生sn map 學生匿名
+    public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
     // public $tch_sex; //性別
     
     //建構函數
@@ -59,7 +59,85 @@ class SchoolSet
 
     }
 
-    // 學程>段考>科目課程>成績
+    // 取出考科查詢，學生備註
+    public function exam_comment($dep_id='',$exam_stage=''){
+        global $xoopsDB,$xoopsUser;
+        $tb1 = $xoopsDB->prefix('yy_query_stage_score');
+        $sql = "SELECT * FROM $tb1 
+                    Where `year` = '{$this->sem_year}'
+                    AND `term` = '{$this->sem_term}'
+                    AND `dep_id`='{$dep_id}' 
+                    AND `exam_stage` = '{$exam_stage}'
+                    ORDER BY student_sn
+                ";
+        // echo($sql);die();
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']]=$data['comment'];
+        }
+        return $all;
+    }
+    
+    // 新增考科成績
+    public function add_query_stage_score($dep_id='',$exam_stage='',$stu_data=[]){
+        global $xoopsDB,$xoopsUser;
+        // 先把學生備註複製下來
+        $stu_com=$this->exam_comment($dep_id,$exam_stage);
+        // 刪除學生 目前學年度 目前學期 學程的第幾次段考
+        $tbl = $xoopsDB->prefix('yy_query_stage_score');
+        $sql = "DELETE FROM `$tbl` WHERE 
+                `year` = '{$this->sem_year}'
+            AND `term` = '{$this->sem_term}'
+            AND `dep_id` = '{$dep_id}'
+            AND `exam_stage` = '{$exam_stage}'
+            ";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        
+        // die(var_dump($stu_data));
+        // 把備註給學生資料
+        foreach($stu_data as $sn=>$v){
+            $stu_data[$sn]['comment']=$stu_com[$sn];
+        }
+        // die(var_dump($stu_data));
+        foreach($stu_data as $stusn => $val){
+            $sql = "insert into `$tbl` (
+                `year`,`term`,`dep_id`,`exam_stage`,`student_sn`,
+                `qscore_sum`,`qscore_avg`,`reward_method`,`progress_score`,
+                `comment`,`update_user`,`update_date`
+                ) 
+                values(
+                '{$this->sem_year}','{$this->sem_term}','{$dep_id}','{$exam_stage}','{$stusn}',
+                '{$val['sum']}','{$val['avg']}','{$val['reward_method']}','{$val['progress_score']}',
+                '{$val['comment']}','{$xoopsUser->uid()}',now()
+                )";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+    }
+
+    // 回傳第一次段考，學生平均分數。用來算進步分
+    public function first_exam_avg_score($dep_id=''){
+        global $xoopsDB,$xoopsUser;
+        $tb1 = $xoopsDB->prefix('yy_query_stage_score');
+        $sql = "SELECT * FROM $tb1 
+                    Where `year` = '{$this->sem_year}'
+                    AND `term` = '{$this->sem_term}'
+                    AND `dep_id`='{$dep_id}' 
+                    AND `exam_stage`='2'
+                    ORDER BY student_sn
+                ";
+        // echo($sql);die();
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']]=$data['qscore_avg'];
+        }
+        return $all;
+    }
+
+    // 學程>段考考科>科目課程>成績 [stu_sn][course id]= score
     public function dept_exam_course_score( $dep_id='',$exam_stage='',$course_id=[]){
         global $xoopsDB,$xoopsUser;
         //找出學程>段考>科目>成績
@@ -78,12 +156,9 @@ class SchoolSet
         while($data= $xoopsDB->fetchArray($result)){
             $all[$data['student_sn']][$data['course_id']]=$data['score'];
         }
-        // die(var_dump($all));
-        
-        return $all;
-
+        return $all; //
     }
-    // get 學程->段考->課程id->課程中文名稱
+    // 列出一~三次段考 [學程] [段考] [課程id]=[課程中文名稱]
     private function dep2exam(){
         global $xoopsDB;
         // 第一次段考 學程 map 科目
@@ -548,10 +623,10 @@ class SchoolSet
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $stu_name=$major_stu=[];
         while($user= $xoopsDB->fetchArray($result)){
-            $major_stu[$user['major_id']][] = $user['sn'];
-            $stu_name[$user['sn']] = $user['stu_name'];
-            $stu_anonymous[$user['sn']] = $user['stu_anonymous'];
-            $stu_sn_classid[$user['sn']] = $user['class_id'];
+            $major_stu[$user['major_id']][] = $user['sn']; //[學程id][]=stu sn
+            $stu_name[$user['sn']] = $user['stu_name'];    //[stu sn]=name
+            $stu_anonymous[$user['sn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
+            $stu_sn_classid[$user['sn']] = $user['class_id'];  // [stu sn]= class id
         }
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;

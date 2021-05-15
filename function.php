@@ -8,6 +8,25 @@ if (!file_exists(XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php")) {
 include_once XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php";
 // require_once XOOPS_ROOT_PATH."/modules/tadtools/TadUpFiles.php" ;
 
+//判斷進步獎
+function progress_award($score=0){
+    $number=(int)(round($score,2));
+    if($number>=10){
+        $msg = "｢進步獎｣獎狀一張、白鴿3支。";
+    } elseif($number>=9){
+        $msg = "｢進步獎｣:白鴿3支。";
+    } elseif($number>=6){
+        $msg = "｢進步獎｣:白鴿2支。";
+    } elseif($number>=3){
+        $msg = "｢進步獎｣:白鴿1支。";
+    } else {
+        $msg = "";
+    }
+    
+ 
+    return $msg;
+}
+
 //判斷成績等弟
 function score_range($score=0,$exam_stage='2'){
     $number=(int)(round($score,0));

@@ -1,6 +1,6 @@
 <{$formValidator_code}>
 <h2 class="mb-3">段考成績查詢</h2>
-<form name="query_stage_score" id="query_stage_score" action="tchstu_mag.php" method="get">
+<form name="query_stage_score" id="query_stage_score" action="tchstu_mag.php" method="post">
    
     <div class="col">
         <div class="form-group row">
@@ -19,14 +19,8 @@
             </div>
         </div>
     </div>
-    <button type="submit" style="display:none;"></button>
-    <input name="op" id="op" value="<{$op}>" type="hidden">
 
-</form>
-<{$XOOPS_TOKEN}>
 <{if $showtable}>
-
-
 
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead>
@@ -40,7 +34,9 @@
                 <th scope="col" class="text-center">總分</th>
                 <th scope="col" class="text-center">平均</th>
                 <th scope="col" class="text-center">獎勵方式</th>
+                <{if $pars.exam_stage=='4'}>
                 <th scope="col" class="text-center">進步分</th>
+                <{/if}>
                 <th scope="col" class="text-center">備註</th>
             </tr>
         </thead>
@@ -53,17 +49,17 @@
                 <{foreach from=$v1.scores key=course_id item=vscore}>
                     <th class="text-center" width="3%"><{$vscore}></th>
                 <{/foreach}>
-                <th class="text-center" width="3%"><{$v1.sum}></th>
-                <th class="text-center" width="3%"><{$v1.avg}></th>
-                <th class="text-left" width="12%">
-                    <label name="reward_method[<{$stu_sn}>]"><{$v1.reward_method}></label>    
-                </th>
-                <th class="text-center" width="4%">
-                    <label name="progress_score[<{$stu_sn}>]">進步分</label>    
-                </th>
-                <th class="text-center" width="12%">
-                    <input type="text" class="form-control" name="comment[<{$stu_sn}>]" value="備註">
-                </th>
+                <th class="text-center" width="3%" name="qscore_sum[<{$stu_sn}>]"><{$v1.sum}></th>
+                <th class="text-center" width="3%" name="qscore_avg[<{$stu_sn}>]"><{$v1.avg}></th>
+                <th class="text-left" width="12%" name="reward_method[<{$stu_sn}>]"><{$v1.reward_method}></th>
+                <{if $pars.exam_stage=='4'}>
+                    <th class="text-center" width="4%" name="progress_score[<{$stu_sn}>]"><{$v1.progress_score}></th>
+                <{/if}>
+                <{if $ps_edit}>
+                    <th class="text-center" width="12%"><input type="text" class="form-control" name="comment[<{$stu_sn}>]" value="<{$v1.comment}>"></th>
+                <{else}>
+                    <th class="text-center" width="12%" name="comment[<{$stu_sn}>]"><{$v1.comment}></th>
+                <{/if}>
             </tr>
             <{/foreach}>
 
@@ -72,7 +68,21 @@
         </tbody>
     </table>
     <br>
+    <div class="col-md-12 text-center mb-3">
+        <{if $ps_edit}>
+            <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>修改備註</button>
+        <{/if}>
+        <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-undo mr-2" aria-hidden="true"></i>回上頁</a>
+    </div>
 
+    <input name="op" id="op" value="<{$op}>" type="hidden">
+    <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
+    <input name="year" id="year" value="<{$course.year}>" type="hidden">
+    <input name="term" id="term" value="<{$course.term}>" type="hidden">
+    <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
+    <{$XOOPS_TOKEN}>
+
+</form>
 <{else}>
     <div class="alert alert-danger">
         尚無內容
