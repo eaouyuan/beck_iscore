@@ -190,16 +190,20 @@
     function check_num(){
         let formstatus=true;
         // $('input[type=text]').each(function(i){
-        $(".score_jug").each(function(i){ //取得開頭name=student_sn
 
-            if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
-            {
-                alert("成績格式有錯，請確認！");
-                formstatus=false;
-                return false;
-            }
-        })
-        if(formstatus==true){document.forms["stage_score_list"].submit();}
+        let validat=$("#stage_score_list").validationEngine('validate');
+        // console.log(validat);
+        if(validat==true){
+            $(".score_jug").each(function(i){ //取得開頭name=student_sn
+                if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
+                {
+                    alert("成績格式有錯，請確認！");
+                    formstatus=false;
+                    return false;
+                }
+            })
+            if(formstatus==true){document.forms["stage_score_list"].submit();}
+        }
     }
 
 

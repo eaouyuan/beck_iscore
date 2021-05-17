@@ -224,16 +224,18 @@ switch ($op) {
         // 學程名稱下拉選單
         $course['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['dep_id'],'1');
         // 段考名稱 下拉選單
-        $course['exam_number_htm']=Get_select_opt_htm($SchoolSet->stage_exam_name+['8' => '總成績'],$pars['exam_stage'],'1');
+        // $course['exam_number_htm']=Get_select_opt_htm($SchoolSet->stage_exam_name+['8' => '總成績'],$pars['exam_stage'],'1');
+        $course['exam_number_htm']=Get_select_opt_htm($SchoolSet->stage_exam_name,$pars['exam_stage'],'1');
         $course['year']=$SchoolSet->sem_year;
         $course['term']=$SchoolSet->sem_term;
+        $course['dep_id']=$pars['dep_id'];
         
 
         if(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin()){
             $xoopsTpl->assign("ps_edit",true);
         } 
 
-        if($pars['dep_id']!='' AND  $pars['exam_stage']!='' AND $pars['exam_stage']!='8'){
+        if($pars['dep_id']!='' AND  $pars['exam_stage']!=''){
             $xoopsTpl->assign('showtable', true);
             $xoopsTpl->assign('pars', $pars);
 
@@ -480,11 +482,11 @@ switch ($op) {
             $addEdit=[];
             foreach($SchoolSet->stage_exam_name as $k=>$name){
                 // 判斷新增、修改平時成績權限 
-                if((power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-                    $addEdit[$k]=true;
-                }else{
+                // if((power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+                //     $addEdit[$k]=true;
+                // }else{
                     $addEdit[$k]=$SchoolSet->exam_date_check($name);
-                }
+                // }
             }
             $xoopsTpl->assign('addEdit', $addEdit);
             foreach($addEdit as $k=>$val){

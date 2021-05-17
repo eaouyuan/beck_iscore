@@ -1,5 +1,5 @@
 <{$formValidator_code}>
-<h2 class="mb-3">段考成績查詢</h2>
+<h2 class="mb-3">考科成績查詢</h2>
 <form name="query_stage_score" id="query_stage_score" action="tchstu_mag.php" method="post">
    
     <div class="col">
@@ -72,14 +72,13 @@
         <{if $ps_edit}>
             <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>修改備註</button>
         <{/if}>
-        <a class="btn btn-secondary" href="javascript:history.back()"><i class="fa fa-undo mr-2" aria-hidden="true"></i>回上頁</a>
+        <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=query_stage_score&dep_id=<{$course.dep_id}>"><i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
     </div>
 
     <input name="op" id="op" value="<{$op}>" type="hidden">
     <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
     <input name="year" id="year" value="<{$course.year}>" type="hidden">
     <input name="term" id="term" value="<{$course.term}>" type="hidden">
-    <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
     <{$XOOPS_TOKEN}>
 
 </form>

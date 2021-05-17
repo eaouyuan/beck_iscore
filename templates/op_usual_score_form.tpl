@@ -75,16 +75,19 @@
     }
     function check_num(){
         let formstatus=true;
-        // $('input[name^="student_sn"]').each(function(i){ //取得開頭name=student_sn
-        $('input[type=text]').each(function(i){
-            if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
-            {
-                alert("成績格式有錯，請確認！");
-                formstatus=false;
-                return false;
-            }
-        })
-        if(formstatus==true){document.forms["usual_score_form"].submit();}
+        let validat=$("#usual_score_form").validationEngine('validate');
+        // console.log(validat);
+        if(validat==true){
+            $('input[type=text]').each(function(i){
+                if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
+                {
+                    alert("成績格式有錯，請確認！");
+                    formstatus=false;
+                    return false;
+                }
+            })
+            if(formstatus==true){document.forms["usual_score_form"].submit();}
+        }
     }
 
     $(document).ready(function($){
