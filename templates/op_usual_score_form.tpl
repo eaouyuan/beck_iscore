@@ -21,7 +21,7 @@
             <tr id="odr_<{$its.uid}>"> 
                 <th class="text-center"><{$its.name}></th>
                 <td>
-                    <input type="text" class="form-control validate[required]" name="student_sn[<{$i}>]" id="stu_<{$i}>" value="<{$its.score}>">
+                    <input type="text" class="form-control validate[required,min[0],max[100]]" name="student_sn[<{$i}>]" id="stu_<{$i}>" value="<{$its.score}>">
                 </td>
     
             </tr>

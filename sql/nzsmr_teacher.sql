@@ -326,7 +326,7 @@ ALTER TABLE `yy_stage_sum`
 ADD UNIQUE `course_id_student_sn` (`course_id`, `student_sn`);
 
 
--- 段考成績查詢
+-- 考科成績查詢
 CREATE TABLE `yy_query_stage_score` (
   `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
   `year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
@@ -334,6 +334,7 @@ CREATE TABLE `yy_query_stage_score` (
   `dep_id` mediumint(8) unsigned NOT NULL COMMENT '學程編號',
   `exam_stage` enum('2','4','6','8') NOT NULL COMMENT '第幾次段考',
   `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `sum_credits` int(5) unsigned NOT NULL DEFAULT '1' COMMENT '總學分數',
   `qscore_sum` varchar(5) NULL COMMENT '段考加總',
   `qscore_avg` varchar(5) NULL COMMENT '段考平均',
   `reward_method` varchar(255) NULL DEFAULT '' COMMENT '獎勵方式',
@@ -346,6 +347,26 @@ CREATE TABLE `yy_query_stage_score` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ALTER TABLE `yy_query_stage_score`
 ADD UNIQUE `dep_id_exam_stage_student_sn` (`dep_id`, `exam_stage`, `student_sn`);
+
+-- 學期總成績查詢
+CREATE TABLE `yy_term_total_score` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
+  `term` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學期',
+  `dep_id` mediumint(8) unsigned NOT NULL COMMENT '學程編號',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `sum_credits` int(5) unsigned NOT NULL DEFAULT '1' COMMENT '總學分數',
+  `total_score` varchar(6) NULL COMMENT '總分',
+  `total_avg` varchar(5) NULL COMMENT '總平均',
+  `comment` varchar(255) NULL DEFAULT '' COMMENT '備註',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+ALTER TABLE `yy_term_total_score`
+ADD UNIQUE `year_term_dep_id_student_sn` (`year`, `term`, `dep_id`, `student_sn`);
+
 
 -- 學年度
 INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`, `create_date`, `update_user`, `update_date`, `activity`, `sort`) VALUES

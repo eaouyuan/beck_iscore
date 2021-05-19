@@ -59,6 +59,71 @@ class SchoolSet
 
     }
 
+    // 計算學期總成績
+    public function calculation_term_score($year='',$term='',$dep=''){
+        // die(var_dump($term));
+
+
+
+
+    }
+    // 輸入學年度 學期 學程，學生期末成績
+    public function year_term_score($year='',$term='',$depid=''){
+        global $xoopsDB;
+        $tbl = $xoopsDB->prefix('yy_stage_sum');
+        $tb2 = $xoopsDB->prefix('yy_course');
+        $sql = "SELECT * FROM $tbl  LEFT JOIN $tb2 ON $tbl.course_id=$tb2.sn
+                Where `cos_year`='{$year}' 
+                AND `cos_term`='{$term}' 
+                AND `dep_id`='{$depid}' 
+                        ";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo($sql);die();
+        $all==$stu_score=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']]['grp_cos_name'][$data['cos_name_grp']][$data['course_id']]['cos_credits']=$data['cos_credits'];
+            $all[$data['student_sn']]['grp_cos_name'][$data['cos_name_grp']][$data['course_id']]['sum_usual_stage_avg']=$data['sum_usual_stage_avg'];
+        }
+        // die(var_dump($all));
+        // 先算出 群組科目加總的學分、總分、平均
+        foreach($all as $stu_sn=>$v1){
+            foreach($v1['grp_cos_name'] as $cos_name_grp=>$v2){
+                $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred']=$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']=$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['avg_score']='-';
+                foreach($v2 as $course_id=>$v3){
+                    if(is_numeric($v3['sum_usual_stage_avg'])){
+                        $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred']+=$v3['cos_credits'];
+                        $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']+=$v3['sum_usual_stage_avg']*$v3['cos_credits'];
+                    }
+                }
+                if(is_numeric($stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score'])){
+                    $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['avg_score']=(float) round($stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']/$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred'],2);
+                }
+            }
+        }
+        // die(var_dump($stu_score));
+
+        // 再算出該學生的總分、總學分、總平均
+        foreach($stu_score as $stu_sn=>$v1){
+            $stu_score[$stu_sn]['stu_sum_score']=$stu_score[$stu_sn]['stu_sum_cred']=$stu_score[$stu_sn]['stu_avg_score']='-';
+            foreach($v1['grp_cos_name'] as $cos_name_grp=>$v2){
+                if(is_numeric($v2['sum_score'])){
+                    $stu_score[$stu_sn]['stu_sum_score']+=$v2['sum_score'];
+                    $stu_score[$stu_sn]['stu_sum_cred']+=$v2['sum_cred'];
+                }
+            }
+            if(is_numeric($stu_score[$stu_sn]['stu_sum_score'])){
+                $stu_score[$stu_sn]['stu_avg_score']=(float) round($stu_score[$stu_sn]['stu_sum_score']/ $stu_score[$stu_sn]['stu_sum_cred'],2);
+            }
+
+        }
+        die(var_dump($stu_score));
+
+
+        return $stu_score;
+    }
+
+
+
     // 取出考科查詢，學生備註
     public function exam_comment($dep_id='',$exam_stage=''){
         global $xoopsDB,$xoopsUser;
@@ -327,7 +392,7 @@ class SchoolSet
         }
         // die(var_dump($all));
         
-        // 段考成績欄位"final_score_sn" 對映到 yy_stage_sum  sn
+        // 平時考成績欄位"final_score_sn" 對映到 yy_stage_sum  sn
         foreach($all as $stusn=>$v){
             $tbl = $xoopsDB->prefix('yy_uscore_avg');
             $sql = "update `$tbl` set `final_score_sn`   = '{$v['final_sum_sn']}'

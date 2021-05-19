@@ -25,6 +25,7 @@ $g2p=Request::getInt('g2p');
 $cos['cos_year'] = Request::getString('cos_year');
 $cos['cos_term'] = Request::getString('cos_term');
 $cos['dep_id']   = Request::getString('dep_id');
+$cos['ac']       = Request::getString('ac');
 $uscore['dep_id']      = Request::getString('dep_id');
 $uscore['course_id']   = Request::getString('course_id');
 $uscore['exam_stage']  = Request::getString('exam_stage');
@@ -131,22 +132,21 @@ switch ($op) {
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}");
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         exit;//離開，結束程式
-//段考成績 查詢
+//查詢 考科成績 及期末總成績 學期總成績
     //平時成績 列表
     case "query_stage_score":
         query_stage_score($uscore);
         break;//跳出迴圈,往下執行
-    // 新增、更新 平時成績
+    // 新增、更新 考科成績
     case "add_query_stage_score_comment":
         add_query_stage_score_comment($uscore);
         header("location:tchstu_mag.php?op=query_stage_score&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         exit;//離開，結束程式
-
-    // // 刪除 平時成績'
-    // case "usual_score_delete":
-    //     $re=usual_score_delete($uscore);
-    //     header("location:tchstu_mag.php?op=usual_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
-    //     exit;
+    // 學期總成績term_total_score 列表
+    case "term_total_score_list":
+        term_total_score_list($cos);
+        break;//跳出迴圈,往下執行
+    // 新增、更新 平時成績
 
 
 
@@ -160,8 +160,147 @@ switch ($op) {
 
 /*-----------function區--------------*/
 // ----------------------------------
-// 段考成績查詢 
-    // sql-新增 段考成績查詢
+// 成績查詢 
+    // 學期總成績列表
+    function term_total_score_list($pars=[]){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+
+        if(!$xoopsUser){
+            redirect_header('index.php', 3, 'term_total_score_list ! error:2105181152');
+        }
+            
+        $SchoolSet= new SchoolSet;
+        // 學年度select
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'1');
+        $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],1);
+        $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
+
+        // 學程列表
+        $major_name=[];
+        foreach ($SchoolSet->dept as $k=>$v){
+            $major_name[$v['sn']]=$v['dep_name'];
+        }
+        $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
+        $xoopsTpl->assign('major_htm', $major_htm);
+
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#stage_score_list", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $myts = MyTextSanitizer::getInstance();
+        
+        // 假如 學年度 學期是目前學期，才有重新計算，否則沒有
+        if($pars['cos_year']==$SchoolSet->sem_year AND  $pars['cos_term']==$SchoolSet->sem_term  AND $pars['dep_id']!=''){
+            $xoopsTpl->assign('show_ac', true);
+        }
+
+        // 計算學期總成績
+        if($pars['cos_year']!='' AND  $pars['cos_term']!='' AND $pars['dep_id']!='' AND $pars['ac']!='calculate'){
+            $xoopsTpl->assign('showtable', true);
+            // 列出該學程內所有學生sn, name 不含回歸結案
+            $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
+            
+            // 列出 [課程群組][課程id][cos_credits] = 學分數
+            $year_term_score=$SchoolSet->year_term_score($pars['cos_year'],$pars['cos_term'],$pars['dep_id']);
+            die(var_dump($year_term_score));
+            // 列出學程內所有學生的期末成績
+
+
+            // $xoopsTpl->assign('dep_exam_course', $dep_exam_course);
+            // 列出 [學年度][學期][學程][stu sn][course_id]=總成績
+            // $stu_score=$SchoolSet->calculation_term_score($pars['cos_year'],$pars['cos_term'],$pars['dep_id']);
+
+            $i=1;
+
+
+
+            foreach ($major_stu as $k=>$stu_sn){
+                $stu_data[$stu_sn]['order']=$i;
+                $stu_data[$stu_sn]['class_name']=$myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$stu_sn]]);
+                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous[$stu_sn]);
+
+                // 填入所有科目段考成績 
+                foreach ($dep_exam_course as $course_id=>$course_name){
+                    $stu_data[$stu_sn]['scores'][$course_id]=$stu_score[$stu_sn][$course_id];
+                    // $stu_data[$stu_sn]['scores'][]=$stu_score[$stu_sn][$course_id];
+                }
+
+                // // 計算總分、平均
+                // foreach ($stu_data as $stu_sn=>$v){
+                //     $j=$sum=0;
+                //     foreach ($v['scores'] as $course_id=>$score){
+                //         if(is_numeric($score)){
+                //             $sum=$sum+$score;
+                //             $j++;
+                //         }
+                //     }
+                //     if($j==0){
+                //         $stu_data[$stu_sn]['sum']='-';
+                //         $stu_data[$stu_sn]['avg']='-';
+                //         $stu_data[$stu_sn]['reward_method']='';
+                //     }else{
+                //         $stu_data[$stu_sn]['sum']=$sum;
+                //         $stu_data[$stu_sn]['avg']=(float)(round(($sum/$j),2));
+                //         $stu_data[$stu_sn]['reward_method']=score_range($stu_data[$stu_sn]['avg'],$pars['exam_stage']);
+                //     }
+
+                //     if($pars['exam_stage']=='4' AND $stu_first_exam_avg_score[$stu_sn]>='60'){
+                //         $stu_data[$stu_sn]['progress_score']=$stu_data[$stu_sn]['avg']-$stu_first_exam_avg_score[$stu_sn];
+                //         $stu_data[$stu_sn]['reward_method'].=progress_award($stu_data[$stu_sn]['progress_score']);
+                //     }else{
+                //         $stu_data[$stu_sn]['progress_score']='';
+                //     }
+                    
+                //     $stu_data[$stu_sn]['comment']=$stu_comment[$stu_sn];//備註
+
+                // }
+                $i++;
+            }
+            
+            // die(var_dump($stu_data));
+        
+        }
+
+
+
+
+        $xoopsTpl->assign('all', $all);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
+
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('cosqq_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=course_delete&sn=", 'sn','確定要刪除課程資料','課程資料資料刪除。');
+        
+        // $SchoolSet->sem_year;
+        // $SchoolSet->sem_term;
+        $xoopsTpl->assign('sem_year', $SchoolSet->sem_year);
+        $xoopsTpl->assign('sem_term', $SchoolSet->sem_term);
+
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+        $xoopsTpl->assign('op', "course_list");
+
+    }
+
+    // sql-新增 考科成績備註
     function add_query_stage_score_comment($pars=[]){
 
         global $xoopsDB,$xoopsUser,$xoopsTpl;
@@ -182,7 +321,7 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
-        $comment  = Request::getArray('comment');//學生編號=>平時成績
+        $comment  = Request::getArray('comment');//學生編號=>平時備註
         // die(var_dump($comment));
 
         // 新增學生段考成績
@@ -335,6 +474,8 @@ switch ($op) {
         // }
         // array_push($excel_save['0'],'總分','平均','獎勵方式','進步分','備註');
     }
+
+
 // ----------------------------------
 // 段考成績 管理
     // sql-新增 段考成績
@@ -347,11 +488,11 @@ switch ($op) {
         }
 
         // 安全判斷 儲存 更新都要做
-        if (!$GLOBALS['xoopsSecurity']->check()) {
-            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'stage_score_insert失敗! error:2105100816 檢查結果:'.!$GLOBALS['xoopsSecurity']->check());
-            throw new Exception($error);
-        }
+        // if (!$GLOBALS['xoopsSecurity']->check()) {
+        //     $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+        //     redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'stage_score_insert失敗! error:2105100816 檢查結果:'.!$GLOBALS['xoopsSecurity']->check());
+        //     throw new Exception($error);
+        // }
         
         $myts = MyTextSanitizer::getInstance();
         foreach ($_POST as $key => $value) {
@@ -363,14 +504,21 @@ switch ($op) {
 
         // 先刪除該科目段考資料
         $tbl = $xoopsDB->prefix('yy_stage_score');
-        $sql = "DELETE FROM `$tbl` 
-            WHERE `course_id` = '{$course_id}'
-                AND `year` = '{$year}'
-                AND `term` = '{$term}'
-                AND `dep_id` = '{$dep_id}'
-            ";
-        // echo($sql);die();
-        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        foreach($stu_score as $stusn=>$v){
+            foreach($v['score'] as $exam_stage=>$score){
+                $sql = "DELETE FROM `$tbl` 
+                    WHERE `course_id` = '{$course_id}'
+                        AND `year` = '{$year}'
+                        AND `term` = '{$term}'
+                        AND `dep_id` = '{$dep_id}'
+                        AND `exam_stage`='{$exam_stage}'
+                        AND `student_sn`='{$stusn}'
+                    ";
+                // echo($sql);die();
+                $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            }
+        }
+
 
         // 新增學生段考成績
         $tbl = $xoopsDB->prefix('yy_stage_score');
@@ -386,7 +534,9 @@ switch ($op) {
                     )";
                 $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             }
+        
         }
+        echo($sql);
         // die();
         // 重新計算段考及平時考平均
         $SchoolSet= new SchoolSet;
