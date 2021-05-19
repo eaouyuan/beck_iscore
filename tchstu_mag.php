@@ -488,11 +488,11 @@ switch ($op) {
         }
 
         // 安全判斷 儲存 更新都要做
-        // if (!$GLOBALS['xoopsSecurity']->check()) {
-        //     $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-        //     redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'stage_score_insert失敗! error:2105100816 檢查結果:'.!$GLOBALS['xoopsSecurity']->check());
-        //     throw new Exception($error);
-        // }
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'stage_score_insert失敗! error:2105100816 檢查結果:'.!$GLOBALS['xoopsSecurity']->check());
+            throw new Exception($error);
+        }
         
         $myts = MyTextSanitizer::getInstance();
         foreach ($_POST as $key => $value) {
