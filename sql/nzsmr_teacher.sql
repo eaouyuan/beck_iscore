@@ -316,6 +316,7 @@ CREATE TABLE `yy_stage_sum` (
   `uscore_avg` varchar(5) NULL COMMENT '平時考平均',
   `sscore_sum` varchar(5) NULL COMMENT '段考加總',
   `sscore_avg` varchar(5) NULL COMMENT '段考平均',
+  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '質性描述',
   `sum_usual_stage_avg` varchar(5) NULL COMMENT '平時考平均+段考平均',
   `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',

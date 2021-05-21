@@ -160,7 +160,7 @@ switch ($op) {
 
 /*-----------function區--------------*/
 // ----------------------------------
-// 成績查詢 
+// 考科及學期總成績查詢 
     // 學期總成績列表
     function term_total_score_list($pars=[]){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
@@ -512,11 +512,10 @@ switch ($op) {
                         AND `term` = '{$term}'
                         AND `dep_id` = '{$dep_id}'
                         AND `exam_stage`='{$exam_stage}'
-                        AND `student_sn`='{$stusn}'
                     ";
-                // echo($sql);die();
                 $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             }
+            break;
         }
 
 
@@ -526,21 +525,20 @@ switch ($op) {
             foreach($v['score'] as $exam_stage=>$score){
                 $sql = "insert into `$tbl` (
                     `year`,`term`,`dep_id`,`course_id`,`exam_stage`,
-                    `student_sn`,`score`,`description`,`update_user`,`update_date`
+                    `student_sn`,`score`,`update_user`,`update_date`
                     ) 
                     values(
                     '{$year}','{$term}','{$dep_id}','{$course_id}','{$exam_stage}',
-                    '{$stusn}','{$score}','{$v['desc']}','{$update_user}',now()
+                    '{$stusn}','{$score}','{$update_user}',now()
                     )";
                 $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             }
-        
         }
-        echo($sql);
+        // echo($sql);
         // die();
         // 重新計算段考及平時考平均
         $SchoolSet= new SchoolSet;
-        $SchoolSet->sscore_calculate( $dep_id,$course_id);
+        $SchoolSet->sscore_calculate( $dep_id,$course_id,$stu_score);
 
         // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}", 3, '存檔成功！');
         redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
@@ -628,7 +626,7 @@ switch ($op) {
                 $stu_data[$stu_sn]['f_sum']='';
                 $stu_data[$stu_sn]['desc']='-';
             }
-            // 三次平時成績時段，是否可keyin
+            // 三次段考成績時段，是否可keyin
             $addEdit=[];
             foreach($SchoolSet->stage_exam_name as $k=>$name){
                 // 判斷新增、修改平時成績權限 
@@ -671,7 +669,8 @@ switch ($op) {
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             while($data= $xoopsDB->fetchArray($result)){
                 $stu_data [$data['student_sn']]['score'][$data['exam_stage']]= $myts->htmlSpecialChars($data['score']);
-                $stu_data [$data['student_sn']]['desc']= $myts->htmlSpecialChars($data['description']);
+                $stu_data [$data['student_sn']]['desc_old']= $myts->htmlSpecialChars($data['description']);//beck
+
             }
             
             // 撈出 平時考及段考總成績
@@ -686,6 +685,8 @@ switch ($op) {
                 $stu_data [$data['student_sn']]['f_usual']= $myts->htmlSpecialChars($data['uscore_avg']);
                 $stu_data [$data['student_sn']]['f_stage']= $myts->htmlSpecialChars($data['sscore_avg']);
                 $stu_data [$data['student_sn']]['f_sum']= $myts->htmlSpecialChars($data['sum_usual_stage_avg']);
+                $stu_data [$data['student_sn']]['desc']= $myts->htmlSpecialChars($data['description']);
+
             }
 
 

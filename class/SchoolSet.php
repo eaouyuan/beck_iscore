@@ -69,7 +69,7 @@ class SchoolSet
     }
     // 輸入學年度 學期 學程，學生期末成績
     public function year_term_score($year='',$term='',$depid=''){
-        global $xoopsDB;
+        global $xoopsDB ,$xoopsUser;
         $tbl = $xoopsDB->prefix('yy_stage_sum');
         $tb2 = $xoopsDB->prefix('yy_course');
         $sql = "SELECT * FROM $tbl  LEFT JOIN $tb2 ON $tbl.course_id=$tb2.sn
@@ -100,7 +100,7 @@ class SchoolSet
                 }
             }
         }
-        // die(var_dump($stu_score));
+        // die(var_dump($xoopsUser->uid()));
 
         // 再算出該學生的總分、總學分、總平均
         foreach($stu_score as $stu_sn=>$v1){
@@ -116,6 +116,54 @@ class SchoolSet
             }
 
         }
+        
+        $tbl = $xoopsDB->prefix('yy_term_total_score');
+        // 先將學生總成績的總平均及備註複製下來
+        $sql = "SELECT * FROM $tbl
+                Where `year`='{$year}' 
+                AND `term`='{$term}' 
+                AND `dep_id`='{$depid}' 
+                ";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo($sql);die();
+        $stu_tmp_data=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $stu_tmp_data[$data['student_sn']]['comment']=$data['comment'];
+        }
+
+        // 刪除學生的總成績
+        foreach($stu_score as $stu_sn=>$v1){
+            $sql = "DELETE FROM `$tbl` 
+            WHERE `year` = '{$year}'
+                AND `term` = '{$term}'
+                AND `dep_id` = '{$depid}'
+            ";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            break;
+        }
+
+        // 新增學生的系統總成績
+        foreach($stu_score as $stu_sn=>$v1){
+            $sql = "insert into `$tbl` (
+                `year`,`term`,`dep_id`,`student_sn`,`sum_credits`,
+                `total_score`,`total_avg`,`comment`,`update_user`,
+                `update_date`
+                ) 
+                values(
+                '{$year}','{$term}','{$depid}','{$stu_sn}','{$v1['stu_sum_cred']}',
+                '{$v1['stu_sum_score']}','{$v1['stu_avg_score']}','{$stu_tmp_data[$stu_sn]['comment']}','{$xoopsUser->uid()}',now()
+                )";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+
+
+
+
+
+
+
+
+
         die(var_dump($stu_score));
 
 
@@ -272,7 +320,7 @@ class SchoolSet
     }
 
     // 計算段考及平時考成績 加總 平均
-    public function sscore_calculate( $dep_id='',$coursid=''){
+    public function sscore_calculate( $dep_id='',$coursid='',$stu_desc=[]){
         global $xoopsDB,$xoopsUser;
         //找出學程對映 成績分配比例
         $tb1      = $xoopsDB->prefix('yy_department');
@@ -359,7 +407,7 @@ class SchoolSet
         $sql = "DELETE FROM `$tbl` WHERE `course_id` = '{$coursid}'";
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        // die(var_dump($all));
+        // die(var_dump($stu_desc));
         
 
         // 新增學生總成績
@@ -367,11 +415,13 @@ class SchoolSet
         foreach($all as $stusn=>$v){
             $sql_1 = "insert into `$tbl` (
                 `course_id`,`student_sn`,`uscore_sum`,`uscore_avg`,`sscore_sum`,
-                `sscore_avg`,`sum_usual_stage_avg`,`update_user`,`update_date`
+                `sscore_avg`,`sum_usual_stage_avg`,`update_user`,`update_date`,
+                `description`
                 ) 
                 values(
                 '{$coursid}','{$stusn}','{$v['usum']}','{$v['uavg']}','{$v['ssum']}',
-                '{$v['savg']}','{$v['uavg_savg_sum']}','{$xoopsUser->uid()}',now()
+                '{$v['savg']}','{$v['uavg_savg_sum']}','{$xoopsUser->uid()}',now(),
+                '{$stu_desc[$stusn]["desc"]}'
                 )";
                 // echo($sql_1);die();
             $xoopsDB->queryF($sql_1) or Utility::web_error($sql, __FILE__, __LINE__);

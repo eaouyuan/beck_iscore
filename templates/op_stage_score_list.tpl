@@ -34,8 +34,9 @@
                 <{/foreach}>
                 <th scope="col" class="text-center" width="8%">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
                 <th scope="col" class="text-center" width="8%">段考成績<br>(<{$course.section_exam_rate}>%)</th>
-                <th scope="col" class="text-center" width="10%">總成績</th>
-                <th scope="col" class="text-center" width="16%">質性<br>描述</th>
+                <th scope="col" class="text-center" width="8%">總成績</th>
+                <th scope="col" class="text-center" width="8%">質性<br>描述</th>
+                <th scope="col" class="text-center" width="10%">質性_old<br>描述</th>
             </tr>
         </thead>
 
@@ -62,8 +63,8 @@
                     <{else}>
                         <{$v1.desc}>
                     <{/if}>
-
                 </th>
+                <th class="text-center"><{$v1.desc_old}></th>
             </tr>
             <{/foreach}>
         </tbody>
