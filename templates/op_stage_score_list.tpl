@@ -28,15 +28,14 @@
         <thead>
             <tr class="table-info">
                 
-                <th style="border: 2px solid #000000;"class="text-center" width="10%" >姓名</th>
+                <th style="border: 2px solid #000000;"class="text-center" width="9%" >姓名</th>
                 <{foreach from=$exam_name key=exam_sn item=exam_chnname}>
-                    <th scope="col" class="text-center" width="8%"><{$exam_chnname}></th>
+                    <th scope="col" class="text-center" width="7%"><{$exam_chnname}></th>
                 <{/foreach}>
-                <th scope="col" class="text-center" width="8%">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
-                <th scope="col" class="text-center" width="8%">段考成績<br>(<{$course.section_exam_rate}>%)</th>
-                <th scope="col" class="text-center" width="8%">總成績</th>
-                <th scope="col" class="text-center" width="8%">質性<br>描述</th>
-                <th scope="col" class="text-center" width="10%">質性_old<br>描述</th>
+                <th scope="col" class="text-center" width="7%">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
+                <th scope="col" class="text-center" width="7%">段考成績<br>(<{$course.section_exam_rate}>%)</th>
+                <th scope="col" class="text-center" width="7%">總成績</th>
+                <th scope="col" class="text-center" width="18%">質性<br>描述</th>
             </tr>
         </thead>
 
@@ -64,7 +63,6 @@
                         <{$v1.desc}>
                     <{/if}>
                 </th>
-                <th class="text-center"><{$v1.desc_old}></th>
             </tr>
             <{/foreach}>
         </tbody>

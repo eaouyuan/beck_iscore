@@ -669,7 +669,6 @@ switch ($op) {
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             while($data= $xoopsDB->fetchArray($result)){
                 $stu_data [$data['student_sn']]['score'][$data['exam_stage']]= $myts->htmlSpecialChars($data['score']);
-                $stu_data [$data['student_sn']]['desc_old']= $myts->htmlSpecialChars($data['description']);//beck
 
             }
             

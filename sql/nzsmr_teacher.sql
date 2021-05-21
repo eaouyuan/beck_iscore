@@ -295,7 +295,6 @@ CREATE TABLE `yy_stage_score` (
   `exam_stage` enum('2','4','6') NOT NULL COMMENT '第幾次段考',
   `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
   `score` varchar(5) NULL COMMENT '段考成績',
-  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '質性描述',
   `final_score_sn` mediumint(8) unsigned NOT NULL COMMENT '期末總成績sn',
   `stage_calculation_sn` mediumint(8) unsigned NOT NULL COMMENT '段考成績計算sn',
   `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
