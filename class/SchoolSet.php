@@ -320,7 +320,7 @@ class SchoolSet
     }
 
     // 計算段考及平時考成績 加總 平均
-    public function sscore_calculate( $dep_id='',$coursid='',$stu_desc=[]){
+    public function sscore_calculate( $dep_id='',$coursid='',$stu_desc=[],$tea_keyin_score=[]){
         global $xoopsDB,$xoopsUser;
         //找出學程對映 成績分配比例
         $tb1      = $xoopsDB->prefix('yy_department');
@@ -416,12 +416,12 @@ class SchoolSet
             $sql_1 = "insert into `$tbl` (
                 `course_id`,`student_sn`,`uscore_sum`,`uscore_avg`,`sscore_sum`,
                 `sscore_avg`,`sum_usual_stage_avg`,`update_user`,`update_date`,
-                `description`
+                `description`,`tea_input_score`
                 ) 
                 values(
                 '{$coursid}','{$stusn}','{$v['usum']}','{$v['uavg']}','{$v['ssum']}',
                 '{$v['savg']}','{$v['uavg_savg_sum']}','{$xoopsUser->uid()}',now(),
-                '{$stu_desc[$stusn]["desc"]}'
+                '{$stu_desc[$stusn]["desc"]}','{$tea_keyin_score[$stusn]}'
                 )";
                 // echo($sql_1);die();
             $xoopsDB->queryF($sql_1) or Utility::web_error($sql, __FILE__, __LINE__);

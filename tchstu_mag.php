@@ -500,6 +500,9 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
         $stu_score  = Request::getArray('stu_score');//學生編號=>平時成績
+        $tea_keyin_score  = Request::getArray('tea_keyin_score');//學生編號=>教師keyin總成績
+
+        // var_dump($tea_keyin_score);        
         // die(var_dump($stu_score));
 
         // 先刪除該科目段考資料
@@ -538,7 +541,7 @@ switch ($op) {
         // die();
         // 重新計算段考及平時考平均
         $SchoolSet= new SchoolSet;
-        $SchoolSet->sscore_calculate( $dep_id,$course_id,$stu_score);
+        $SchoolSet->sscore_calculate( $dep_id,$course_id,$stu_score,$tea_keyin_score);
 
         // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}", 3, '存檔成功！');
         redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
@@ -685,7 +688,7 @@ switch ($op) {
                 $stu_data [$data['student_sn']]['f_stage']= $myts->htmlSpecialChars($data['sscore_avg']);
                 $stu_data [$data['student_sn']]['f_sum']= $myts->htmlSpecialChars($data['sum_usual_stage_avg']);
                 $stu_data [$data['student_sn']]['desc']= $myts->htmlSpecialChars($data['description']);
-
+                $stu_data [$data['student_sn']]['tea_input_score']= ($data['tea_input_score']=='')?$data['sum_usual_stage_avg']:$data['tea_input_score'];
             }
 
 

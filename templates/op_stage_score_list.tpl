@@ -34,7 +34,8 @@
                 <{/foreach}>
                 <th scope="col" class="text-center" width="7%">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
                 <th scope="col" class="text-center" width="7%">段考成績<br>(<{$course.section_exam_rate}>%)</th>
-                <th scope="col" class="text-center" width="7%">總成績</th>
+                <th scope="col" class="text-center" width="7%">系統計算總成績</th>
+                <th scope="col" class="text-center" width="7%">教師最終總成績<button class="btn btn-primary btn-sm mr-1" type="button" id="copy_grade">同左</button></th>
                 <th scope="col" class="text-center" width="18%">質性<br>描述</th>
             </tr>
         </thead>
@@ -46,7 +47,7 @@
                 <{foreach from=$v1.score key=k item=score}>
                     <{if $addEdit.$k}>
                     <th class="text-center">
-                        <input type="text" class="form-control validate[required,min[0],max[100]] score_jug" name="stu_score[<{$stu_sn}>][score][<{$k}>]" id="stu_<{$stu_sn}>" value="<{$score}>">
+                        <input type="text" class="form-control validate[required,min[0],max[100]] score_jug" name="stu_score[<{$stu_sn}>][score][<{$k}>]" id="stu_score_<{$stu_sn}>_score_<{$k}>" value="<{$score}>">
                     </th>
                     <{else}>
                         <th class="text-center"><{$score}></th>
@@ -55,7 +56,10 @@
                 <{/foreach}>
                 <th class="text-center"><{$v1.f_usual}></th>
                 <th class="text-center"><{$v1.f_stage}></th>
-                <th class="text-center"><{$v1.f_sum}></th>
+                <th class="text-center source_score" id="sys_score_<{$stu_sn}>"><{$v1.f_sum}></th>
+                <th class="text-center">
+                    <input type="text" class="form-control score_jug validate[required,min[0],max[100]]" name="tea_keyin_score[<{$stu_sn}>]" id="stu_finalscore_<{$stu_sn}>" value="<{$v1.tea_input_score}>">
+                </th>
                 <th class="text-center">
                     <{if $desc_addEdit}>
                         <input type="text" class="form-control validate[required]" name="stu_score[<{$stu_sn}>][desc]" id="stu_<{$stu_sn}>" value="<{$v1.desc}>">
@@ -79,7 +83,7 @@
     <div class="col-md-12 text-center mb-3">
         <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
         <!-- <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
-        <a class="btn btn-secondary" href="javascript:history.back()">
+        <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id=<{$sscore.dep_id}>">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
         <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
     </div>
@@ -153,6 +157,19 @@
             // console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
+        // 複製"系統總成績"到"教師總成績
+        $("#copy_grade").click(function(){
+            $(".source_score").each(function(i){ //取得開頭name=student_sn
+                console.log(this.id);
+                let textval=$(this).text();
+                let tea_keyin_id=(this.id.replace('sys_score_', 'stu_finalscore_'));
+                $('#'+tea_keyin_id).val(textval);
+            })
+            document.forms["stage_score_list"].submit();
+        })
+
+
+
         // 判斷表單是否有改變，沒變才能按列印
         var dataformInit = $("#stage_score_list").serializeArray();
         var jsonTextInit = JSON.stringify({ dataform: dataformInit });
