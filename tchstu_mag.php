@@ -672,7 +672,6 @@ switch ($op) {
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             while($data= $xoopsDB->fetchArray($result)){
                 $stu_data [$data['student_sn']]['score'][$data['exam_stage']]= $myts->htmlSpecialChars($data['score']);
-
             }
             
             // 撈出 平時考及段考總成績
