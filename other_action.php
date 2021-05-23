@@ -1,6 +1,5 @@
 <?php
 use Xmf\Request;
-// print_r($_REQUEST);die();
 
 include_once "../../mainfile.php";
 include_once "function.php";
@@ -50,13 +49,14 @@ switch ($op) {
     case "course_stest_sw":
         course_test_sw($sn,$check_status,'second_test');
         exit;
-
+        
     default:
         echo('this is default switch in op_teacher.php');
     break;
 
 
 }
+
 
 function student_sort($odr_ary){
     global $xoopsDB,$xoopsUser;
@@ -211,5 +211,4 @@ function teacher_identity_edit($sn,$check_status,$idtf){
     $return['msg']='修改成功';
     echo json_encode($return);
 
-    // return '34345345';
 }

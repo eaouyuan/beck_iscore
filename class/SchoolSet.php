@@ -21,14 +21,14 @@ class SchoolSet
     public $class_name; //班級sn -> name
     public $class_tutor_name; //班級sn -> 導師名稱
     public $dept; //所有學程資料
-    public $depsnname; //學程 sn map name
+    public $depsnname; //學程中文名稱 sn map name
     public $deptofsch; //處室資料
     public $isguidance; //輔導老師
     public $issocial; //社工師
     public $exam_name; //考試名稱
     public $usual_exam_name; //平時考名稱
     public $stage_exam_name; //段考名稱
-    public $tea_course; //教師課表 教師  學程 課程
+    public $tea_course; //本學期教師課表 教師  學程 課程
     public $dep2course; //學程對課程
     public $dep_exam_course; //[學程id][段考ID][課程id] = [課程中文名]
     public $courese_chn; //課程中文名稱
@@ -38,6 +38,8 @@ class SchoolSet
     public $stu_name; //  //[stu sn]=name   , 學生sn map name
     public $stu_anonymous; //  [stu sn]=stu_anonymous , 學生sn map 學生匿名
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
+    public $stu_dep; //學生 學程
+    public $stu_id; // 學生 學號
     // public $tch_sex; //性別
     
     //建構函數
@@ -59,15 +61,94 @@ class SchoolSet
 
     }
 
-    // 計算學期總成績
-    public function calculation_term_score($year='',$term='',$dep=''){
-        // die(var_dump($term));
-
-
-
-
+    // get 學期資料
+    public function get_termarray($year=''){
+        global $xoopsDB;
+        $tbl = $xoopsDB->prefix('yy_semester');
+        $sql = "SELECT * FROM $tbl 
+                Where `year`={$year}
+                ORDER BY term
+                ";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['term']]= $data['term'];
+        }
+        return $all;
     }
-    // 輸入學年度 學期 學程，學生期末成績
+
+    // 列出群組科目名稱及總學份
+    public function query_course_groupname($year='',$term='',$depid=''){
+        global $xoopsDB ,$xoopsUser;
+        $tbl = $xoopsDB->prefix('yy_course');
+        $sql = "SELECT cos_name_grp , sum(cos_credits) as sum_cred FROM $tbl  
+                Where `cos_year`='{$year}' 
+                AND `cos_term`='{$term}' 
+                AND `dep_id`='{$depid}' 
+                AND `scoring`='1'
+                AND `status`='1'
+                GROUP BY cos_name_grp
+                ORDER BY `sort`
+                        ";
+        // echo($sql);die();
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        $sum=0;
+        while($data= $xoopsDB->fetchArray($result)){
+            $all['grpname_sumcred'][$data['cos_name_grp']] = $data['sum_cred'];
+            $sum+= $data['sum_cred'];
+        }
+        $all['total_cred']=$sum;
+
+        // die(var_dump($all));
+        return $all;
+    }
+
+    // 查詢學期成績
+    public function query_term_total_score($year='',$term='',$depid=''){
+        global $xoopsDB ,$xoopsUser;
+        $tbl = $xoopsDB->prefix('yy_term_total_score');
+        $sql = "SELECT * FROM $tbl  
+                Where `year`='{$year}' 
+                AND `term`='{$term}' 
+                AND `dep_id`='{$depid}' 
+                ORDER BY `student_sn`
+                        ";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']]['sum_credits'] = $data['sum_credits'];
+            $all[$data['student_sn']]['total_score'] = $data['total_score'];
+            $all[$data['student_sn']]['total_avg']   = $data['total_avg'];
+            $all[$data['student_sn']]['comment']   = $data['comment'];
+        }
+        return $all;
+    }
+
+    // 查詢學期成績
+    public function query_term_score_detail($year='',$term='',$depid=''){
+        global $xoopsDB ,$xoopsUser;
+        $tbl = $xoopsDB->prefix('yy_term_score_detail');
+        $sql = "SELECT * FROM $tbl  
+                Where `year`='{$year}' 
+                AND `term`='{$term}' 
+                AND `dep_id`='{$depid}' 
+                ORDER BY `student_sn`,`sort`
+                        ";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $all[$data['student_sn']][$data['cos_name_grp']]['course_total_score'] = $data['course_total_score'];
+            $all[$data['student_sn']][$data['cos_name_grp']]['course_sum_credits'] = $data['course_sum_credits'];
+            $all[$data['student_sn']][$data['cos_name_grp']]['course_total_avg']   = $data['course_total_avg'];
+            $all[$data['student_sn']][$data['cos_name_grp']]['comment']   = $data['comment'];
+        }
+
+        // die(var_dump($all));
+        return $all;
+    }
+
+    // 輸入學年度 學期 學程，新增學生期末成績db
     public function year_term_score($year='',$term='',$depid=''){
         global $xoopsDB ,$xoopsUser;
         $tbl = $xoopsDB->prefix('yy_stage_sum');
@@ -76,31 +157,47 @@ class SchoolSet
                 Where `cos_year`='{$year}' 
                 AND `cos_term`='{$term}' 
                 AND `dep_id`='{$depid}' 
+                ORDER BY `student_sn`,$tb2.sort
                         ";
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         // echo($sql);die();
-        $all==$stu_score=[];
+
+        // [stu_sn][群組名稱][科目id][cos_credits]=學分
+        // [stu_sn][群組名稱][科目id][tea_input_score]=教師keyin 成績
+        $all=$stu_score=[];
         while($data= $xoopsDB->fetchArray($result)){
             $all[$data['student_sn']]['grp_cos_name'][$data['cos_name_grp']][$data['course_id']]['cos_credits']=$data['cos_credits'];
-            $all[$data['student_sn']]['grp_cos_name'][$data['cos_name_grp']][$data['course_id']]['sum_usual_stage_avg']=$data['sum_usual_stage_avg'];
+            $all[$data['student_sn']]['grp_cos_name'][$data['cos_name_grp']][$data['course_id']]['tea_input_score']=$data['tea_input_score'];
+            $all[$data['student_sn']]['grp_cos_name'][$data['cos_name_grp']][$data['course_id']]['description']=$data['description'];
         }
         // die(var_dump($all));
-        // 先算出 群組科目加總的學分、總分、平均
+
+        // 群組科目加總的學分、總分、平均
         foreach($all as $stu_sn=>$v1){
             foreach($v1['grp_cos_name'] as $cos_name_grp=>$v2){
-                $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred']=$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']=$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['avg_score']='-';
+                $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred']='-';//群組科目總學分
+                $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']='-';//群組科目加權總分
+                $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['avg_score']='-'; //群組科目除加權後總平均
+                $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_comment']=''; //群組科目描述
+                $desc_temp=[]; //群組科目描述
                 foreach($v2 as $course_id=>$v3){
-                    if(is_numeric($v3['sum_usual_stage_avg'])){
+                    if(is_numeric($v3['tea_input_score'])){
                         $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred']+=$v3['cos_credits'];
-                        $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']+=$v3['sum_usual_stage_avg']*$v3['cos_credits'];
+                        $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']+=$v3['tea_input_score']*$v3['cos_credits'];
+                    }
+                    if($v3['description']!='-'){
+                        $desc_temp[]=$v3['description'];
                     }
                 }
+                if(count($desc_temp)!=0){
+                    $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_comment']=implode("；", $desc_temp).'；';
+                }
                 if(is_numeric($stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score'])){
-                    $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['avg_score']=(float) round($stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']/$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred'],2);
+                    $stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['avg_score']=(float) round($stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_score']/$stu_score[$stu_sn]['grp_cos_name'][$cos_name_grp]['sum_cred'],0);
                 }
             }
         }
-        // die(var_dump($xoopsUser->uid()));
+        // die(var_dump($stu_score));
 
         // 再算出該學生的總分、總學分、總平均
         foreach($stu_score as $stu_sn=>$v1){
@@ -112,13 +209,13 @@ class SchoolSet
                 }
             }
             if(is_numeric($stu_score[$stu_sn]['stu_sum_score'])){
-                $stu_score[$stu_sn]['stu_avg_score']=(float) round($stu_score[$stu_sn]['stu_sum_score']/ $stu_score[$stu_sn]['stu_sum_cred'],2);
+                $stu_score[$stu_sn]['stu_avg_score']=(float) round($stu_score[$stu_sn]['stu_sum_score']/ $stu_score[$stu_sn]['stu_sum_cred'],0);
             }
-
         }
+        // die(var_dump($stu_score));
         
         $tbl = $xoopsDB->prefix('yy_term_total_score');
-        // 先將學生總成績的總平均及備註複製下來
+        // 先將學生總成績的備註複製下來
         $sql = "SELECT * FROM $tbl
                 Where `year`='{$year}' 
                 AND `term`='{$term}' 
@@ -132,15 +229,13 @@ class SchoolSet
         }
 
         // 刪除學生的總成績
-        foreach($stu_score as $stu_sn=>$v1){
-            $sql = "DELETE FROM `$tbl` 
-            WHERE `year` = '{$year}'
-                AND `term` = '{$term}'
-                AND `dep_id` = '{$depid}'
-            ";
-            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            break;
-        }
+        $sql = "DELETE FROM `$tbl` 
+                WHERE `year` = '{$year}'
+                    AND `term` = '{$term}'
+                    AND `dep_id` = '{$depid}'
+                ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo($sql);die();
 
         // 新增學生的系統總成績
         foreach($stu_score as $stu_sn=>$v1){
@@ -156,21 +251,38 @@ class SchoolSet
             $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         }
 
-
-
-
-
-
-
-
-
-        die(var_dump($stu_score));
-
-
-        return $stu_score;
+        // 群組科目成績明細
+        $tbl = $xoopsDB->prefix('yy_term_score_detail');
+        // 刪除學生的群組科目成績明細
+        $sql = "DELETE FROM `$tbl` 
+                WHERE `year` = '{$year}'
+                    AND `term` = '{$term}'
+                    AND `dep_id` = '{$depid}'
+                ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo($sql);die();
+        // 新增學生的群組科目分數明細
+        foreach($stu_score as $stu_sn=>$v1){
+            $i=1;
+            foreach($v1['grp_cos_name'] as $gp_course_name=>$v2){
+                $sql = "insert into `$tbl` (
+                    `year`,`term`,`dep_id`,`student_sn`,`cos_name_grp`,
+                    `course_total_score`,`course_sum_credits`,`course_total_avg`,`update_user`,`update_date`,
+                    `sort`,`comment`
+                    ) 
+                    values(
+                    '{$year}','{$term}','{$depid}','{$stu_sn}','{$gp_course_name}',
+                    '{$v2['sum_score']}','{$v2['sum_cred']}','{$v2['avg_score']}','{$xoopsUser->uid()}',now(),
+                    '{$i}','{$v2['sum_comment']}'
+                    )";
+                $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+                $i++;
+            }
+        }
+        // echo($sql);die();
+        // die(var_dump($stu_score));
+        // return $stu_score;
     }
-
-
 
     // 取出考科查詢，學生備註
     public function exam_comment($dep_id='',$exam_stage=''){
@@ -742,11 +854,16 @@ class SchoolSet
             $stu_name[$user['sn']] = $user['stu_name'];    //[stu sn]=name
             $stu_anonymous[$user['sn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
             $stu_sn_classid[$user['sn']] = $user['class_id'];  // [stu sn]= class id
+            $stu_dep[$user['sn']] = $user['major_id'];  // [stu sn]= dep id
+            $stu_id[$user['sn']] = $user['stu_id'];  // [stu sn]= stu_id
+            
         }
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;
         $this->stu_anonymous=$stu_anonymous;
         $this->stu_sn_classid=$stu_sn_classid;
+        $this->stu_dep=$stu_dep;
+        $this->stu_id=$stu_id;
     }
 
     // 部門名稱->user

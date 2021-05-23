@@ -23,7 +23,7 @@
             </div>
 
             <div class="ml-auto row">
-                <{if $show_ac}><button type="button" id="re_clu" class="btn btn-outline-primary col-0.5 mb-2 mr-3">重新計算</button><{/if}>
+                <!-- <{if $show_ac}><button type="button" id="re_clu" class="btn btn-outline-primary col-0.5 mb-2 mr-3">重新計算</button><{/if}> -->
                 <input name="op" id="op" value="<{$op}>" type="hidden">
                 <button type="button" id="clear" class="btn btn-outline-dark col-0.5 mb-2 mr-3">清空</button>
                 <button type="button" id="ac_smes" class="btn btn btn-success col-0.5 mb-2 mr-3">目前學期</button>
@@ -31,54 +31,52 @@
 
 
         </div>
+
     </div> 
 
 </form>
-
-
-
-
 <{if $all}>
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead class="table-info">
             <tr>
-                <th scope="col" class="text-center">編號</th>
-                <th scope="col" class="text-center">學年度/學期</th>
-                <th scope="col" class="text-center">學程</th>
-                <th scope="col" class="text-center">課程名稱</th>
-                <th scope="col" class="text-center">教師</th>
-                <th scope="col" class="text-center">課程群組</th>
+                <th width="2%" rowspan="2" class="text-center">序號</th>
+                <th width="2%" rowspan="2" class="text-center">班級</th>
+                <th width="6%"             class="text-center">姓名</th>
+                <{foreach from=$course_groupname.grpname_sumcred key=grp_name item=sumcred}>
+                    <th width="2%" class="text-center"><{$grp_name}></th>
+                <{/foreach}>
+                <th width="2%"             class="text-center">修得學分</th>
+                <th width="2%" rowspan="2" class="text-center">總分</th>
+                <th width="2%" rowspan="2" class="text-center">平均</th>
+                <th width="10%" rowspan="2" class="text-center">列印成績單</th>
+            </tr>
+            <tr>
                 <th scope="col" class="text-center">學分</th>
-                <th scope="col" class="text-center">段考一</th>
-                <th scope="col" class="text-center">段考二</th>
-                <{if $can_edit}>
-                <th scope="col" class="text-center">功能</th>
-                <{/if}>
-
+                <{foreach from=$course_groupname.grpname_sumcred key=grp_name item=sumcred}>
+                    <th class="text-center"><{$sumcred}></th>
+                <{/foreach}>
+                <th class="text-center"><{$course_groupname.total_cred}></th>
             </tr>
         </thead>
-        <tbody id="sort">
-    <{foreach from=$all key=i item=its}>
-        <tr id="odr_<{$its.sn}>"> 
-            <th class="text-center"><{$its.i}></th>
-            <th class="text-center"><{$its.year_term}></th>
-            <td class="text-center"><{$its.dep_name}></td>
-            <td class="text-center"><{$its.cos_name}></td>
-            <td class="text-center"><{$its.teacher_name}></td>
-            <td class="text-center"><{$its.cos_name_grp}></td>
-            <td class="text-center"><{$its.cos_credits}></td>
-            <{if $can_edit}>
-            <td class="text-center"><div class="custom-control custom-switch"><{$its.first_chk}></div></td>
-            <td class="text-center"><div class="custom-control custom-switch"><{$its.second_chk}></div></td>
-            <td class="text-center">
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=course_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
-                <a href="javascript:cos_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
-            </td>
-            <{else}>
-            <td class="text-center"><{$its.f_icon}></td>
-            <td class="text-center"><{$its.s_icon}></td>
-            <{/if}>
 
+
+        <tbody>
+    <{foreach from=$all key=i item=its}>
+        <tr> 
+            <th class="text-center"><{$its.order}></th>
+            <th class="text-center"><{$its.class_name}></th>
+            <th class="text-center"><{$its.stu_anonymous}></th>
+            <{foreach from=$its.scores key=grpname item=course_total_avg}>
+                <{if $course_total_avg<60 and $course_total_avg!='-'}><th class="text-center text-danger"><{$course_total_avg}></th>
+                <{else}><th class="text-center"><{$course_total_avg}></th><{/if}>
+            <{/foreach}>
+            <td class="text-center"><{$its.sum_credits}></td>
+            <td class="text-center"><{$its.total_score}></td>
+            <td class="text-center"><{$its.total_avg}></td>
+            <td class="text-center">
+                <a target="_blank" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=transcript&cos_year=<{$pars.cos_year}>&cos_term=<{$pars.cos_term}>&dep_id=<{$pars.dep_id}>&sn=<{$i}>" class="btn btn-success btn-sm mr-2"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</a>
+            </td>
+            <!-- <td class="text-center"><{$its.comment}></td> -->
         </tr>
     <{/foreach}>
         </tbody>
@@ -92,20 +90,17 @@
     </div>
 
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <!-- <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
         <!-- <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
-        <a class="btn btn-secondary" href="javascript:history.back()">
-            <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
-        <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
+        <a class="btn btn-secondary"href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=term_total_score_list&cos_year=<{$pars.cos_year}>&cos_term=<{$pars.cos_term}>">
+            <i class="fa fa-undo mr-2" aria-hidden="true"></i>回上一頁</a>
     </div>
 <{else}>
     <div class="alert alert-danger">
         尚無內容
     </div>
 <{/if}>
-<h4 class="mb-3 text-center">------ 學分數總計:<{$credit_sun}> -----</h4>
 
-<{$bar}>
 
 <script type="text/javascript">
     $(document).ready(function($){
@@ -123,9 +118,12 @@
             r=get_pars();
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=term_total_score_list&cos_year='+r.year+'&cos_term='+r.term;
         });
-        $("#re_clu").click(function() {
-            r=get_pars();
-            location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=term_total_score_list&cos_year='+r.year+'&cos_term='+r.term+'&dep_id='+r.dep+'&ac=calculate';
+        $('#cos_year').change(function(e){
+            $('#cos_term').val('');
+            $('#dep_id').val('');
+        });
+        $('#cos_term').change(function(e){
+            $('#dep_id').val('');
         });
         $('#cos_year , #cos_term , #dep_id').change(function(e){
             r=get_pars();
@@ -146,5 +144,20 @@
 </script>
 
 <style type="text/css">
+    table th, .table th ,.table td, table.table-bordered > thead > tr > th{
+        vertical-align:middle;
+        text-align:center;
+        border: 2px solid #000000;
+        line-height:2.5em;
+        /* width:auto; */
+        /* border-bottom: 2px solid #000000; */
+    }
+
+    input , select{
+        /* width:auto; */
+        position: relative;
+        vertical-align:middle;
+        text-align:center;
+    }
     [data-href] { cursor: pointer; }
 </style>

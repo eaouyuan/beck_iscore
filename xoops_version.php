@@ -52,6 +52,7 @@ $modversion['tables'][]         = 'yy_stage_score';            //段考成績
 $modversion['tables'][]         = 'yy_stage_sum';              //段考成績加總
 $modversion['tables'][]         = 'yy_query_stage_score';      //段考成績查詢
 $modversion['tables'][]         = 'yy_term_total_score';      //學期總成績查詢
+$modversion['tables'][]         = 'yy_term_score_detail';      //學期總成績-群組科目成績記錄
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

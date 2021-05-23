@@ -1,5 +1,7 @@
 <link href="css/module.css" rel="stylesheet" type="text/css">
 <{includeq file="$xoops_rootpath/modules/$xoops_dirname/templates/op_`$now_op`.tpl"}>
+
+
 <!-- <{$toolbar}> -->
 <!-- <{$now_op|@var_dump}> -->
 <!-- http://localhost/modules/beck_iscore/index.php?op=student_form -->
