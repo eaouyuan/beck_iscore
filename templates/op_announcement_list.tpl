@@ -61,19 +61,19 @@
         <tbody>
     <{foreach from=$all key=i item=its}>
         <tr> 
-            <th class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"scope="row"><{$its.sn}></th>
-            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.ann_class_id}></td>
-            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.dept_id}></td>
-            <td width="40%" class="text-left clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>">
+            <th width="5%" class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"scope="row"><{$its.sn}></th>
+            <td width="8%" class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.ann_class_id}></td>
+            <td width="8%" class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.dept_id}></td>
+            <td width="50%" class="text-left clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>">
                 <{if $its.top=='1'}><span class="badge" style="background-color:blue;font-weight:normal;color:white;text-shadow:none;">置頂</span><{/if}>
                 <{$its.title}>
             </td>
-            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.start_date}></td>
+            <td width="8%" class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.start_date}></td>
             <!-- <td class="text-center"><{$its.end_date}></td> -->
-            <td class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.hit_count}></td>
+            <td width="8%" class="text-center clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.hit_count}></td>
 
             <{if $is_admin}>
-            <td class="text-center">
+            <td  class="text-center">
                 <a href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_form&sn=<{$its.sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
                 <a href="javascript:ann_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
             </td>
