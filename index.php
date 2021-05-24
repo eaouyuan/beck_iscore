@@ -685,7 +685,8 @@ switch ($op) {
             $anns['sn']           = $myts->htmlSpecialChars($anns['sn']);
             $anns['ann_class_id'] = $myts->htmlSpecialChars(Announcement::GetAnn_Class($anns['ann_class_id'])['ann_class_name']);
             $anns['dept_id']      = $myts->htmlSpecialChars(Dept_school::GetDept($anns['dept_id'])['dept_name']);
-            $anns['title']        = word_cut($myts->htmlSpecialChars($anns['title']), 30);
+            $anns['title']        = $myts->htmlSpecialChars($anns['title']);
+            // $anns['title']        = word_cut($myts->htmlSpecialChars($anns['title']), 30);
             $anns['top']          = $myts->htmlSpecialChars($anns['top']);
             $anns['start_date']   = $myts->htmlSpecialChars($anns['start_date']);
             $anns['end_date']     = $myts->htmlSpecialChars($anns['end_date']);
