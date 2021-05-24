@@ -190,7 +190,10 @@ switch ($op) {
             $stu_da[$i]['comment']= $term_score_detail[$grp_name]['comment'];
             $i++;
         }
-        
+        $stu['sum_credits']=$term_total_score['sum_credits'];//總學分
+        $stu['total_score']=$term_total_score['total_score'];//加權總分
+        $stu['total_avg']=$term_total_score['total_avg'];//學期總平均
+
         $xoopsTpl->assign('stu', $stu);
         $xoopsTpl->assign('all', $stu_da);
         // die(var_dump($stu_da));

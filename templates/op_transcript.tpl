@@ -39,6 +39,12 @@
             <{/foreach}>
         </tbody>
     </table>
+    <br>
+    <div class="row">
+        <div class="col-4"><h5>總修得學分：<{$stu.sum_credits}>  </h5></div>
+        <div class="col-4"><h5>加權總分：<{$stu.total_score}>      </h5></div>
+        <div class="col-4"><h5>學期總平均：<{$stu.total_avg}>    </h5></div>
+    </div>
     <hr>
     <br>
     <h3 id="buton">教務處:_______________________</h3>
