@@ -6,6 +6,7 @@ $item_list = array(
     '1' => "管理學生(student_form)",
     '2' => "學生列表(student_list)",
     '3' => "課程管理",
+    '4' => "高關懷名單",
 
 );
 $mid       = $xoopsModule->mid();

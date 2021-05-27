@@ -33,10 +33,11 @@
                 <{/foreach}>
                 <th scope="col" class="text-center">總分</th>
                 <th scope="col" class="text-center">平均</th>
-                <th scope="col" class="text-center">獎勵方式</th>
                 <{if $pars.exam_stage=='4'}>
+                <th scope="col" class="text-center">第一次段考</th>
                 <th scope="col" class="text-center">進步分</th>
                 <{/if}>
+                <th scope="col" class="text-center">獎勵方式</th>
                 <th scope="col" class="text-center">備註</th>
             </tr>
         </thead>
@@ -51,10 +52,11 @@
                 <{/foreach}>
                 <th class="text-center" width="3%" name="qscore_sum[<{$stu_sn}>]"><{$v1.sum}></th>
                 <th class="text-center" width="3%" name="qscore_avg[<{$stu_sn}>]"><{$v1.avg}></th>
-                <th class="text-left" width="12%" name="reward_method[<{$stu_sn}>]"><{$v1.reward_method}></th>
                 <{if $pars.exam_stage=='4'}>
-                    <th class="text-center" width="4%" name="progress_score[<{$stu_sn}>]"><{$v1.progress_score}></th>
+                <th class="text-center" width="4%" name="frist_exam_score[<{$stu_sn}>]"><{$v1.frist_exam_score}></th>
+                <th class="text-center" width="4%" name="progress_score[<{$stu_sn}>]"><{$v1.progress_score}></th>
                 <{/if}>
+                <th class="text-left" width="12%" name="reward_method[<{$stu_sn}>]"><{$v1.reward_method}></th>
                 <{if $ps_edit}>
                     <th class="text-center" width="12%"><input type="text" class="form-control" name="comment[<{$stu_sn}>]" value="<{$v1.comment}>"></th>
                 <{else}>

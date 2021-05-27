@@ -104,14 +104,14 @@ switch ($op) {
     // 新增 教師
     case "teacher_insert":
         teacher_insert($sn);
-        header("location:school_affairs.php?op=teacher_list");
+        header("location:school_affairs.php?op=teacher_list&dep_id={$tea_list['dep_id']}");
         // header("location:school_affairs.php?op=teacher_listshow&sn={$sn}");
         exit;//離開，結束程式
 
     // 更新 教師
     case "teacher_update":
         $sn=teacher_update($sn);
-        header("location:school_affairs.php?op=teacher_list");
+        header("location:school_affairs.php?op=teacher_list&dep_id={$tea_list['dep_id']}");
         // header("location:school_affairs.php?op=teacher_show&sn={$sn}");
         exit;
 
@@ -957,7 +957,7 @@ switch ($op) {
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "update `$tbl` set 
                     `uid`         = '{$sn}',
-                    `dep_id`      = '{$dept_id}',
+                    `dep_id`      = '{$dep_id}',
                     `title`       = '{$title}',
                     `sex`         = '{$sex}',
                     `phone`       = '{$phone}',
@@ -1021,7 +1021,7 @@ switch ($op) {
                     `cell_phone`,`enable`,`isteacher`,`isguidance`,`issocial`,`create_uid`,`create_time`,`update_uid`,
                     `update_time`
                 )values(
-                    '{$sn}','{$dept_id}','{$title}','{$sex}','{$phone}',
+                    '{$sn}','{$dep_id}','{$title}','{$sex}','{$phone}',
                     '{$cell_phone}','{$enable}','{$isteacher}','{$isguidance}','{$issocial}','{$create_uid}', now(),
                     '{$create_uid}',now()
                 )";

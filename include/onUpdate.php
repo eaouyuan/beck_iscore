@@ -3,13 +3,32 @@
 function xoops_module_update_beck_iscore(&$module, $old_version) {
     GLOBAL $xoopsDB;
 
-    mk_group("學生增刪", "學生新增編輯刪除");
-    mk_group("課程管理", "課程管理");
+    // del_group("學生增刪");
+    // del_group("課程管理");
+    // del_group("輔導室");
+
+    // mk_group("學生增刪", "學生新增編輯刪除");
+    // mk_group("課程管理", "課程管理");
+    mk_group("輔導室", "輔導室");
 
 
     // if(!chk_chk1()) go_update1();
 
     return true;
+}
+// 刪除群組
+function del_group($name=""){
+    global $xoopsDB;
+    $sql = "select groupid from ".$xoopsDB->prefix("groups")." where `name`='$name'";
+    $result=$xoopsDB->query($sql) or web_error($sql);
+    list($groupid)=$xoopsDB->fetchRow($result);
+    if(!empty($groupid)){
+        $sql = "DELETE FROM ".$xoopsDB->prefix("group_permission")." where `gperm_groupid`='{$groupid}'";
+        $xoopsDB->queryF($sql) or web_error($sql);
+
+        $sql_group = "DELETE FROM ".$xoopsDB->prefix("groups")." where `name`='{$name}'";
+        $xoopsDB->queryF($sql_group) or web_error($sql);
+    }   
 }
 
 function mk_group($name = "")

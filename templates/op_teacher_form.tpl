@@ -36,9 +36,9 @@
             <input class="form-control" type="text" name="email" title="email" id="email" value="<{$tch.email}>">
         </div>
 
-        <label for="dept_id" class="col-lg-2 col-form-label text-sm-right">處室</label>
+        <label for="dep_id" class="col-lg-2 col-form-label text-sm-right">處室</label>
         <div class="col-lg-4">
-            <select class="custom-select validate[required]" name="dept_id">
+            <select class="custom-select validate[required]" name="dep_id">
                 <{$dept_c_sel_htm}>
             </select>
         </div>

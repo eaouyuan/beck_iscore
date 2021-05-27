@@ -371,8 +371,8 @@ ADD UNIQUE `year_term_dep_id_student_sn` (`year`, `term`, `dep_id`, `student_sn`
 -- 學期總成績-群組科目 分數
 CREATE TABLE `yy_term_score_detail` (
   `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-  `year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
-  `term` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學期',
+  `year` varchar(8) NOT NULL COMMENT '學年度',
+  `term` varchar(8) NOT NULL COMMENT '學期',
   `dep_id` mediumint(8) unsigned NOT NULL COMMENT '學程編號',
   `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
   `cos_name_grp` varchar(65) NOT NULL COMMENT '課程群組',
@@ -387,6 +387,35 @@ CREATE TABLE `yy_term_score_detail` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ALTER TABLE `yy_term_score_detail`
 ADD UNIQUE `year_term_dep_id_student_sn_cos_name_grp` (`year`, `term`, `dep_id`, `student_sn`, `cos_name_grp`);
+
+-- 每月高關懷學生名單
+CREATE TABLE `yy_high_care` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `year` varchar(3) NOT NULL COMMENT '年',
+  `month` varchar(2) NOT NULL COMMENT '月',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `class_id` mediumint(8) unsigned NOT NULL COMMENT '班級',
+  `event_desc` text NOT NULL COMMENT '事件說明',
+  `keyin_date` date NOT NULL COMMENT '填寫日期',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- 每月高關懷學生名單列表
+CREATE TABLE `yy_high_care_month` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `event_date` date NOT NULL COMMENT '事件日期',
+  `event` varchar(65) NOT NULL COMMENT '事件名稱',
+  `comment` text NOT NULL COMMENT '備註',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+ALTER TABLE `yy_high_care_month`
+ADD UNIQUE `event` (`event`);
 
 
 -- 學年度

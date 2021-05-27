@@ -145,12 +145,14 @@ switch ($op) {
     case "term_total_score_list":
         term_total_score_list($cos);
         break;//跳出迴圈,往下執行
-    // 新增、更新 平時成績
+    // 列印成績單
     case "transcript":
         transcript($cos,$sn);
         break;//跳出迴圈,往下執行
-
-
+        
+    case "high_care_mon":
+        transcript($cos,$sn);
+        break;//跳出迴圈,往下執行
     default:
         // semester_list();
         // $op="semester_list";
@@ -433,12 +435,13 @@ switch ($op) {
                         $stu_data[$stu_sn]['reward_method']='';
                     }else{
                         $stu_data[$stu_sn]['sum']=$sum;
-                        $stu_data[$stu_sn]['avg']=(float)(round(($sum/$j),2));
+                        $stu_data[$stu_sn]['avg']=(float)(round(($sum/$j),0));
                         $stu_data[$stu_sn]['reward_method']=score_range($stu_data[$stu_sn]['avg'],$pars['exam_stage']);
                     }
 
                     if($pars['exam_stage']=='4' AND $stu_first_exam_avg_score[$stu_sn]>='60'){
-                        $stu_data[$stu_sn]['progress_score']=$stu_data[$stu_sn]['avg']-$stu_first_exam_avg_score[$stu_sn];
+                        $stu_data[$stu_sn]['frist_exam_score']=$stu_first_exam_avg_score[$stu_sn];
+                        $stu_data[$stu_sn]['progress_score']=round($stu_data[$stu_sn]['avg']-$stu_first_exam_avg_score[$stu_sn],0);
                         $stu_data[$stu_sn]['reward_method'].=progress_award($stu_data[$stu_sn]['progress_score']);
                     }else{
                         $stu_data[$stu_sn]['progress_score']='';
@@ -449,6 +452,7 @@ switch ($op) {
                 }
                 $i++;
             }
+            // die(var_dump($stu_data));
             // 建立考科總成績檔
             $SchoolSet->add_query_stage_score($pars['dep_id'],$pars['exam_stage'],$stu_data);
 

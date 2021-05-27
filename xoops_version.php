@@ -51,8 +51,10 @@ $modversion['tables'][]         = 'yy_uscore_avg';             //平時成績平
 $modversion['tables'][]         = 'yy_stage_score';            //段考成績
 $modversion['tables'][]         = 'yy_stage_sum';              //段考成績加總
 $modversion['tables'][]         = 'yy_query_stage_score';      //段考成績查詢
-$modversion['tables'][]         = 'yy_term_total_score';      //學期總成績查詢
+$modversion['tables'][]         = 'yy_term_total_score';       //學期總成績查詢
 $modversion['tables'][]         = 'yy_term_score_detail';      //學期總成績-群組科目成績記錄
+$modversion['tables'][]         = 'yy_high_care';              //高關懷名單
+$modversion['tables'][]         = 'yy_high_care_month';        //每月高關懷名單
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;
