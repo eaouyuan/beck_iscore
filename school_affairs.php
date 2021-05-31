@@ -222,7 +222,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('tchstu_mag.php', 3, '無student_delete權限!error:2104210936');
+            redirect_header('tchstu_mag.php', 3, '無 exam_keyindate_delete 權限!error:2104210936');
         } 
         
         $tbl = $xoopsDB->prefix('yy_exam_keyin_daterange');
@@ -237,7 +237,7 @@ switch ($op) {
 
         global $xoopsDB,$xoopsUser;
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('index.php', 3, 'exam_keyindate_update! error:2105010830');
+            redirect_header('index.php', 3, '無 exam_keyindate_update 權限! error:2105010830');
         } 
 
         
@@ -277,7 +277,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('index.php', 3, 'exam_keyindate_insert! error:2104301036');
+            redirect_header('index.php', 3, '無 exam_keyindate_insert 權限! error:2104301036');
         } 
 
         // 安全判斷 儲存 更新都要做
@@ -325,7 +325,7 @@ switch ($op) {
     function exam_keyindate_form($sn){
         // var_dump(power_chk("tchstu_mag", "1"));die();
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('index.php', 3, 'exam_keyindate_form!error:2104301507');
+            redirect_header('index.php', 3, '無 exam_keyindate_form 權限!error:2104301507');
         }        
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
@@ -415,7 +415,7 @@ switch ($op) {
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('index.php', 3, 'exam_keyindate_list!error:2104301500');
+            redirect_header('index.php', 3, '無 exam_keyindate_list 權限! error:2104301500');
         } 
 
         // var_dump($_SESSION);die();

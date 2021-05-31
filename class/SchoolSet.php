@@ -40,6 +40,7 @@ class SchoolSet
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
     public $stu_dep; //學生 學程
     public $stu_id; // 學生 學號
+    public $month_ary; // 月份陣列
     // public $tch_sex; //性別
     
     //建構函數
@@ -58,6 +59,7 @@ class SchoolSet
         $this->exam_name = ['1'=>'第一次段考前平時考','2'=>'第一次段考','3'=>'第二次段考前平時考','4'=>'第二次段考','5'=>'第三次段考前平時考','6'=>'期末考'];
         $this->usual_exam_name=['1'=>'第一次段考前平時考','3'=>'第二次段考前平時考','5'=>'第三次段考前平時考'];
         $this->stage_exam_name=['2'=>'第一次段考','4'=>'第二次段考','6'=>'期末考'];
+        $this->month_ary=['01'=>'01','02'=>'02','03'=>'03','04'=>'04','05'=>'05','06'=>'06','07'=>'07','08'=>'08','09'=>'09','10'=>'10','11'=>'11','12'=>'12'];
 
     }
 
@@ -125,7 +127,7 @@ class SchoolSet
         return $all;
     }
 
-    // 查詢學期成績
+    // 查詢學期成績明細
     public function query_term_score_detail($year='',$term='',$depid=''){
         global $xoopsDB ,$xoopsUser;
         $tbl = $xoopsDB->prefix('yy_term_score_detail');

@@ -29,14 +29,10 @@ $uscore['dep_id']      = Request::getString('dep_id');
 $uscore['course_id']   = Request::getString('course_id');
 $uscore['exam_stage']  = Request::getString('exam_stage');
 $uscore['exam_number'] = Request::getString('exam_number');
-// $student_sn  = Request::getArray('student_sn');//學生編號=>平時成績
-// $year        = Request::getString('year');
-// $term        = Request::getString('term');
-// $dep_id      = Request::getInt('dep_id');
-// $course_id   = Request::getInt('course_id');
-// $exam_stage  = Request::getInt('exam_stage');
-// $exam_number = Request::getInt('exam_number');
-// $update_user = Request::getString('update_user');
+$hi_care['year'] = Request::getString('year');
+$hi_care['month'] = Request::getString('month');
+
+
 
 // die(var_dump($_POST));
 // die(var_dump($_GET));
@@ -45,7 +41,7 @@ $uscore['exam_number'] = Request::getString('exam_number');
 // var_dump($uscore);die();
 
 switch ($op) {
-//學生 管理
+// 學生 管理
     case "student_list":
         student_list($stu_list,$g2p);
         break;//跳出迴圈,往下執行
@@ -73,7 +69,7 @@ switch ($op) {
         header("location:tchstu_mag.php?op=student_list");
         exit;
 
-//課程 管理
+// 課程 管理
     //課程 列表
     case "course_list":
         course_list($cos,$g2p);
@@ -99,7 +95,7 @@ switch ($op) {
         $re=course_delete($sn);
         header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
         exit;
-//平時成績 管理
+// 平時成績 管理
     //平時成績 列表
     case "usual_score_list":
         usual_score_list($uscore);
@@ -120,7 +116,7 @@ switch ($op) {
         $re=usual_score_delete($uscore);
         header("location:tchstu_mag.php?op=usual_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         exit;
-//段考成績 管理
+// 段考成績 管理
     //段考成績 列表
     case "stage_score_list":
         stage_score_list($uscore);
@@ -131,7 +127,7 @@ switch ($op) {
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}");
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         exit;//離開，結束程式
-//查詢 考科成績 及期末總成績 學期總成績
+// 查詢 考科成績 及期末總成績 學期總成績
     //平時成績 列表
     case "query_stage_score":
         query_stage_score($uscore);
@@ -149,10 +145,35 @@ switch ($op) {
     case "transcript":
         transcript($cos,$sn);
         break;//跳出迴圈,往下執行
-        
+
+// 高關懷名單
+    // 新增 高關懷名單
+    case "high_care_update":
+        high_care_update($sn);
+        header("location:tchstu_mag.php?op=high_care_mon&year={$hi_care['year']}&month={$hi_care['month']}");
+        exit;//離開，結束程式
+    case "high_care_insert":
+        $re=high_care_insert();
+        header("location:tchstu_mag.php?op=high_care_mon&year={$re['year']}&month={$re['month']}");
+        exit;//離開，結束程式
     case "high_care_mon":
-        transcript($cos,$sn);
+        high_care_mon($hi_care);
         break;//跳出迴圈,往下執行
+    // 刪除 高關懷名單
+    case "high_care_delete":
+        $re=high_care_delete($sn);
+        header("location:tchstu_mag.php?op=high_care_mon&year={$re['year']}&month={$re['month']}");
+        exit;
+    // 表單，新增、編輯畫面
+    case "high_care_form":
+        high_care_form($sn);
+        break;//跳出迴圈,往下執行
+    //高關懷列表
+    case "high_care_list":
+        high_care_list();
+        break;//跳出迴圈,往下執行
+
+        
     default:
         // semester_list();
         // $op="semester_list";
@@ -161,6 +182,338 @@ switch ($op) {
 
 }
 /*-----------function區--------------*/
+
+// 每月高關懷名單 
+    // 列表- 高關懷名單
+    function high_care_list(){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 high_care_list 權限! error:2105311342');
+        }
+        $myts = MyTextSanitizer::getInstance();
+
+        $tbl      = $xoopsDB->prefix('yy_high_care_month');
+        $sql      = "SELECT * FROM $tbl ORDER BY `year` DESC  , `month` DESC";
+        
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        $PageBar = getPageBar($sql, 12, 10);
+        $bar     = $PageBar['bar'];
+        $sql     = $PageBar['sql'];
+        $total   = $PageBar['total'];
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+
+        while(  $hcm= $xoopsDB->fetchArray($result)){
+            $hcm['sn']          = $myts->htmlSpecialChars($hcm['sn']);
+            $hcm['year']        = $myts->htmlSpecialChars($hcm['year']);
+            $hcm['month']       = $myts->htmlSpecialChars($hcm['month']);
+            $hcm['event_date']  = $myts->htmlSpecialChars($hcm['event_date']);
+            $hcm['event']       = $myts->htmlSpecialChars($hcm['event']);
+            $all []             = $hcm;
+        }
+        $xoopsTpl->assign('all', $all);
+        $xoopsTpl->assign('bar', $bar);
+        $xoopsTpl->assign('total', $total);
+        
+        // die(var_dump($all));
+
+    }
+    // sql-刪除 每月高關懷名單 
+    function high_care_delete($sn){
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, '無 high_care_delete 權限!error:2105310845');
+        }       
+
+        $tbl     = $xoopsDB->prefix('yy_high_care');
+        $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $stu = $xoopsDB->fetchArray($result);
+        if(!($stu['update_user']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php?op=high_care_mon', 3, '非填報人員，無刪除權限 !error:2105310849');
+        }
+
+        // 刪除資料
+        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        // 假如該月份沒有高關懷名單紀錄，也需一並刪除 名單列表
+        $tbl     = $xoopsDB->prefix('yy_high_care');
+        $sql     = "SELECT * FROM $tbl 
+                    where `year`='{$stu['year']}'
+                    AND `month`='{$stu['month']}'
+                    ";
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $rec_exist = $xoopsDB->fetchArray($result);
+        // die(var_dump($rec_exist));
+        if(!$rec_exist){
+            $tbl     = $xoopsDB->prefix('yy_high_care_month');
+            $sql = "DELETE FROM `$tbl` 
+                    where `year`='{$stu['year']}'
+                    AND `month`='{$stu['month']}'";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+
+        return $stu;
+    }
+    // sql-更新 高關懷名單紀錄
+    function high_care_update($sn){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        
+        if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, '無 high_care_update 權限!error:2105310800');
+        } 
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=dept_school_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // die();
+
+        // 更新高關懷名單列表的事件日期
+        $tbl = $xoopsDB->prefix('yy_high_care_month');
+        $sql = "update " . $tbl . " set `event_date`=now()  
+            where `year`='{$year}'
+            AND `month`='{$month}'
+            ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        // 更新高關懷名單紀錄
+        $tbl = $xoopsDB->prefix('yy_high_care');
+        $sql = "update " . $tbl . " 
+                set `keyin_date`=now(), 
+                    `event_desc` ='{$event_desc}',
+                    `update_user` ='{$uid}',
+                    `update_date` =now()
+                where `sn`='{$sn}'
+                ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        $re['year']=$year;
+        $re['month']=$month;
+
+        return true;
+    }
+    // 新增高關懷名單sql
+    function high_care_insert(){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        
+        if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, '無 high_care_insert 權限!error:2105301615');
+        } 
+
+        // 安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=high_care_mon", 3, '新增 每月高關懷名單 ，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        $class_id=($SchoolSet->stu_sn_classid[$student_sn]);
+
+        // 查看是否為每月高關懷名單第一筆
+        $tbl     = $xoopsDB->prefix('yy_high_care_month');
+        $sql     = "SELECT * FROM $tbl 
+                Where `year`='{$year}'
+                AND `month`='{$month}'
+                ";
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $have_data = $xoopsDB->fetchArray($result);
+        if(!$have_data){
+            $event=$year.'年'.$month.'月份，高關懷學生通報';
+            $sql = "insert into `$tbl` (
+                `year`,`month`,`event_date`,`event`,`comment`,
+                `update_user`,`update_date`) 
+                values(
+                '{$year}','{$month}',now(),'{$event}','',
+                '{$uid}',now()
+                )";
+            // echo($sql); 
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }else{
+            $sql = "update " . $tbl . " set `event_date`=now()  
+                    where `year`='{$year}'
+                    AND `month`='{$month}'
+                    ";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+        // die(var_dump(!$have_data));
+
+        $tbl = $xoopsDB->prefix('yy_high_care');
+        $sql = "insert into `$tbl` (
+            `year`,`month`,`student_sn`,`class_id`,`event_desc`,
+            `keyin_date`,`update_user`,`update_date`) 
+            values(
+            '{$year}','{$month}','{$student_sn}','{$class_id}','{$event_desc}',
+            now(),'{$uid}',now()
+            )";
+        // echo($sql); 
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        
+        $re['year']=$year;
+        $re['month']=$month;
+
+        return $re;
+    }
+    // 表單-新增、編輯 學生
+    function high_care_form($sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+
+        if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php?op=high_care_mon', 3, '無 high_care_form 權限!error:2105281537');
+        }        
+        // 西元年轉民國年
+        $taiwan_year = date('Y')-1911;
+        $now_month = date('m');
+        // $taiwan_year_v = str_pad($taiwan_year,3,'0',STR_PAD_LEFT);//將數字由左邊補零至3位數
+        $now_year_ary = [$taiwan_year=>(string)$taiwan_year,$taiwan_year+1=>(string)($taiwan_year+1)];
+        // 通報時間年
+        $year_sel=Get_select_opt_htm($now_year_ary,$taiwan_year,'0');
+        $xoopsTpl->assign('year_sel', $year_sel);
+        // 通報時間月列表
+        $month_sel=Get_select_opt_htm($SchoolSet->month_ary,$now_month,'0');
+        $xoopsTpl->assign('month_sel', $month_sel);
+        // 學生sn[name]
+        $stu_sel=Get_select_opt_htm($SchoolSet->stu_name,'','1');
+        $xoopsTpl->assign('stu_sel', $stu_sel);
+        // 填寫人員
+        $xoopsTpl->assign('teacher_name', $xoopsUser->name());
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#op_high_care_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $form_title = '新增每月高關懷學生';
+        $stu = array();
+
+        if($sn){
+            $form_title = '編輯高關懷學生紀錄';
+            $tbl     = $xoopsDB->prefix('yy_high_care');
+            $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $stu = $xoopsDB->fetchArray($result);
+            $xoopsTpl->assign('edit', ture);
+            if(!($stu['update_user']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+                redirect_header('tchstu_mag.php?op=high_care_mon', 3, '非填報人員，無權限 !error:2105302220');
+            }
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+        $stu['year']         = $myts->htmlSpecialChars($stu['year']??$taiwan_year);                //日期
+        $stu['month']        = $myts->htmlSpecialChars($stu['month']??$now_month);                 //月份
+        $stu['student_name'] = $myts->htmlSpecialChars($SchoolSet->stu_name[$stu['student_sn']]);
+        $stu['event_desc']   = $myts->displayTarea($stu['event_desc'], 1, 0, 0, 0, 0);
+        $xoopsTpl->assign('stu', $stu);
+        
+        // var_dump($_SESSION);die();
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $stu['update_user'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
+        // 下個動作
+        if ($sn) {
+            $op='high_care_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='high_care_insert';
+        }
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+    // 該月高關懷名單
+    function high_care_mon($hi_care=[]){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 high_care_mon 權限! error:2105272100');
+        }
+        // 西元年轉民國年
+        $taiwan_year = date('Y')-1911;
+        $now_month = date('m');
+        $hi_care['year']=($hi_care['year']=='')?(string)$taiwan_year:$hi_care['year'];
+        $hi_care['month']=($hi_care['month']=='')?(string)$now_month:$hi_care['month'];
+        // $taiwan_year_v = str_pad($taiwan_year,3,'0',STR_PAD_LEFT);//將數字由左邊補零至3位數
+        $now_year_ary = [$taiwan_year-2=>(string)$taiwan_year-2,$taiwan_year-1=>(string)($taiwan_year-1),$taiwan_year=>(string)($taiwan_year)];
+        // 通報時間列表
+        $year_sel=Get_select_opt_htm($now_year_ary,$hi_care['year'],'0');
+        $xoopsTpl->assign('year_sel', $year_sel);
+        // 月份列表時間列表
+        $month_sel=Get_select_opt_htm($SchoolSet->month_ary,$hi_care['month'],'0');
+        $xoopsTpl->assign('month_sel', $month_sel);
+        $xoopsTpl->assign('hi_care', $hi_care);
+        // die(var_dump($hi_care));
+        $myts = MyTextSanitizer::getInstance();
+
+        $tbl      = $xoopsDB->prefix('yy_high_care');
+        $sql      = "SELECT  * FROM $tbl 
+                        WHERE `year`= '{$hi_care['year']}'
+                        AND `month`= '{$hi_care['month']}'
+                        ORDER BY `sn` DESC
+                        " ;
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+        while($data= $xoopsDB->fetchArray($result)){
+            $data['sn']          = $myts->htmlSpecialChars($data['sn']);
+            $data['year']        = $myts->htmlSpecialChars($data['year']);
+            $data['month']       = $myts->htmlSpecialChars($data['month']);
+            $data['student']     = $myts->htmlSpecialChars($SchoolSet->stu_name[$data['student_sn']]);
+            $data['class']       = $myts->htmlSpecialChars($SchoolSet->class_name[$data['class_id']]);
+            $data['event_desc']  = $myts->displayTarea($data['event_desc'], 1, 0, 0, 0, 0);
+            $data['keyin_date']  = $myts->htmlSpecialChars($data['keyin_date']);
+            if($data['update_user']==$xoopsUser->uid() OR $xoopsUser->isAdmin()){
+                $data['edit']=true;
+            }else{$data['edit']=false;}
+            $data['update_user'] = $myts->htmlSpecialChars($SchoolSet->uid2name[$data['update_user']]??'未命名');
+            $all  [] = $data;
+        }
+        $xoopsTpl->assign('all', $all);
+
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('hi_care_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=high_care_delete&sn=", 'sn','確定要刪除關懷學生紀錄','關懷學生紀錄刪除。');
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+        $xoopsTpl->assign('op', "high_care_mon");
+
+    }
 // ----------------------------------
 // 考科及學期總成績查詢 
     // 列印成績單
@@ -735,7 +1088,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header("tchstu_mag.php?op=course_form&sn={$sn}", 3, '無course_delete!error:2104270940');
+            redirect_header("tchstu_mag.php?op=course_form&sn={$sn}", 3, '無course_delete 權限! error:2104270940');
         }       
        
         $tbl   = $xoopsDB->prefix('yy_course');
@@ -872,7 +1225,7 @@ switch ($op) {
     function course_update($sn){
         global $xoopsDB,$xoopsUser;
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header("tchstu_mag.php?op=course_form&sn={$sn}", 3, '無course_update權限!error:2104261000');
+            redirect_header("tchstu_mag.php?op=course_form&sn={$sn}", 3, '無 course_update 權限!error:2104261000');
         } 
         
         //安全判斷 儲存 更新都要做
@@ -921,7 +1274,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('tchstu_mag.php?op=course_form', 3, '無course_insert權限!error:2104242100');
+            redirect_header('tchstu_mag.php?op=course_form', 3, '無 course_insert 權限!error:2104242100');
         } 
         // 安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
@@ -981,7 +1334,7 @@ switch ($op) {
     function course_form($sn){
         // var_dump(power_chk("tchstu_mag", "1"));die();
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('tchstu_mag.php?op=course_list', 3, '無course_form權限!error:2104221800');
+            redirect_header('tchstu_mag.php?op=course_list', 3, '無 course_form 權限!error:2104221800');
         }        
 
         global $xoopsTpl,$xoopsUser,$xoopsDB;
@@ -1081,7 +1434,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!power_chk("beck_iscore", "1")){
-            redirect_header('tchstu_mag.php', 3, '無student_delete權限!error:2104210936');
+            redirect_header('tchstu_mag.php', 3, '無 student_delete 權限!error:2104210936');
         } 
 
         
@@ -1097,7 +1450,7 @@ switch ($op) {
 
         global $xoopsDB,$xoopsUser;
         if(!power_chk("beck_iscore", "1")){
-            redirect_header('index.php', 3, '無student_update權限!error:2104201500');
+            redirect_header('index.php', 3, '無 student_update 權限! error:2104201500');
         } 
 
         
@@ -1162,7 +1515,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!power_chk("beck_iscore", "1")){
-            redirect_header('index.php', 3, '無student_insert權限!error:210420114');
+            redirect_header('index.php', 3, '無 student_insert 權限!  error:210420114');
         } 
 
         // 安全判斷 儲存 更新都要做
@@ -1207,7 +1560,7 @@ switch ($op) {
     function student_form($sn){
         // var_dump(power_chk("tchstu_mag", "1"));die();
         if(!power_chk("beck_iscore", "1") or !power_chk("beck_iscore", "3")){
-            redirect_header('index.php', 3, '無student_form權限!error:2104191604');
+            redirect_header('index.php', 3, '無 student_form 權限!  error:2104191604');
         }        
         // if (!power_chk('beck_iscore', 1)) {
         //     redirect_header('school_affairs.php', 3, '無操作權限');
@@ -1340,9 +1693,8 @@ switch ($op) {
     // 列表- 學生
     function student_list($pars=[],$g2p=''){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
-        // if(!power_chk("beck_iscore", "2")){
         if (!$xoopsUser) {
-            redirect_header('index.php', 3, 'student_list!error:210420115');
+            redirect_header('index.php', 3, '無 student_list 權限! error:210420115');
         } 
         if(power_chk("beck_iscore", "1")){
             $xoopsTpl->assign('can_edit', true);
@@ -1554,7 +1906,7 @@ switch ($op) {
     
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $uscore['tea_id']==$_SESSION['xoopsUserId'])){
-            redirect_header('tchstu_mag.php?op=usual_score_list', 3, 'usual_score_form! error:2105051000');
+            redirect_header('tchstu_mag.php?op=usual_score_list', 3, '無 usual_score_form 權限!  error:2105051000');
         }     
 
         //套用formValidator驗證機制
