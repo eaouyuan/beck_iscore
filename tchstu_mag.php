@@ -1095,15 +1095,19 @@ switch ($op) {
     // 列表- 課程
     function course_list($pars=[],$g2p=''){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $SchoolSet= new SchoolSet;
 
         if(!$xoopsUser){
-            redirect_header('index.php', 3, 'course_list!error:2104261048');
+            redirect_header('index.php', 3, 'course_list! error:2104261048');
         }
         if(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() ){
             $xoopsTpl->assign('can_edit', true);
         } 
 
-        // var_dump($_REQUEST);
+        $pars['cos_year']=($pars['cos_year']=='')?(string)$SchoolSet->sem_year:$pars['cos_year'];
+        $pars['cos_term']=($pars['cos_term']=='')?(string)$SchoolSet->sem_term:$pars['cos_term'];
+
+        // var_dump($pars);die();
         $myts = MyTextSanitizer::getInstance();
 
         $tb1      = $xoopsDB->prefix('yy_course');
@@ -1129,7 +1133,6 @@ switch ($op) {
             $sql.="cr.dep_id = '{$pars['dep_id']}'";
             $have_par='1';
         }
-        $SchoolSet= new SchoolSet;
 
         $sql.=" ORDER BY `sort`,`cos_year` DESC , `cos_term` DESC ,`dep_id` ,`tea_id` , `cos_name`";
         // echo($sql);die();
@@ -1145,7 +1148,6 @@ switch ($op) {
 
         if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*30+1;}
         $credit_sun=0;
-        // var_dump($cos= $xoopsDB->fetchArray($result));die();
         $star_icon=['0'=>'','1'=>'<i class="fa fa-star" aria-hidden="true"></i>'];
         while($cos= $xoopsDB->fetchArray($result)){
             $cos['i']            = $i;
@@ -1170,11 +1172,11 @@ switch ($op) {
         foreach ($SchoolSet->all_sems as $k=>$v){
             $sems_year[$v['year']]=$v['year'];
         }
-        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'1');
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'0');
         $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
         // 學期 
         $terms=['1'=>'1','2'=>'2'];
-        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],1);
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],'0');
         $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
 
         // 學程列表
