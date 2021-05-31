@@ -416,7 +416,7 @@ CREATE TABLE `yy_high_care_month` (
   `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-ALTER TABLE `xx_yy_high_care_month`
+ALTER TABLE `yy_high_care_month`
 ADD UNIQUE `year_month` (`year`, `month`);
 
 

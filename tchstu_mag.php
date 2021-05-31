@@ -395,7 +395,7 @@ switch ($op) {
         $month_sel=Get_select_opt_htm($SchoolSet->month_ary,$now_month,'0');
         $xoopsTpl->assign('month_sel', $month_sel);
         // 學生sn[name]
-        $stu_sel=Get_select_opt_htm($SchoolSet->stu_name,'','1');
+        $stu_sel=Get_select_opt_htm($SchoolSet->stu_anonymous,'','1');
         $xoopsTpl->assign('stu_sel', $stu_sel);
         // 填寫人員
         $xoopsTpl->assign('teacher_name', $xoopsUser->name());
@@ -429,7 +429,7 @@ switch ($op) {
         $xoopsTpl->assign('form_title', $form_title);
         $stu['year']         = $myts->htmlSpecialChars($stu['year']??$taiwan_year);                //日期
         $stu['month']        = $myts->htmlSpecialChars($stu['month']??$now_month);                 //月份
-        $stu['student_name'] = $myts->htmlSpecialChars($SchoolSet->stu_name[$stu['student_sn']]);
+        $stu['student_name'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous[$stu['student_sn']]);
         $stu['event_desc']   = $myts->displayTarea($stu['event_desc'], 1, 0, 0, 0, 0);
         $xoopsTpl->assign('stu', $stu);
         
@@ -491,7 +491,7 @@ switch ($op) {
             $data['sn']          = $myts->htmlSpecialChars($data['sn']);
             $data['year']        = $myts->htmlSpecialChars($data['year']);
             $data['month']       = $myts->htmlSpecialChars($data['month']);
-            $data['student']     = $myts->htmlSpecialChars($SchoolSet->stu_name[$data['student_sn']]);
+            $data['student']     = $myts->htmlSpecialChars($SchoolSet->stu_anonymous[$data['student_sn']]);
             $data['class']       = $myts->htmlSpecialChars($SchoolSet->class_name[$data['class_id']]);
             $data['event_desc']  = $myts->displayTarea($data['event_desc'], 1, 0, 0, 0, 0);
             $data['keyin_date']  = $myts->htmlSpecialChars($data['keyin_date']);
