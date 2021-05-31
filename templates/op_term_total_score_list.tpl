@@ -48,7 +48,8 @@
                 <th width="2%"             class="text-center">修得學分</th>
                 <th width="2%" rowspan="2" class="text-center">總分</th>
                 <th width="2%" rowspan="2" class="text-center">平均</th>
-                <th width="10%" rowspan="2" class="text-center">列印成績單</th>
+                <th width="10%" rowspan="2" class="text-center">獎勵方式</th>
+                <th width="8%" rowspan="2" class="text-center">列印成績單</th>
             </tr>
             <tr>
                 <th scope="col" class="text-center">學分</th>
@@ -73,6 +74,7 @@
             <td class="text-center"><{$its.sum_credits}></td>
             <td class="text-center"><{$its.total_score}></td>
             <td class="text-center"><{$its.total_avg}></td>
+            <td class="text-center"><{$its.reward_method}></td>
             <td class="text-center">
                 <a target="_blank" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=transcript&cos_year=<{$pars.cos_year}>&cos_term=<{$pars.cos_term}>&dep_id=<{$pars.dep_id}>&sn=<{$i}>" class="btn btn-success btn-sm mr-2"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</a>
             </td>
@@ -148,7 +150,7 @@
         vertical-align:middle;
         text-align:center;
         border: 2px solid #000000;
-        line-height:2.5em;
+        /* line-height:2.5em; */
         /* width:auto; */
         /* border-bottom: 2px solid #000000; */
     }

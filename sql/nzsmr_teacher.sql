@@ -360,6 +360,7 @@ CREATE TABLE `yy_term_total_score` (
   `total_score` varchar(6) NULL COMMENT '總分',
   `total_avg` varchar(5) NULL COMMENT '總平均',
   `comment` varchar(255) NULL DEFAULT '' COMMENT '備註',
+  `reward_method` varchar(255) NULL DEFAULT '' COMMENT '獎勵方式',
   `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `update_user` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '修改者',
   `update_date` datetime NOT NULL COMMENT '修改日期', 

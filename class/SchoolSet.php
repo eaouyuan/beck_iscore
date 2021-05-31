@@ -119,10 +119,11 @@ class SchoolSet
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all=[];
         while($data= $xoopsDB->fetchArray($result)){
-            $all[$data['student_sn']]['sum_credits'] = $data['sum_credits'];
-            $all[$data['student_sn']]['total_score'] = $data['total_score'];
-            $all[$data['student_sn']]['total_avg']   = $data['total_avg'];
-            $all[$data['student_sn']]['comment']   = $data['comment'];
+            $all[$data['student_sn']]['sum_credits']   = $data['sum_credits'];
+            $all[$data['student_sn']]['total_score']   = $data['total_score'];
+            $all[$data['student_sn']]['total_avg']     = $data['total_avg'];
+            $all[$data['student_sn']]['comment']       = $data['comment'];
+            $all[$data['student_sn']]['reward_method'] = $data['reward_method'];
         }
         return $all;
     }
@@ -212,6 +213,7 @@ class SchoolSet
             }
             if(is_numeric($stu_score[$stu_sn]['stu_sum_score'])){
                 $stu_score[$stu_sn]['stu_avg_score']=(float) round($stu_score[$stu_sn]['stu_sum_score']/ $stu_score[$stu_sn]['stu_sum_cred'],0);
+                $stu_score[$stu_sn]['reward_method']=score_range($stu_score[$stu_sn]['stu_avg_score'],'8'); //總成績獎勵
             }
         }
         // die(var_dump($stu_score));
@@ -244,11 +246,12 @@ class SchoolSet
             $sql = "insert into `$tbl` (
                 `year`,`term`,`dep_id`,`student_sn`,`sum_credits`,
                 `total_score`,`total_avg`,`comment`,`update_user`,
-                `update_date`
+                `update_date`,`reward_method`
                 ) 
                 values(
                 '{$year}','{$term}','{$depid}','{$stu_sn}','{$v1['stu_sum_cred']}',
-                '{$v1['stu_sum_score']}','{$v1['stu_avg_score']}','{$stu_tmp_data[$stu_sn]['comment']}','{$xoopsUser->uid()}',now()
+                '{$v1['stu_sum_score']}','{$v1['stu_avg_score']}','{$stu_tmp_data[$stu_sn]['comment']}','{$xoopsUser->uid()}',now(),
+                '{$v1['reward_method']}'
                 )";
             $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         }

@@ -636,10 +636,11 @@ switch ($op) {
                 foreach ($course_groupname['grpname_sumcred'] as $grpname=>$sumcred){
                     $stu_data[$stu_sn]['scores'][$grpname]=$term_score_detail[$stu_sn][$grpname]['course_total_avg']??'-';
                 }
-                $stu_data[$stu_sn]['sum_credits']=$term_total_score[$stu_sn]['sum_credits'];
-                $stu_data[$stu_sn]['total_score']=$term_total_score[$stu_sn]['total_score'];
-                $stu_data[$stu_sn]['total_avg']=$term_total_score[$stu_sn]['total_avg'];
-                $stu_data[$stu_sn]['comment']=$term_total_score[$stu_sn]['comment'];
+                $stu_data[$stu_sn]['sum_credits']   = $term_total_score[$stu_sn]['sum_credits'];
+                $stu_data[$stu_sn]['total_score']   = $term_total_score[$stu_sn]['total_score'];
+                $stu_data[$stu_sn]['total_avg']     = $term_total_score[$stu_sn]['total_avg'];
+                $stu_data[$stu_sn]['comment']       = $term_total_score[$stu_sn]['comment'];
+                $stu_data[$stu_sn]['reward_method'] = $term_total_score[$stu_sn]['reward_method'];
                 $i++;
             }
             
@@ -823,22 +824,6 @@ switch ($op) {
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
         
-
-        // die(var_dump($stu_data));
-        // echo('<br>');
-        // $SchoolSet->progress_score($pars['dep_id']);
-        // var_dump(score_range('91',$pars['exam_stage']));
-        // echo('<br>');
-        // die();
-        // die();
-        // die(var_dump($stu_data));
-        // die(var_dump($stu_data));
-        // $excel_save=[];
-        // $excel_save[]=['序號','班級','姓名'];
-        // foreach($dep_exam_course as $course_id => $course_name){
-        //     $excel_save['0'][]=$course_name;
-        // }
-        // array_push($excel_save['0'],'總分','平均','獎勵方式','進步分','備註');
     }
 
 
