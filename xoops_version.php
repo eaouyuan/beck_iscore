@@ -55,6 +55,7 @@ $modversion['tables'][]         = 'yy_term_total_score';       //學期總成績
 $modversion['tables'][]         = 'yy_term_score_detail';      //學期總成績-群組科目成績記錄
 $modversion['tables'][]         = 'yy_high_care';              //高關懷名單
 $modversion['tables'][]         = 'yy_high_care_month';        //每月高關懷名單
+$modversion['tables'][]         = 'yy_config';                 //config
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

@@ -420,6 +420,22 @@ CREATE TABLE `yy_high_care_month` (
 ALTER TABLE `yy_high_care_month`
 ADD UNIQUE `year_month` (`year`, `month`);
 
+-- config
+CREATE TABLE `yy_config` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '設定檔流水號',
+  `gpname` varchar(255) NOT NULL COMMENT '群組名稱',
+  `title` varchar(255) NOT NULL COMMENT '中文名稱',
+  `gpval` varchar(65) NOT NULL COMMENT '值',
+  `description` varchar(255) NOT NULL COMMENT '描述',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `status` enum('0','1') NOT NULL DEFAULT '1' COMMENT '狀態 0關閉 1啟用',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '1' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL DEFAULT now() COMMENT '修改日期', 
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+ALTER TABLE `yy_config`
+ADD UNIQUE `gpname_value` (`gpname`, `value`);
+
 
 -- 學年度
 INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`, `create_date`, `update_user`, `update_date`, `activity`, `sort`) VALUES
@@ -612,4 +628,16 @@ INSERT INTO `yy_exam_keyin_daterange` (`sn`, `exam_year`, `exam_term`, `exam_nam
 (5,	'109',	'2',	'第三次段考前平時考',	'2021-05-07',	'2021-05-19',	'1',	6,	1,	'2021-05-01 08:32:33'),
 (6,	'109',	'2',	'期末考',	'2021-05-06',	'2021-05-13',	'1',	5,	1,	'2021-05-01 08:42:46');
 
-
+INSERT INTO `yy_config` (`sn`, `gpname`, `title`, `value`, `description`, `sort`, `update_user`, `update_date`) VALUES
+(1,'Adoption_interview_location','會客室','1','認輔面談地點',90,1,'2021-06-01 16:23:05'),
+(2,'Adoption_interview_location','綠園','2','認輔面談地點',90,1,'2021-06-01 16:23:05'),
+(3,'Adoption_interview_location','其他','3','認輔面談地點',90,1,'2021-06-01 16:23:05'),
+(4,'Counseling_focus','親子互動','1','認輔-輔導重點',90,1,'2021-06-01 16:24:41'),
+(5,'Counseling_focus','人際關係','2','認輔-輔導重點',90,1,'2021-06-01 16:24:41'),
+(6,'Counseling_focus','兩性交往','3','認輔-輔導重點',90,1,'2021-06-01 16:24:41'),
+(7,'Counseling_focus','生涯規劃','4','認輔-輔導重點',90,1,'2021-06-01 16:24:41'),
+(8,'Counseling_focus','情緒困擾','5','認輔-輔導重點',90,1,'2021-06-01 16:26:18'),
+(9,'Counseling_focus','自我探索','6','認輔-輔導重點',90,1,'2021-06-01 16:26:18'),
+(10,'Counseling_focus','學習輔導','7','認輔-輔導重點',90,1,'2021-06-01 16:28:58'),
+(11,'Counseling_focus','創傷復原','8','認輔-輔導重點',90,1,'2021-06-01 16:29:13'),
+(12,'Counseling_focus','其他','9','認輔-輔導重點',90,1,'2021-06-01 16:29:36');

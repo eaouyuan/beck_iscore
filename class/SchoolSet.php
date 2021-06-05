@@ -41,6 +41,7 @@ class SchoolSet
     public $stu_dep; //學生 學程
     public $stu_id; // 學生 學號
     public $month_ary; // 月份陣列
+    public $sys_config; // config
     // public $tch_sex; //性別
     
     //建構函數
@@ -56,12 +57,33 @@ class SchoolSet
         $this->get_uid_name();// get uid 2 name
         $this->get_stu_data();// get stu data
         $this->dep2exam()    ;// 學程瓶段考科目
+        $this->get_config_data()    ;// config
         $this->exam_name = ['1'=>'第一次段考前平時考','2'=>'第一次段考','3'=>'第二次段考前平時考','4'=>'第二次段考','5'=>'第三次段考前平時考','6'=>'期末考'];
         $this->usual_exam_name=['1'=>'第一次段考前平時考','3'=>'第二次段考前平時考','5'=>'第三次段考前平時考'];
         $this->stage_exam_name=['2'=>'第一次段考','4'=>'第二次段考','6'=>'期末考'];
         $this->month_ary=['01'=>'01','02'=>'02','03'=>'03','04'=>'04','05'=>'05','06'=>'06','07'=>'07','08'=>'08','09'=>'09','10'=>'10','11'=>'11','12'=>'12'];
 
     }
+
+    // get config
+    private function get_config_data(){
+        global $xoopsDB;
+        $tbl = $xoopsDB->prefix('yy_config');
+        $sql            = "SELECT distinct `gpname` FROM $tbl";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $config_gpname=$config_desc=[];
+        while($all= $xoopsDB->fetchArray($result)){
+            $sys_config['gpname'][$all['gpname']]=$all['gpname'];
+        }
+        $sql            = "SELECT distinct `description` FROM $tbl";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $config_gpname=$config_desc=[];
+        while($all= $xoopsDB->fetchArray($result)){
+            $sys_config['desc'][$all['description']]=$all['description'];
+        }
+        $this->sys_config = $sys_config;
+    }
+
 
     // get 學期資料
     public function get_termarray($year=''){

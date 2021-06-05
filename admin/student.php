@@ -3,10 +3,11 @@ include_once "header.php";
 include_once XOOPS_ROOT_PATH . '/class/xoopsform/grouppermform.php';
 //權限項目陣列（編號超級重要！設定後，以後切勿隨便亂改。）
 $item_list = array(
-    '1' => "管理學生(student_form)",
-    '2' => "學生列表(student_list)",
+    '1' => "增刪學生",
+    '2' => "學生列表",
     '3' => "課程管理",
-    '4' => "高關懷名單",
+    '4' => "高關懷",
+    '5' => "認輔管理",
 
 );
 $mid       = $xoopsModule->mid();

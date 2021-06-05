@@ -43,6 +43,9 @@ switch ($op) {
     case "exam_keyindate_sort":
         exam_keyindate_sort($odr_ary);
         exit;
+    case "variable_sort":
+        variable_sort($odr_ary);
+        exit;
     case "course_ftest_sw":
         course_test_sw($sn,$check_status,'first_test');
         exit;
@@ -56,7 +59,22 @@ switch ($op) {
 
 
 }
+function variable_sort($odr_ary){
+    global $xoopsDB,$xoopsUser;
+    $tbl   = $xoopsDB->prefix('yy_config');
+    $sort = 1;
+    // var_dump($odr_ary);die();
+    foreach ($odr_ary as $sn) {
+        $sql = "update " . $tbl . " set `sort`='{$sort}'  where `sn`='{$sn}'";
+        // $xoopsDB->queryF($sql) or die(_TAD_SORT_FAIL . " (" . date("Y-m-d H:i:s") . ")" . $sql);
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // echo('</br>');
+        $sort++;
+    }
+    // var_dump($sql);die();
 
+}
 
 function student_sort($odr_ary){
     global $xoopsDB,$xoopsUser;
