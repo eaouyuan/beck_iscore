@@ -17,9 +17,14 @@ include_once XOOPS_ROOT_PATH . "/header.php";
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
 $op = Request::getString('op');
 $sn = Request::getInt('sn');
+$type = Request::getString('type');
+
 $tea_list['dep_id']=Request::getInt('dep_id');
 $tea_list['search']=Request::getString('search');
 $g2p=Request::getInt('g2p');
+$cfg['gpname'] = Request::getString('gpname');
+$cfg['desc']   = Request::getString('desc');
+$cfg['search'] = Request::getString('search');
 
 // var_dump($_POST);
 // die(var_dump($_SESSION));
@@ -204,8 +209,36 @@ switch ($op) {
         exam_keyindate_delete($sn);
         header("location:school_affairs.php?op=exam_keyindate_list");
         exit;
-
-    default:
+// 系統變數設定
+    // 變數列表
+    case "variable_list":
+        variable_list($cfg,$g2p);
+        break;//跳出迴圈,往下執行
+    // 變數 表單
+    case "variable_form":
+        variable_form($type,$sn);
+        break;//跳出迴圈,往下執行
+    case "variable_update":
+        variable_update($sn);
+        header("location:school_affairs.php?op=variable_list&gpname={$cfg['gpname']}&desc={$cfg['desc']}");
+        exit;//離開，結束程式
+    case "variable_insert":
+        variable_insert($type);
+        header("location:school_affairs.php?op=variable_list&gpname={$cfg['gpname']}&desc={$cfg['desc']}");
+        exit;//離開，結束程式
+    case "variable_delete":
+        variable_delete($sn);
+        header("location:school_affairs.php?op=variable_list");
+        exit;//離開，結束程式
+// 權限管理
+    case "permission":
+        permission();
+        break;//跳出迴圈,往下執行
+    
+    
+    
+    
+        default:
         semester_list();
         $op="semester_list";
         break;
@@ -214,7 +247,299 @@ switch ($op) {
 }
 
 /*-----------function區--------------*/
+// ----------------------------------
+function permission(){
+    global $xoopsTpl,$xoopsDB,$xoopsModule,$xoopsUser;
+    include_once XOOPS_ROOT_PATH . '/class/xoopsform/grouppermform.php';
+    //權限項目陣列（編號超級重要！設定後，以後切勿隨便亂改。）
+    $item_list = array(
+        '1' => "增刪學生",
+        '2' => "學生列表",
+        '3' => "課程管理",
+        '4' => "高關懷",
+        '5' => "認輔管理",
+    
+    );
+    $mid       = $xoopsModule->mid();
+    $perm_name = $xoopsModule->dirname();//這是 beck_iscore 模組名稱
+    // $perm_name = 'tchstu_mag';//這是 beck_iscore 模組名稱
+    // var_dump($xoopsModule);die();
+    $formi     = new XoopsGroupPermForm('細部權限設定', $mid, $perm_name, '請勾選欲開放給群組使用的權限：<br>');
+    foreach ($item_list as $item_id => $item_name) {
+        $formi->addItem($item_id, $item_name);
+    }
+    echo $formi->render();
+    // include_once 'footer.php';
 
+
+
+}
+
+
+
+
+// ----------------------------------
+// 系統設定- 變數列表
+    // 變數刪除
+    function variable_delete($sn){
+        global $xoopsDB,$xoopsUser;
+
+        if(!($xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php', 3, '無 variable_delete 權限!error:2106051650');
+        }       
+
+        $tbl     = $xoopsDB->prefix('yy_config');
+        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        return true;
+    }
+    // 變數更新
+    function variable_update($sn){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        
+        if(!($xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=variable_list', 3, '無 variable_update 權限!error:2106051350');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=dept_school_form&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // die();
+
+        // 查看變數是否存在
+        $tbl     = $xoopsDB->prefix('yy_config');
+        $sql     = "SELECT * FROM $tbl 
+                Where `gpname`='{$gpname}' AND `gpval`='{$gpval}'";
+
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $exist = $xoopsDB->fetchArray($result);
+        if($exist AND $exist['sn']!=$sn){
+            redirect_header("school_affairs.php?op=variable_form&type={$type}&sn={$sn}", 3, "群組名稱:{$gpname}，值:{$gpval}，已存在! error:2106051245");
+        }
+
+        // 更新變數
+        $tbl = $xoopsDB->prefix('yy_config');
+        $sql = "update " . $tbl . " 
+                set `title`       = '{$title}',
+                    `gpval`       = '{$gpval}',
+                    `description` = '{$description}',
+                    `sort`        = '{$sort}',
+                    `status`      = '{$status}',
+                    `update_user` = '{$update_user}',
+                    `update_date` = now()
+                where `sn`          = '{$sn}'
+                ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        return true;
+    }
+    // 新增系統變數
+    function variable_insert($type){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        
+        if(!($xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=variable_list', 3, '無 variable_insert 權限!error:2105301615');
+        } 
+
+        // 安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=variable_list", 3, '新增 系統變數 ，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // var_dump($type);die();
+
+        // 查看變數是否存在
+        $tbl     = $xoopsDB->prefix('yy_config');
+        $sql     = "SELECT * FROM $tbl 
+                Where `gpname`='{$gpname}' AND `gpval`='{$gpval}'";
+
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $exist = $xoopsDB->fetchArray($result);
+        if($exist){
+            redirect_header("school_affairs.php?op=variable_form&type={$type}&sn={$sn}", 3, "群組名稱:{$gpname}，值:{$gpval}，已存在! error:2106051245");
+        }
+        // die();
+        $tbl = $xoopsDB->prefix('yy_config');
+        $sql = "insert into `$tbl` (
+            `gpname`,`title`,`gpval`,`description`,`sort`,
+            `status`,`update_user`,`update_date`) 
+            values(
+            '{$gpname}','{$title}','{$gpval}','{$description}','{$sort}',
+            '{$status}','{$uid}',now()
+            )";
+        // echo($sql); 
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        
+        return true;
+    }
+    // 表單-系統變數
+    function variable_form($type,$sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+        if(!($xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php', 3, '無 variable_form 權限! error:2106049044');
+        }
+
+        switch ($type) {
+            case "n":
+                $form_title = '新增系統變數';
+                $op='variable_insert';
+                break;//跳出迴圈,往下執
+            case "c":
+                $form_title = '複製系統變數';
+                $op='variable_insert';
+                break;//跳出迴圈,往下執
+            case "e":
+                $form_title = '編輯系統變數';
+                $op='variable_update';
+                break;//跳出迴圈,往下執
+        }
+        $xoopsTpl->assign("type",$type);
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("variable_form.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#variable_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $status_ary=['0'=>'關閉','1'=>'啟用'] ;
+        $cfg   = array();
+
+        if($sn){
+            $tbl    = $xoopsDB->prefix('yy_config');
+            $sql    = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $val    = $xoopsDB->fetchArray($result);
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+        $cfg['sn']          = $myts->htmlSpecialChars($val['sn']);
+        $cfg['gpname']      = $myts->htmlSpecialChars($val['gpname']);
+        $cfg['title']       = $myts->htmlSpecialChars($val['title']);
+        $cfg['gpval']       = (int)($val['gpval']);
+        $cfg['description'] = $myts->htmlSpecialChars($val['description']);
+        $cfg['status']      = radio_htm($status_ary,'status', $val['status']??'1');
+        $cfg['update_date'] = $myts->htmlSpecialChars($val['update_date']);
+        $cfg['update_user'] = $SchoolSet->uid2name[$val['update_user']]??'管理員';
+        $cfg['sort']        = $myts->htmlSpecialChars($val['sort']??'99');
+
+        $xoopsTpl->assign('cfg', $cfg);
+
+
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $val['update_user'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
+
+        // //下個動作
+        if ($sn) {
+            $xoopsTpl->assign('sn', $sn);
+        } 
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+    function variable_list($pars=[],$g2p=''){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        if(!($xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php', 3, '無 variable_list 權限! error:2106031400');
+        }
+        $myts = MyTextSanitizer::getInstance();
+        // $SchoolSet->sys_config;
+
+        // 群組名稱
+        $sel['gpname']=Get_select_opt_htm($SchoolSet->sys_config['gpname'],$pars['gpname'],'1');
+        // 描述
+        $sel['desc']=Get_select_opt_htm($SchoolSet->sys_config['desc'],$pars['desc'],'1');
+        $sel['search']=$pars['search'];
+        $xoopsTpl->assign('sel', $sel);
+
+        $tbl      = $xoopsDB->prefix('yy_config');
+        $sql      = "SELECT * FROM $tbl";
+
+        if($pars['gpname']!=''){
+            $sql.=" WHERE `gpname`='{$pars['gpname']}'";
+        }elseif($pars['desc']!=''){
+            $sql.=" WHERE `description`='{$pars['desc']}'";
+        }elseif($pars['search']!=''){
+            $sql.=" WHERE (`gpname` like '%{$pars['search']}%' OR `title` like '%{$pars['search']}%' OR `description` like '%{$pars['search']}%')";
+        }
+        $sql.=" ORDER BY `gpname` , `sort`";
+        // echo($sql);die();
+        
+        
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        $PageBar = getPageBar($sql, 12, 10);
+        $bar     = $PageBar['bar'];
+        $sql     = $PageBar['sql'];
+        $total   = $PageBar['total'];
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+        $status_ary=['0'=>'關閉','1'=>'啟用'] ;
+        // var_dump($pars);
+        while(  $cfg= $xoopsDB->fetchArray($result)){
+            $cfg['sn']          = $myts->htmlSpecialChars($cfg['sn']);
+            $cfg['gpname']      = $myts->htmlSpecialChars($cfg['gpname']);
+            $cfg['title']       = $myts->htmlSpecialChars($cfg['title']);
+            $cfg['gpval']       = $myts->htmlSpecialChars($cfg['gpval']);
+            $cfg['desc']        = $myts->htmlSpecialChars($cfg['desc']);
+            $cfg['status']      = $myts->htmlSpecialChars($status_ary[$cfg['status']]);
+            $cfg['sort']        = (int) $cfg['sort'];
+            $cfg['update_date'] = $myts->htmlSpecialChars(date("Y-m-d",strtotime($cfg['update_date'])));
+            $all []             = $cfg;
+        }
+        $xoopsTpl->assign('all', $all);
+        $xoopsTpl->assign('bar', $bar);
+        $xoopsTpl->assign('total', $total);
+        
+        // die(var_dump($all));
+
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('var_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=variable_delete&sn=", 'sn','確定要刪除變數資料','變數資料刪除。');
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+        $xoopsTpl->assign('op', "variable_list");
+
+
+    }
 // ----------------------------------
 // 成績keyin日期 管理
     // sql-成績keyin日期
@@ -222,7 +547,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
-            redirect_header('tchstu_mag.php', 3, '無 exam_keyindate_delete 權限!error:2104210936');
+            redirect_header('index.php', 3, '無 exam_keyindate_delete 權限!error:2104210936');
         } 
         
         $tbl = $xoopsDB->prefix('yy_exam_keyin_daterange');
@@ -283,7 +608,7 @@ switch ($op) {
         // 安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("tchstu_mag.php?op=student_form", 3, '新增學生，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
+            redirect_header("school_affairs.php?op=student_form", 3, '新增成績keyin日期，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
             throw new Exception($error);
         }
         
@@ -323,7 +648,6 @@ switch ($op) {
 
     // 表單-新增、編輯 成績keyin日期
     function exam_keyindate_form($sn){
-        // var_dump(power_chk("tchstu_mag", "1"));die();
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
             redirect_header('index.php', 3, '無 exam_keyindate_form 權限!error:2104301507');
         }        

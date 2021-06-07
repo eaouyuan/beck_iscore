@@ -1,9 +1,9 @@
 <h2 style="float:left" class="mb-3">系統變數設定─列表</h2>
 <div class="col row"></div>
-<button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=variable_form&type=n';" style="float:right">
+<button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=variable_form&type=n';" style="float:right">
     <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增系統變數">新增系統變數
 </button>
-<form name="variable_list" id="variable_list" action="tchstu_mag.php" method="get">
+<form name="variable_list" id="variable_list" action="school_affairs.php" method="get">
     <div class="form-group row">
         <label for="gpname" class="col-1.5 col-form-label text-sm-right px-0">群組名稱：</label>
         <div class="col-2.5 text-left px-0 mr-3">
@@ -65,8 +65,8 @@
             <td class="text-center"><{$its.update_date}></td>
             <td class="text-center"><{$its.sort}></td>
             <td class="text-center">
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=variable_form&sn=<{$its.sn}>&type=e" class="btn btn-warning btn-sm mr-2">編輯</a>
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=variable_form&sn=<{$its.sn}>&type=c" class="btn btn-info btn-sm mr-2">複製</a>
+                <a href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=variable_form&sn=<{$its.sn}>&type=e" class="btn btn-warning btn-sm mr-2">編輯</a>
+                <a href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=variable_form&sn=<{$its.sn}>&type=c" class="btn btn-info btn-sm mr-2">複製</a>
                 <a href="javascript:var_del(<{$its.sn}>)" class="btn btn-danger btn-sm">刪除</a>
             </td>
         </tr>
@@ -82,6 +82,13 @@
 <{$bar}>
 
 <script type="text/javascript">
+    $(document).on('keypress',function(e) {
+        if(e.which == 13) {
+            $("#gpname option:selected").prop("selected", false);
+            $("#desc option:selected").prop("selected", false);
+            document.forms["variable_list"].submit();
+        }
+    });
     $(document).ready(function($){
         $("#clear").click(function() {
             $('#search').val('');
