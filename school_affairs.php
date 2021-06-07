@@ -30,7 +30,7 @@ $cfg['search'] = Request::getString('search');
 // die(var_dump($_SESSION));
 // die(var_dump($_REQUEST));
 // var_dump($_REQUEST);
-// var_dump($sn);
+// var_dump($d_list);
 // var_dump('g2p:'.$g2p);
 // die();
 
@@ -214,7 +214,6 @@ switch ($op) {
     case "variable_list":
         variable_list($cfg,$g2p);
         break;//跳出迴圈,往下執行
-    // 變數 表單
     case "variable_form":
         variable_form($type,$sn);
         break;//跳出迴圈,往下執行
@@ -230,6 +229,15 @@ switch ($op) {
         variable_delete($sn);
         header("location:school_affairs.php?op=variable_list");
         exit;//離開，結束程式
+// 認輔教師設定
+    case "counseling_set":
+        counseling_set($sn);
+        break;//跳出迴圈,往下執行
+    case "counseling_update":
+        counseling_update($sn);
+        header("location:school_affairs.php?op=counseling_set&sn={$sn}");
+        exit;//離開，結束程式
+
 // 權限管理
     case "permission":
         permission();
@@ -248,35 +256,149 @@ switch ($op) {
 
 /*-----------function區--------------*/
 // ----------------------------------
-function permission(){
-    global $xoopsTpl,$xoopsDB,$xoopsModule,$xoopsUser;
-    include_once XOOPS_ROOT_PATH . '/class/xoopsform/grouppermform.php';
-    //權限項目陣列（編號超級重要！設定後，以後切勿隨便亂改。）
-    $item_list = array(
-        '1' => "增刪學生",
-        '2' => "學生列表",
-        '3' => "課程管理",
-        '4' => "高關懷",
-        '5' => "認輔管理",
+    function counseling_update($sn){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        
+        if(!(power_chk("beck_iscore", "5") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=counseling_set', 3, '無 counseling_update 權限!error:2106072000');
+        }
+        
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=counseling_set&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
     
-    );
-    $mid       = $xoopsModule->mid();
-    $perm_name = $xoopsModule->dirname();//這是 beck_iscore 模組名稱
-    // $perm_name = 'tchstu_mag';//這是 beck_iscore 模組名稱
-    // var_dump($xoopsModule);die();
-    $formi     = new XoopsGroupPermForm('細部權限設定', $mid, $perm_name, '請勾選欲開放給群組使用的權限：<br>');
-    foreach ($item_list as $item_id => $item_name) {
-        $formi->addItem($item_id, $item_name);
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        $d_list = Request::getArray('d_list');
+        foreach ($d_list as $key => $value) {
+            $$d_list[$key] = $myts->addSlashes($value);
+        }
+        // var_dump($d_list);die();
+        if(count($d_list)==0){
+            // redirect_header("school_affairs.php?op=counseling_set&sn={$sn}", 3, '沒有選取認輔學生！');
+        }
+        foreach ($d_list as $key => $stusn) {
+            $tbl = $xoopsDB->prefix('yy_tea_counseling');
+            // 學生在其它認輔教師紀錄先刪
+            $sql = "DELETE FROM `$tbl`
+            WHERE `year` = '{$year}'
+            AND `term` = '{$term}'
+            AND `student_sn` = '{$stusn}'
+            ";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+
+        // 再刪除此教師所有認輔學生
+        $tbl = $xoopsDB->prefix('yy_tea_counseling');
+        $sql = "DELETE FROM `$tbl`
+        WHERE `year` = '{$year}'
+        AND `term` = '{$term}'
+        AND `tea_uid` = '{$sn}'
+        ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        
+        foreach ($d_list as $key => $stusn) {
+            // 新增認輔對應紀錄
+            $sql = "insert into `$tbl` (
+                `year`,`term`,`tea_uid`,`student_sn`,`update_user`,
+                `update_date`) 
+                values(
+                '{$year}','{$term}','{$sn}','{$stusn}','{$uid}',
+                now()
+                )";
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+        
+        return true;
     }
-    echo $formi->render();
-    // include_once 'footer.php';
 
+    // 認輔教師設定
+    function counseling_set($sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
 
+        if(!(power_chk("beck_iscore", "5") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=', 3, '無 counseling_set 權限!error:2106070953');
+        }
+        $xoopsTpl->assign('sem_year', $SchoolSet->sem_year);
+        $xoopsTpl->assign('sem_term', $SchoolSet->sem_term);
+        
+        $teachers=[];
+        foreach($SchoolSet->users as $k=>$v){
+            $teachers[$v['uid']]=$v['name'];
+        }
 
-}
+        // 教師列表
+        $tea_sel=Get_select_opt_htm($teachers,$sn,'0');
+        $xoopsTpl->assign('tea_sel', $tea_sel);
+        $xoopsTpl->assign('tea_name',$teachers[$sn]);
+        $counseling  = array();
+        if($sn){
+            $tbl = $xoopsDB->prefix('yy_tea_counseling');
+            $sql = "SELECT * FROM $tbl 
+                    WHERE `year` = '{$SchoolSet->sem_year}'
+                    AND `term` = '{$SchoolSet->sem_term}'
+                    AND `tea_uid` = '{$sn}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            while($data= $xoopsDB->fetchArray($result)){
+                $counseling[$data['student_sn']] = $SchoolSet->stu_name[$data['student_sn']];
+            }
+            $xoopsTpl->assign('sn', $sn);
+            // 認輔列表
+            $counseling_sel=Get_select_opt_htm($counseling,'','0');
+            $xoopsTpl->assign('counseling_sel', $counseling_sel);
+        }
 
+        // 學生列表
+        $stu_list_ary=$SchoolSet->stu_name;
+        $stu_list_ary=array_diff_key($stu_list_ary,$counseling);
 
+        $stu_sel=Get_select_opt_htm($stu_list_ary,'','0');
+        $xoopsTpl->assign('stu_sel', $stu_sel);
+        // var_dump($stu_list_ary);die();
 
+        $xoopsTpl->assign('uid', $xoopsUser->uid());
+        $xoopsTpl->assign('op', 'counseling_update');
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+
+// ----------------------------------
+    function permission(){
+        global $xoopsTpl,$xoopsDB,$xoopsModule,$xoopsUser;
+        include_once XOOPS_ROOT_PATH . '/class/xoopsform/grouppermform.php';
+        //權限項目陣列（編號超級重要！設定後，以後切勿隨便亂改。）
+        $item_list = array(
+            '1' => "增刪學生",
+            '2' => "學生列表",
+            '3' => "課程管理",
+            '4' => "高關懷",
+            '5' => "認輔管理",
+        
+        );
+        $mid       = $xoopsModule->mid();
+        $perm_name = $xoopsModule->dirname();//這是 beck_iscore 模組名稱
+        // $perm_name = 'tchstu_mag';//這是 beck_iscore 模組名稱
+        // var_dump($xoopsModule);die();
+        $formi     = new XoopsGroupPermForm('細部權限設定', $mid, $perm_name, '請勾選欲開放給群組使用的權限：<br>');
+        foreach ($item_list as $item_id => $item_name) {
+            $formi->addItem($item_id, $item_name);
+        }
+        echo $formi->render();
+        // include_once 'footer.php';
+    }
 
 // ----------------------------------
 // 系統設定- 變數列表
