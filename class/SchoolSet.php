@@ -42,6 +42,7 @@ class SchoolSet
     public $stu_id; // 學生 學號
     public $month_ary; // 月份陣列
     public $sys_config; // config
+    public $sys_var; // config
     // public $tch_sex; //性別
     
     //建構函數
@@ -69,19 +70,32 @@ class SchoolSet
     private function get_config_data(){
         global $xoopsDB;
         $tbl = $xoopsDB->prefix('yy_config');
-        $sql            = "SELECT distinct `gpname` FROM $tbl";
+        $sql            = "SELECT distinct `gpname` , `title` ,`gpval`
+                        FROM $tbl where `status` ='1' ORDER BY `gpname` , `gpval`";
+        // echo($sql);die();
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $config_gpname=$config_desc=[];
         while($all= $xoopsDB->fetchArray($result)){
-            $sys_config['gpname'][$all['gpname']]=$all['gpname'];
+            // $sys_config['gpname'][$all['gpname']]=$all['gpname'];
+            $sys_config[$all['gpname']][$all['gpval']]=$all['title'];
         }
+        $this->sys_config = $sys_config;
+
+
         $sql            = "SELECT distinct `description` FROM $tbl";
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $config_gpname=$config_desc=[];
         while($all= $xoopsDB->fetchArray($result)){
-            $sys_config['desc'][$all['description']]=$all['description'];
+            $sys_var['desc'][$all['description']]=$all['description'];
         }
-        $this->sys_config = $sys_config;
+
+        $sql            = "SELECT distinct `gpname` FROM $tbl";
+        $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $config_gpname=$config_desc=[];
+        while($all= $xoopsDB->fetchArray($result)){
+            $sys_var['gpname'][$all['gpname']]=$all['gpname'];
+        }
+        $this->sys_var = $sys_var;
     }
 
 

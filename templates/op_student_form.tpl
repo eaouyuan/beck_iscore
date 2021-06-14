@@ -131,20 +131,20 @@
         let tutor_name=class_tutor[class_id];
         $('#tutor').text(tutor_name);
 
-        $('#out_learn').click(function(){
-            if($('#out_learn_0').prop('checked')){　　
-                $('#out_learn_1').prop('checked',true);
-            }else{ 
-                $('#out_learn_0').prop('checked',true);
-            }
-        });
-        $('#audit').click(function(){
-            if($('#audit_0').prop('checked')){　　
-                $('#audit_1').prop('checked',true);
-            }else{ 
-                $('#audit_0').prop('checked',true);
-            }
-        });
+        // $('#out_learn').click(function(){
+        //     if($('#out_learn_0').prop('checked')){　　
+        //         $('#out_learn_1').prop('checked',true);
+        //     }else{ 
+        //         $('#out_learn_0').prop('checked',true);
+        //     }
+        // });
+        // $('#audit').click(function(){
+        //     if($('#audit_0').prop('checked')){　　
+        //         $('#audit_1').prop('checked',true);
+        //     }else{ 
+        //         $('#audit_0').prop('checked',true);
+        //     }
+        // });
 
         $("#copy_guardian").click(function() {
             $('#emergency1_contact1').val($('#guardian1').val());

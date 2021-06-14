@@ -229,12 +229,12 @@ switch ($op) {
         variable_delete($sn);
         header("location:school_affairs.php?op=variable_list");
         exit;//離開，結束程式
-// 認輔教師設定
+// 認輔管理
     case "counseling_set":
         counseling_set($sn);
         break;//跳出迴圈,往下執行
-    case "counseling_update":
-        counseling_update($sn);
+    case "counseling_set_update":
+        counseling_set_update($sn);
         header("location:school_affairs.php?op=counseling_set&sn={$sn}");
         exit;//離開，結束程式
 
@@ -256,12 +256,13 @@ switch ($op) {
 
 /*-----------function區--------------*/
 // ----------------------------------
-    function counseling_update($sn){
+// 認輔設定
+    function counseling_set_update($sn){
         global $xoopsDB,$xoopsUser;
         $SchoolSet= new SchoolSet;
         
         if(!(power_chk("beck_iscore", "5") or $xoopsUser->isAdmin())){
-            redirect_header('school_affairs.php?op=counseling_set', 3, '無 counseling_update 權限!error:2106072000');
+            redirect_header('school_affairs.php?op=counseling_set', 3, '無 counseling_set_update 權限!error:2106072000');
         }
         
         //安全判斷 儲存 更新都要做
@@ -318,7 +319,6 @@ switch ($op) {
         
         return true;
     }
-
     // 認輔教師設定
     function counseling_set($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
@@ -368,7 +368,7 @@ switch ($op) {
         // var_dump($stu_list_ary);die();
 
         $xoopsTpl->assign('uid', $xoopsUser->uid());
-        $xoopsTpl->assign('op', 'counseling_update');
+        $xoopsTpl->assign('op', 'counseling_set_update');
 
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
@@ -376,6 +376,7 @@ switch ($op) {
     }
 
 // ----------------------------------
+// 權限
     function permission(){
         global $xoopsTpl,$xoopsDB,$xoopsModule,$xoopsUser;
         include_once XOOPS_ROOT_PATH . '/class/xoopsform/grouppermform.php';
@@ -603,9 +604,9 @@ switch ($op) {
         // $SchoolSet->sys_config;
 
         // 群組名稱
-        $sel['gpname']=Get_select_opt_htm($SchoolSet->sys_config['gpname'],$pars['gpname'],'1');
+        $sel['gpname']=Get_select_opt_htm($SchoolSet->sys_var['gpname'],$pars['gpname'],'1');
         // 描述
-        $sel['desc']=Get_select_opt_htm($SchoolSet->sys_config['desc'],$pars['desc'],'1');
+        $sel['desc']=Get_select_opt_htm($SchoolSet->sys_var['desc'],$pars['desc'],'1');
         $sel['search']=$pars['search'];
         $xoopsTpl->assign('sel', $sel);
 

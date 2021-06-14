@@ -78,6 +78,27 @@ function radio_htm($ary=[],$name,$value='0'){
     return $htm;
 }
 
+
+
+function checkbox_htm($ary=[],$name,$value=[],$size=2){
+    $htm='';
+    foreach ($ary as $k=>$v){
+        // $chk= ($value==$k)?'checked':'';
+        if(in_array($k,$value)){
+            $chk='checked';
+        }else{
+            $chk='';
+        }
+        $htm.=<<<HTML
+            <div class="form-check form-check-inline col-{$size}">
+                <input class="form-check-input" type="checkbox" name="{$name}" id="{$name}_{$k}" value="{$k}" {$chk}>
+                <label class="form-check-label" for="{$name}_{$k}">{$v}</label>
+            </div>
+    HTML;
+    }
+    return $htm;
+}
+
 //取得select option htm
 function Get_select_opt_htm($ary=[],$value='',$show_space='1')
 {
@@ -226,22 +247,30 @@ function mk_json($sn)
     return $html;
 }
 
+/*  shift alt + a
+if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+    redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106131027');
+}
+ */
 
-// 如果有權限，傳到樣版判斷顯示刪除、修改
-// if(power_chk("beck_iscore", "1")){
-//     $xoopsTpl->assign('student_post', true);
-// }
-// if(power_chk("beck_iscore", "2")){
-//     $xoopsTpl->assign('student_delete', true);
-// }
-// if(power_chk("read", "1")){$xoopsTpl->assign('', true);}
 
-//取得目前使用者的群組編號
-// if (!isset($_SESSION['groups']) or $_SESSION['groups'] === '') {
-//     $_SESSION['groups'] = ($xoopsUser) ? $xoopsUser->getGroups() : XOOPS_GROUP_ANONYMOUS;
-// }
-// var_dump($_SESSION['groups']);
+/* 權限控管，傳到樣版判斷顯示刪除、修改
+if(power_chk("beck_iscore", "1")){
+    $xoopsTpl->assign('student_post', true);
+}
+if(power_chk("beck_iscore", "2")){
+    $xoopsTpl->assign('student_delete', true);
+}
+if(power_chk("read", "1")){$xoopsTpl->assign('', true);}
+ */
 
+
+/* 取得目前使用者的群組編號
+if (!isset($_SESSION['groups']) or $_SESSION['groups'] === '') {
+    $_SESSION['groups'] = ($xoopsUser) ? $xoopsUser->getGroups() : XOOPS_GROUP_ANONYMOUS;
+}
+var_dump($_SESSION['groups']);
+ */
 
 //         http://localhost/beck_iscore/index.php?op=announcement_class_list
 // http://localhost/modules/beck_iscore/index.php?op=announcement_class_list

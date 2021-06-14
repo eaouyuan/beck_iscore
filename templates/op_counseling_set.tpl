@@ -46,7 +46,7 @@
 
 <script type="text/javascript">
     $(document).ready(function($){
-        $("#s_list").click(function() {
+        $("#s_list").dblclick(function() {
             var s = document.getElementById("s_list");
             var d = document.getElementById("d_list");
             while(s.selectedIndex!=-1){
@@ -62,7 +62,7 @@
                 s.remove(s.selectedIndex);     
             }           
         });
-        $("#d_list").click(function() {
+        $("#d_list").dblclick(function() {
             var s = document.getElementById("s_list");
             var d = document.getElementById("d_list");
             while(d.selectedIndex!=-1){

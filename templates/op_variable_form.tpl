@@ -65,69 +65,22 @@
 
 <script type="text/javascript">
     $(document).ready(function($){
-        // let class_tutor=<{$class_tutor}>;
-        // let class_id=$("#class_id" ).val();
-        // let tutor_name=class_tutor[class_id];
-        // $('#tutor').text(tutor_name);
+        // #cfg_status > div:nth-child(2)
+        // $("#cfg_status").not("input[name*='status']").click(function(){
+        // $("#cfg_status:not(.form-check-inline)").click(function(){
+        //     if($('#status_0').prop('checked')){　　
+        //         $('#status_1').prop('checked',true);
+        //     }else{ 
+        //         $('#status_0').prop('checked',true);
+        //     }
+        // });
 
-        $("#cfg_status").click(function(){
-            if($('#status_0').prop('checked')){　　
-                $('#status_1').prop('checked',true);
-            }else{ 
-                $('#status_0').prop('checked',true);
-            }
-        });
-        $('#audit').click(function(){
-            if($('#audit_0').prop('checked')){　　
-                $('#audit_1').prop('checked',true);
-            }else{ 
-                $('#audit_0').prop('checked',true);
-            }
-        });
-
-        $("#copy_guardian").click(function() {
-            $('#emergency1_contact1').val($('#guardian1').val());
-            $('#emergency1_contact_rel').val($('#guardian1_relationship').val());
-            $('#emergency1_cellphone1').val($('#guardian1_cellphone1').val());
-            $('#emergency1_cellphone2').val($('#guardian1_cellphone2').val());
-        });
-        $("#copy_ghousehold").click(function() {
-            $('#address').val($('#household_add').val());
-        });
+        
         $( "input" ).addClass( "font-weight-bold" );
-
-        $('#class_id').change(function(e){
-            // let class_tutor=<{$class_tutor}>;
-            let class_id=$("#class_id" ).val();
-            let tutor_name=class_tutor[class_id];
-            // console.log(class_id=='');
-            if(class_id==''){
-                $('#tutor').text("");
-            }else{
-                $('#tutor').text(tutor_name);
-            }
-        });
-        // 學號末三碼為編號
-        $( "#stu_id" ).blur(function(e){
-            if($('#stu_no').val()==''){
-                $('#stu_no').val($("#stu_id" ).val().substring(3, 6));
-            }
-        });
-
-        //身份證字號大寫
-        $('#national_id').change(function(e){
-            let nastring=$('#national_id').val();
-            let naidnew=nastring.replace(/^./, nastring[0].toUpperCase());
-            $('#national_id').val(naidnew);
-        });
 
     });
 
-function checkID(formElement) {
-        re = /^[A-Z]\d{9}$/;
-        if (!re.test(formElement.value))
-        alert("你的身份證號碼格式不對！")
-};
+
 
 </script>
 

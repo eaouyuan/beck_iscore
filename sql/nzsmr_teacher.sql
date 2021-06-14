@@ -438,7 +438,7 @@ ADD UNIQUE `gpname_value` (`gpname`, `value`);
 
 -- 認輔教師設定
 CREATE TABLE `yy_tea_counseling` (
-  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '認輔教師設定流水號',
   `year` varchar(8) NOT NULL COMMENT '學年度',
   `term` varchar(8) NOT NULL COMMENT '學期',
   `tea_uid` mediumint(8) unsigned NOT NULL COMMENT '教師uid',
@@ -448,8 +448,37 @@ CREATE TABLE `yy_tea_counseling` (
   `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-ALTER TABLE `xx_yy_tea_counseling`
+ALTER TABLE `yy_tea_counseling`
 ADD UNIQUE `year_term_student_sn` (`year`, `term`, `student_sn`);
+
+-- 認輔紀錄
+CREATE TABLE `yy_counseling_rec` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '認輔紀錄流水號',
+  `year` varchar(8) NOT NULL COMMENT '學年度',
+  `term` varchar(8) NOT NULL COMMENT '學期',
+  `notice_time` datetime NOT NULL COMMENT '通報時間',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `tea_uid` mediumint(8) unsigned NOT NULL COMMENT '教師uid',
+  `content` text NOT NULL COMMENT '內容簡述',
+  `location` varchar(255) NOT NULL  DEFAULT '' COMMENT '認輔面談地點',
+  `focus` varchar(255) NOT NULL DEFAULT '' COMMENT '輔導重點',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- 認輔紀錄-面談地點、輔導重點
+CREATE TABLE `yy_counseling_option` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '認輔紀錄選項流水號',
+  `counseling_rec_sn` mediumint(8) unsigned NOT NULL COMMENT '認輔紀錄流水號',
+  `gpname` varchar(255) NOT NULL COMMENT '認輔紀錄群組名稱',
+  `gpval` varchar(3) NOT NULL COMMENT '值',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
 -- 學年度
