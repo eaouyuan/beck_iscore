@@ -26,13 +26,13 @@
         </div>
         <button type="submit"            class="btn btn-outline-primary col-0.5 mb-3 mr-3">搜尋</button>
         <button type="button" id="clear" class="btn btn-outline-dark col-0.5 mb-3 mr-3">清空</button>
-        <{if $show_add_button=='1'}>
         <div class="ml-auto">
             <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';">
-            <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
+                <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
             </button>
         </div>
-        <{/if}>
+        <!-- <{if $show_add_button=='1'}> -->
+        <!-- <{/if}> -->
     </div>
 
 </form>

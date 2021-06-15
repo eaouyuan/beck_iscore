@@ -54,7 +54,10 @@
     </div>
 
     <div class="col-md-12 text-center mb-3">
+        <!-- <button class="btn btn-primary" type="submit" style="display:none;"></button> -->
+        <button class="btn btn-success" id="upload_files" type="button"><i class="fa fa-file" aria-hidden="true"></i> 上傳附檔</button>
         <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_list">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
     </div>
@@ -62,11 +65,32 @@
     <div>
         <input name="uid" id="uid" value="<{$uid}>" type="hidden">
         <input name="op" id="op" value="<{$op}>" type="hidden">
+        <input name="fileup" id="fileup" value="0" type="hidden">
         <{if $sn}> <input name="sn" id="sn" value="<{$sn}>" type="hidden"> <{/if}>
         <{$XOOPS_TOKEN}>
     </div>
 </form>
 
+<script type="text/javascript">
+    $(document).ready(function($){
+        $("#upload_files").click(function() {
+            let fileup=$('#fileup').val("1");
+            // console.log(fileup.val());
+            // if(fileup.val()=='1'){
 
+            // console.log('safsadf');
+
+            // }else{
+            // console.log('777');
+
+            // }
+            document.forms["announcement_form"].submit();
+        });
+    });
+    function onprint() {
+        window.print();
+        return false;
+    }
+</script>
 
 

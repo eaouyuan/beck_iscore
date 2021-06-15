@@ -19,6 +19,7 @@ if (!class_exists('XoopsModules\Beck_iscore\Announcement')) {
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
 $op = Request::getString('op');
 $sn = Request::getInt('sn');
+$fileup = Request::getInt('fileup');
 $ann_list['ann_class_id']=Request::getInt('ann_class_id');
 $ann_list['dept_id']=Request::getInt('dept_id');
 $ann_list['search']=Request::getString('search');
@@ -66,11 +67,7 @@ switch ($op) {
 
     // 公告消息列表
         case "announcement_list":
-            if(isset($ann_list)){
-                announcement_list($ann_list,'1');
-            }else{
-                announcement_list(null,'1');
-            }
+            announcement_list($ann_list);
             break;//跳出迴圈,往下執行
         
         // 新增、編輯 公告消息表單
@@ -86,13 +83,21 @@ switch ($op) {
         // 新增公告消息
         case "announcement_insert":
             $sn=announcement_insert();
-            header("location:index.php?op=announcement_show&sn={$sn}");
+            if($fileup=='1'){
+                header("location:index.php?op=announcement_form&sn={$sn}");
+            }else{
+                header("location:index.php?op=announcement_show&sn={$sn}");
+            }
             exit;//離開，結束程式
 
         // 更新公告消息
         case "announcement_update":
             $sn=announcement_update($sn);
-            header("location:index.php?op=announcement_show&sn={$sn}");
+            if($fileup=='1'){
+                header("location:index.php?op=announcement_form&sn={$sn}");
+            }else{
+                header("location:index.php?op=announcement_show&sn={$sn}");
+            }
             exit;
 
         // 刪除公告消息
@@ -127,7 +132,8 @@ switch ($op) {
         if (!$xoopsUser) {
             break;
         }else{
-            announcement_list(null,'0');
+            // announcement_list(null,'0');
+            announcement_list();
             $op="announcement_list";
             break;
         }
@@ -582,7 +588,7 @@ switch ($op) {
         include_once XOOPS_ROOT_PATH . "/modules/tadtools/ck.php";
         $ck = new CKEditor("beck_iscore", "content", $Ann['content']);
         $ck->setToolbarSet('mySimple');
-        $ck->setHeight(350);
+        $ck->setHeight(250);
         $content=$ck->render();
         $xoopsTpl->assign('content', $content);
 
@@ -640,7 +646,7 @@ switch ($op) {
     }
 
     // 列表-公告消息
-    function announcement_list($parameter=null,$show_add_button){
+    function announcement_list($parameter=null,$show_add_button=''){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
         if (!$xoopsUser) {
             redirect_header('index.php', 3, '無操作權限');
@@ -725,7 +731,7 @@ switch ($op) {
         $xoopsTpl->assign('is_admin', $_SESSION['beck_iscore_adm']);
         // }
         $xoopsTpl->assign('op', "announcement_list");
-        $xoopsTpl->assign('show_add_button', $show_add_button);
+        // $xoopsTpl->assign('show_add_button', $show_add_button);
 
     }
 
