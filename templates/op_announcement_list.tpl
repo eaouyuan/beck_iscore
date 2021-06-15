@@ -114,4 +114,21 @@
 
 <style type="text/css">
     [data-href] { cursor: pointer; }
+    /* table th, .table th ,.table td, table.table-bordered > thead > tr > th{
+        vertical-align:middle;
+        text-align:center;
+        border: 1px solid #000000;
+        line-height:1em;
+        width:auto;
+    } */
+
+    .table th,.table td, .table > thead > tr>th{
+        vertical-align:middle;
+        text-align:center;
+        /* border: 1px solid #000000; */
+        line-height:1em;
+        width:auto;
+
+
+    }
 </style>
