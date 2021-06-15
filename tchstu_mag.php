@@ -401,7 +401,7 @@ switch ($op) {
         $info['content']     = $myts->displayTarea($stu['content'], 1, 0, 0, 0, 0);
         $info['location']    = $myts->htmlSpecialChars($stu['location']);
         $info['focus']       = $myts->htmlSpecialChars($stu['focus']);
-        $info['stu_name']    = $SchoolSet->stu_name[$info['student_sn']];
+        $info['stu_name']    = $SchoolSet->stu_anonymous[$info['student_sn']];
         $info['tea_name']    = $SchoolSet->uid2name[$info['tea_uid']];
         $info['class']       = $SchoolSet->class_name[$SchoolSet->stu_sn_classid[$info['student_sn']]];
         $xoopsTpl->assign('info', $info);
@@ -492,7 +492,7 @@ switch ($op) {
             redirect_header('tchstu_mag.php', 3, '無 counseling_show 權限! error:21060120942');
         }
 
-        $info['stu_name']=$SchoolSet->stu_name[$pars['stu_sn']];
+        $info['stu_name']=$SchoolSet->stu_anonymous[$pars['stu_sn']];
         $info['tea_name']=$SchoolSet->uid2name[$pars['tea_uid']];
         $info['class']=$SchoolSet->class_name[$SchoolSet->stu_sn_classid[$pars['stu_sn']]];
         $info['stu_sn']=$pars['stu_sn'];
