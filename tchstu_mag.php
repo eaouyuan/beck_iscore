@@ -1643,7 +1643,7 @@ switch ($op) {
             $have_par='1';
         }
 
-        $sql.=" ORDER BY `sort`,`cos_year` DESC , `cos_term` DESC ,`dep_id` ,`tea_id` , `cos_name`";
+        $sql.=" ORDER BY `cos_year` DESC , `cos_term` DESC ,`dep_id` ,`sort`,`tea_id` , `cos_name`";
         // echo($sql);die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
