@@ -127,7 +127,7 @@
         text-align:center;
         /* border: 1px solid #000000; */
         line-height:1em;
-        width:auto;
+        /* width:auto; */
 
 
     }
