@@ -67,7 +67,7 @@
         vertical-align:middle;
         text-align:center;
         border: 2px solid #000000;
-        line-height:2em;
+        line-height:1em;
         /* width:auto; */
         /* border-bottom: 2px solid #000000; */
     }
@@ -99,8 +99,8 @@
         /* font-size: 2em; */
     }   
     #buton {
-     position: fixed;
-     bottom: 0;
+        position: fixed;
+        bottom: 0;
    }
 
 
@@ -113,7 +113,7 @@
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #stage_score_list,.notprint,#footer-container-display { display: none; }
+    #stage_score_list,.notprint,#footer-container-display ,#nav-container{ display: none; }
 </style>
 
 

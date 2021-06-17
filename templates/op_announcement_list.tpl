@@ -42,7 +42,7 @@
 
 
 <{if $all}>
-    <table class="table table-bordered table-sm table-hover table-shadow">
+    <table class="table table-bordered table-sm table-hover table-striped table-shadow">
         <thead class="table-info">
             <tr>
                 <th scope="col" class="text-center">編號</th>
@@ -125,10 +125,22 @@
     .table th,.table td, .table > thead > tr>th{
         vertical-align:middle;
         text-align:center;
-        /* border: 1px solid #000000; */
+        border: 1px solid #000000;
         line-height:1em;
         /* width:auto; */
-
-
     }
+
+    .table > tbody > tr:nth-child(odd){
+        /* background-color: #E0E0FF; */
+    }
+
+    .table > tbody > tr:hover{
+    /* #xoops_contents > table > tbody > tr:hover{ */
+    text-decoration: none;
+    color: #000000;
+    background-color: #fcdede;
+    /* background-color: #c8faf7; */
+    /* background-color: #f3969a; */
+    }
+
 </style>

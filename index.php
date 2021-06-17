@@ -592,11 +592,11 @@ switch ($op) {
         $content=$ck->render();
         $xoopsTpl->assign('content', $content);
 
-        // 公告結束日期 預設一個月後
+        // 公告結束日期 預設三個月後
         if(isset($Ann['end_date'])){
             $end_date=$Ann['end_date'];
         }else{
-            $end_date=gmdate('Y-m-d',strtotime('+1 month'));
+            $end_date=gmdate('Y-m-d',strtotime('+3 month'));
         }
         $xoopsTpl->assign('end_date', $end_date);
 

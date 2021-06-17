@@ -480,6 +480,26 @@ CREATE TABLE `yy_counseling_option` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+-- 獎懲紀錄
+CREATE TABLE `yy_reward_punishment` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '獎懲紀錄流水號',
+  `year` varchar(8) NOT NULL COMMENT '學年度',
+  `term` varchar(8) NOT NULL COMMENT '學期',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `RP_kind` enum('1','2') NOT NULL COMMENT '獎懲種類 1獎勵 2懲罰',
+  `RP_content` text NOT NULL COMMENT '事由',
+  `RP_option` enum('1','2','3','4','5','6','7','8','9','10') NULL COMMENT '1白鴿 2嘉獎 3小功 4大功 5榮舉假 6警告 7小過 8大過 9減少榮舉假 10罰勤',
+  `RP_times` varchar(2) NOT NULL COMMENT '獎懲次數',
+  `RP_unit` enum('1','2','3') NULL COMMENT '獎懲單位 1次 2小時 3支',
+  `event_date` date NOT NULL COMMENT '批示日期',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+
+
 
 -- 學年度
 INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`, `create_date`, `update_user`, `update_date`, `activity`, `sort`) VALUES

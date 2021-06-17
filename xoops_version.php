@@ -58,7 +58,8 @@ $modversion['tables'][]         = 'yy_high_care_month';        //每月高關懷
 $modversion['tables'][]         = 'yy_config';                 //config
 $modversion['tables'][]         = 'yy_tea_counseling';         //教師認輔
 $modversion['tables'][]         = 'yy_counseling_rec';         //教師認輔
-$modversion['tables'][]         = 'yy_counseling_option';         //教師認輔
+$modversion['tables'][]         = 'yy_counseling_option';      //教師認輔選項
+$modversion['tables'][]         = 'yy_reward_punishment';      //教師獎懲紀錄
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

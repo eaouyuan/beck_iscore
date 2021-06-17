@@ -247,6 +247,15 @@ function mk_json($sn)
     return $html;
 }
 
+/* <select class="form-select" aria-label="Default select example">
+    <optgroup label="asdf">
+    <option selected>Open this select menu</option>
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+    </optgroup>
+  </select> */
+
 /*  shift alt + a
 if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
     redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106131027');

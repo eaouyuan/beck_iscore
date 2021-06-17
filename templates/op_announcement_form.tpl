@@ -75,15 +75,6 @@
     $(document).ready(function($){
         $("#upload_files").click(function() {
             let fileup=$('#fileup').val("1");
-            // console.log(fileup.val());
-            // if(fileup.val()=='1'){
-
-            // console.log('safsadf');
-
-            // }else{
-            // console.log('777');
-
-            // }
             document.forms["announcement_form"].submit();
         });
     });
