@@ -18,10 +18,10 @@ class SchoolSet
     public $all_sems; //所有學年度資料
     public $users; //使用者資料
     public $teachers; //教師資料
-    public $class_name; //班級sn -> name
-    public $class_tutor_name; //班級sn -> 導師名稱
+    public $class_name; //['1'=>'友仁']班級sn -> name
+    public $class_tutor_name; // ['1'=>'黃淑滿']班級sn -> 導師名稱
     public $dept; //所有學程資料
-    public $depsnname; //學程中文名稱 sn map name
+    public $depsnname; //['4'=>'資料處理科']學程中文名稱 sn map name
     public $deptofsch; //處室資料
     public $isguidance; //輔導老師
     public $issocial; //社工師
@@ -36,13 +36,17 @@ class SchoolSet
     public $uid2name; // uid map 中文姓名
     public $major_stu; // [學程id][]= stu sn 
     public $stu_name; //  //[stu sn]=name   , 學生sn map name
-    public $stu_anonymous; //  [stu sn]=stu_anonymous , 學生sn map 學生匿名
+    public $stu_anonymous; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 學生匿名
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
-    public $stu_dep; //學生 學程
+    public $stu_dep; //[stu sn]= dep id 學生 學程
     public $stu_id; // 學生 學號
     public $month_ary; // 月份陣列
     public $sys_config; // config
     public $sys_var; // config
+    public $RP_kind; 
+    public $RP_option; 
+    public $RP_unit; 
+    public $classname_stuid; //[友仁][1]=王小明
     // public $tch_sex; //性別
     
     //建構函數
@@ -63,6 +67,9 @@ class SchoolSet
         $this->usual_exam_name=['1'=>'第一次段考前平時考','3'=>'第二次段考前平時考','5'=>'第三次段考前平時考'];
         $this->stage_exam_name=['2'=>'第一次段考','4'=>'第二次段考','6'=>'期末考'];
         $this->month_ary=['01'=>'01','02'=>'02','03'=>'03','04'=>'04','05'=>'05','06'=>'06','07'=>'07','08'=>'08','09'=>'09','10'=>'10','11'=>'11','12'=>'12'];
+        $this->RP_kind=['1'=>'獎勵','2'=>'懲罰']; 
+        $this->RP_option=['1'=>'白鴿','2'=>'嘉獎','3'=>'小功','4'=>'大功','5'=>'榮譽假','6'=>'警告','7'=>'小過','8'=>'大過','9'=>'減少榮舉假','10'=>'罰勤'];          
+        $this->RP_unit=['1'=>'次 ','2'=>'小時','3'=>'支']; 
 
     }
 
@@ -797,7 +804,7 @@ class SchoolSet
         $sql = "SELECT * FROM $tb1 
                 LEFT JOIN $tb2 ON $tb1.tutor_sn=$tb2.uid
         WHERE class_status='1'";
-        // echo($sql);
+        // echo($sql);die();
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $class_name=$class_tutor_name=[];
         while($data= $xoopsDB->fetchArray($result)){
@@ -884,27 +891,31 @@ class SchoolSet
     private function get_stu_data(){
         global $xoopsDB;
         $tb1 = $xoopsDB->prefix('yy_student');
-        $sql = "SELECT * FROM $tb1 
+        $tb2 = $xoopsDB->prefix('yy_class');
+        $sql = "SELECT *,$tb1.sn as stusn FROM $tb1 
+                LEFT JOIN $tb2 ON $tb1.class_id =$tb2.sn
                 WHERE `status` !='2'
-                ORDER BY `sort`
+                ORDER BY $tb1.sort
                 ";
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $stu_name=$major_stu=[];
+        $stu_name=$major_stu=$classname_stuid=[];
         while($user= $xoopsDB->fetchArray($result)){
-            $major_stu[$user['major_id']][] = $user['sn']; //[學程id][]=stu sn
-            $stu_name[$user['sn']] = $user['stu_name'];    //[stu sn]=name
-            $stu_anonymous[$user['sn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
-            $stu_sn_classid[$user['sn']] = $user['class_id'];  // [stu sn]= class id
-            $stu_dep[$user['sn']] = $user['major_id'];  // [stu sn]= dep id
-            $stu_id[$user['sn']] = $user['stu_id'];  // [stu sn]= stu_id
-            
+            $major_stu[$user['major_id']][] = $user['stusn']; //[學程id][]=stu sn
+            $stu_name[$user['stusn']] = $user['stu_name'];    //[stu sn]=name
+            $stu_anonymous[$user['stusn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
+            $stu_sn_classid[$user['stusn']] = $user['class_id'];  // [stu sn]= class id
+            $stu_dep[$user['stusn']] = $user['major_id'];  // [stu sn]= dep id
+            $stu_id[$user['stusn']] = $user['stu_id'];  // [stu sn]= stu_id
+            $classname_stuid[$user['class_name']??'未編班'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
         }
+        // var_dump($major_stu);die();
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;
         $this->stu_anonymous=$stu_anonymous;
         $this->stu_sn_classid=$stu_sn_classid;
         $this->stu_dep=$stu_dep;
         $this->stu_id=$stu_id;
+        $this->classname_stuid=$classname_stuid;
     }
 
     // 部門名稱->user

@@ -207,5 +207,5 @@
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #counseling_show,.notprint,#footer-container-display { display: none; }
+    #counseling_show,.notprint,#footer-container-display,#nav-container { display: none; }
 </style>

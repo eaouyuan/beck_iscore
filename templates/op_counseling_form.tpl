@@ -1,7 +1,7 @@
 <script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
 
-<form name="op_counseling_form" id="op_counseling_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
+<form name="counseling_form" id="counseling_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
     <h3><{$form_title}> ─  <{$info.year}> 學年度 第 <{$info.term}> 學期
     </h3>
     <table class="table table-bordered table-sm">
@@ -114,7 +114,7 @@
 .table > tbody > tr > th > .form-check {
     text-align:left;
 }
-/* #op_counseling_form > table > tbody > tr:nth-child(2) > th:nth-child(2) */
+/* #counseling_form > table > tbody > tr:nth-child(2) > th:nth-child(2) */
 .table th {
     vertical-align:middle;
     text-align:center;

@@ -63,6 +63,28 @@ function name_substr_cut($user_name){
     return $strlen == 2 ? $firstStr . str_repeat('*', mb_strlen($user_name, 'utf-8') - 1) : $firstStr . str_repeat("*", $strlen - 2) . $lastStr;
 }
 
+// Get text color radio html
+function color_radio_htm($ary=[],$name,$value='0',$condition='1',$br='0'){
+    $htm='';
+    foreach ($ary as $k=>$v){
+        $chk= ($value==$k)?'checked':'';
+        $color= ($k<=(int)$condition)?'text-success':'text-danger';
+        if($br=='0'){
+            $br_sign='';
+        }else{
+            $br_sign= ($k==(int)$condition)?'<br>':'';
+        }
+        $htm.=<<<HTML
+        <div class="form-check form-check-inline m-2">
+            <input class="form-check-input" type="radio" name="{$name}" id="{$name}_{$k}" title="{$v}" value="{$k}" {$chk}>
+            <label class="form-check-label {$color}" for="{$name}_{$k}">{$v}</label>
+        </div>
+        {$br_sign}
+    HTML;
+    }
+    return $htm;
+}
+
 // Get radio html
 function radio_htm($ary=[],$name,$value='0'){
     $htm='';
@@ -98,6 +120,25 @@ function checkbox_htm($ary=[],$name,$value=[],$size=2){
     }
     return $htm;
 }
+
+//取得select option htm
+function Get_select_grp_opt_htm($ary=[],$value='',$show_space='1')
+{
+    if($show_space=='1'){
+        $return_htm='<option></option>';
+    }else{
+        $return_htm='';
+    }
+    foreach ($ary as $grp_name=>$v1){
+        $return_htm.="<optgroup label='{$grp_name}'>";
+        foreach ($v1 as $k=>$v){
+            $selected= ($value==strval($k))?'selected':'';
+            $return_htm.="<option value='{$k}' {$selected}>{$v}</option>";
+        }
+    }
+    return ($return_htm);
+}
+
 
 //取得select option htm
 function Get_select_opt_htm($ary=[],$value='',$show_space='1')

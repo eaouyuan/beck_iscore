@@ -35,6 +35,12 @@ $counseling['year']   = Request::getString('year');
 $counseling['term']   = Request::getString('term');
 $counseling['stu_sn'] = Request::getString('stu_sn');
 $counseling['tea_uid'] = Request::getString('tea_uid');
+$RP['RP_kind'] = Request::getString('RP_kind');
+$RP['dep_id'] = Request::getString('dep_id');
+$RP['class_id'] = Request::getString('class_id');
+$RP['stu_sn'] = Request::getString('stu_sn');
+$RP['sdate'] = Request::getString('sdate');
+$RP['edate'] = Request::getString('edate');
 
 
 
@@ -194,7 +200,25 @@ switch ($op) {
         $re=counseling_delete($sn);
         header("location:tchstu_mag.php?op=counseling_show&year={$re['year']}&term={$re['term']}&stu_sn={$re['student_sn']}&tea_uid={$re['tea_uid']}");
         exit;
-        
+// 獎懲管理
+    case "reward_punishment_list":
+        reward_punishment_list($RP);
+        break;//跳出迴圈,往下執行
+    case "reward_punishment_form":
+        reward_punishment_form($counseling,$sn);
+        break;//跳出迴圈,往下執行
+    case "reward_punishment_insert":
+        $re=reward_punishment_insert();
+        header("location:tchstu_mag.php?op=reward_punishment_list");
+        exit;//離開，結束程式
+    case "reward_punishment_delete":
+        $re=reward_punishment_delete($sn);
+        header("location:tchstu_mag.php?op=reward_punishment_list");
+        exit;
+    case "reward_punishment_update":
+        $re=reward_punishment_update($sn);
+        header("location:tchstu_mag.php?op=reward_punishment_list");
+        exit;//離開，結束程式
     //下載檔案
     case "tufdl":
         $TadUpFiles=new TadUpFiles("beck_iscore","/counseling",$file="/file",$image="/image",$thumbs="/image/.thumbs");
@@ -210,6 +234,272 @@ switch ($op) {
 
 }
 /*-----------function區--------------*/
+// ----------------------------------
+// 獎懲管理
+    function reward_punishment_update($sn){
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 reward_punishment_update 權限! error:2106190900');
+        }
+
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=reward_punishment_list", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // var_dump($_POST);die();
+
+        // var_dump($counseling_op);die();
+        // 更新獎懲紀錄
+        $tbl = $xoopsDB->prefix('yy_reward_punishment');
+        $sql = "update " . $tbl . " set 
+            `student_sn`='{$student_sn}',
+            `RP_kind`='{$RP_kind}',
+            `RP_content`='{$RP_content}',
+            `RP_option`='{$RP_option}',
+            `RP_times`='{$RP_times}',
+            `RP_unit`='{$RP_unit}',
+            `event_date`='{$event_date}',
+            `update_user`='{$uid}',
+            `update_date`=now()
+            where `sn`='{$sn}'
+            ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        
+        return;
+    }
+    function reward_punishment_delete($sn){
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 reward_punishment_delete 權限! error:2106190045');
+        }
+        
+        // 刪除獎懲資料
+        $tbl    = $xoopsDB->prefix('yy_reward_punishment');
+        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        
+        return;
+    }
+    function reward_punishment_insert(){
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 reward_punishment_insert 權限! error:2106181100');
+        }
+
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=counseling_list", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+
+        $tbl = $xoopsDB->prefix('yy_reward_punishment');
+        $sql = "insert into `$tbl` (
+                `year`,`term`,`student_sn`,`RP_kind`,`RP_content`,
+                `RP_option`,`RP_times`,`RP_unit`,`event_date`,`update_user`,
+                `update_date`
+                )values(
+                    '{$year}','{$term}','{$student_sn}','{$RP_kind}','{$RP_content}',
+                    '{$RP_option}','{$RP_times}','{$RP_unit}','{$event_date}','{$uid}',
+                    now()
+                )";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+        $re['year']=$year;
+        $re['term']=$term;
+        $re['stu_sn']=$student_sn;
+        $re['tea_uid']=$tea_uid;
+        return $re;
+    }
+    function reward_punishment_form($pars=[],$sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 reward_punishment_form 權限! error:2106181100');
+        }
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#reward_punishment_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $form_title = '新增學生獎懲紀錄';
+        if($sn){
+            $form_title = '編輯學生獎懲紀錄';
+            $tbl     = $xoopsDB->prefix('yy_reward_punishment');
+            $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $stu = $xoopsDB->fetchArray($result);
+            if(!($stu['update_user']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+                redirect_header('tchstu_mag.php?op=reward_punishment_list', 3, '非填報人員，無權限 !error:2106190837');
+            }
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+        // var_dump($stu);die();
+
+        $RP_form['year']       = $myts->htmlSpecialChars($stu['year']??$SchoolSet->sem_year);
+        $RP_form['term']       = $myts->htmlSpecialChars($stu['term']??$SchoolSet->sem_term);
+        $RP_form['student_sn'] = $myts->htmlSpecialChars($stu['student_sn']);
+        $RP_form['RP_kind']    = $myts->htmlSpecialChars($stu['RP_kind']);
+        $RP_form['RP_content'] = $myts->displayTarea($stu['RP_content'], 1, 0, 0, 0, 0);
+        $RP_form['RP_option']  = $myts->htmlSpecialChars($stu['RP_option']);
+        $RP_form['RP_times']   = $myts->htmlSpecialChars($stu['RP_times']);
+        $RP_form['RP_unit']    = $myts->htmlSpecialChars($stu['RP_unit']);
+        $RP_form['event_date'] = $myts->htmlSpecialChars($stu['event_date']);
+        $RP_form['update_user'] = $myts->htmlSpecialChars($stu['update_user']);
+        $xoopsTpl->assign('RP_form', $RP_form);
+
+        $sel_stu=Get_select_grp_opt_htm($SchoolSet->classname_stuid, $RP_form['student_sn'],'1');
+        $xoopsTpl->assign('sel_stu', $sel_stu);
+
+        $rdo_RP_kind=color_radio_htm($SchoolSet->RP_kind,'RP_kind',  $RP_form['RP_kind'],'1');
+        $xoopsTpl->assign('rdo_RP_kind', $rdo_RP_kind);
+
+        $rdo_RP_option=color_radio_htm($SchoolSet->RP_option,'RP_option', $RP_form['RP_option'],'5','0');
+        $xoopsTpl->assign('rdo_RP_option', $rdo_RP_option);
+
+        $rdo_RP_unit=radio_htm($SchoolSet->RP_unit,'RP_unit', $RP_form['RP_unit']);
+        $xoopsTpl->assign('rdo_RP_unit', $rdo_RP_unit);
+
+        // var_dump($counseling_otp_ary);die();
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $RP_form['update_user'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
+        // 下個動作
+        if ($sn) {
+            $op='reward_punishment_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='reward_punishment_insert';
+        }
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+    function reward_punishment_list($pars=[]){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 reward_punishment_list 權限! error:2106171120');
+        }
+
+        
+        $SchoolSet->RP_kind;
+        $sel['RP_kind']=Get_select_opt_htm($SchoolSet->RP_kind,$pars['RP_kind'],$show_space='1');
+        $sel['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['dep_id'],'1');
+        $sel['class_name']=Get_select_opt_htm($SchoolSet->class_name,$pars['class_id'],'1');
+        $sel['stu_anonymous']=Get_select_grp_opt_htm($SchoolSet->classname_stuid,$pars['stu_sn'],'1');
+        $sel['sdate']=$pars['sdate'];
+        $sel['edate']=$pars['edate'];
+        $xoopsTpl->assign('sel', $sel);
+
+        $tbl = $xoopsDB->prefix('yy_reward_punishment');
+        $tb2 = $xoopsDB->prefix('yy_student');
+        $sql = "SELECT  *,$tbl.sn as rpsn FROM $tbl LEFT JOIN $tb2 ON $tbl.student_sn =$tb2.sn";
+
+        $have_par='0';
+        if($pars['RP_kind']!=''){
+            $sql.=" WHERE `RP_kind`='{$pars['RP_kind']}'";
+            $have_par='1';
+        }
+        if($pars['dep_id']!=''){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.="`major_id`='{$pars['dep_id']}'";
+            $have_par='1';
+        }
+        if(($pars['class_id']!='')){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.="`class_id` = '{$pars['class_id']}'";
+            $have_par='1';
+        }
+        if(($pars['stu_sn']!='')){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.="`student_sn` = '{$pars['stu_sn']}'";
+            $have_par='1';
+        }
+        if(($pars['sdate']!='' AND $pars['edate']!='')){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.=" `event_date` >= '{$pars['sdate']}' AND `event_date` <= '{$pars['edate']}'";
+            $have_par='1';
+        }
+        if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+        $sql.=" `status`!='2' ORDER BY `rpsn` DESC";
+        // echo($sql);die();
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        // $PageBar = getPageBar($sql, 100, 10);
+        // $bar     = $PageBar['bar'];
+        // $sql     = $PageBar['sql'];
+        // $total   = $PageBar['total'];
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all = $ru = array();
+        while($ru= $xoopsDB->fetchArray($result)){
+            $ru ['year']       = $myts->htmlSpecialChars($ru['year']);
+            $ru ['term']       = $myts->htmlSpecialChars($ru['term']);
+            if($ru['RP_kind']=='1'){$ru['color']='text-success';}else{$ru['color']='text-danger';}
+            $ru ['RP_kind_name']    = $myts->htmlSpecialChars($SchoolSet->RP_kind[$ru['RP_kind']]);
+            $ru ['event_date'] = $myts->htmlSpecialChars($ru['event_date']);
+            $ru ['student_name'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous[$ru['student_sn']]);
+            $ru ['class_name']    = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$ru['student_sn']]]);
+            $ru ['depsnname']    = $myts->htmlSpecialChars($SchoolSet->depsnname[$SchoolSet->stu_dep[$ru['student_sn']]]);
+            $ru ['stu_info']    = $ru ['depsnname'].'<br>'.$ru ['class_name'].' / '.$ru ['student_name'];
+            $ru ['RP_content'] = $myts->displayTarea($ru['RP_content'], 1, 0, 0, 0, 0);
+            $ru ['depsnname']    = $myts->htmlSpecialChars($SchoolSet->depsnname[$SchoolSet->stu_dep[$ru['student_sn']]]);
+            $ru ['RP_option_name'] = $myts->htmlSpecialChars($SchoolSet->RP_option[$ru['RP_option']]);
+            $ru ['RP_times_name']  = $myts->htmlSpecialChars($ru['RP_times']);
+            $ru ['RP_unit_name']   = $myts->htmlSpecialChars($SchoolSet->RP_unit[$ru['RP_unit']]);
+            $ru ['RP_item']   = $ru ['RP_option_name']. $ru ['RP_times_name'].$ru ['RP_unit_name'] ;
+            $all []            = $ru;
+            
+        }
+
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('RP_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=reward_punishment_delete&sn=", 'sn','確定要刪除學生獎懲紀錄','學生獎懲紀錄刪除。');
+        
+        // var_dump($ru);die();
+
+        $xoopsTpl->assign('all', $all);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
+        $xoopsTpl->assign('op', "reward_punishment_list");
+    }
+
+
 // ----------------------------------
 // 學生認輔管理
     function counseling_update($sn){
@@ -366,7 +656,7 @@ switch ($op) {
             redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
         }
         include_once TADTOOLS_PATH."/formValidator.php";
-        $formValidator      = new formValidator("#op_counseling_form", true);
+        $formValidator      = new formValidator("#counseling_form", true);
         $formValidator_code = $formValidator->render();
         $xoopsTpl->assign("formValidator_code",$formValidator_code);
 

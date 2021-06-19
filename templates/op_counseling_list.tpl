@@ -61,39 +61,7 @@
 <{/if}>
 </form>
 
-<div id="printArea">
-    <h2 align="center"> 每月高關懷名單 通報時間：<{$hi_care.year}>年 <{$hi_care.month}>月   </h2>
-    <br>
-<{if $all}>
-    <table style="font-family:sans-serif;">
-        <thead>
-            <tr>
-                <th class="text-center">編號</th>
-                <th class="text-center">學生姓名</th>
-                <th class="text-center">班級</th>
-                <th class="text-center">狀況說明</th>
-                <th class="text-center">填報時間</th>
-                <th class="text-center">填報師長</th>
-            </tr>
-        </thead>
-        <tbody>
-    <{foreach from=$all key=i item=its}>
-        <tr> 
-            <th class="text-center"><{$its.sn}></th>
-            <th class="text-center"><{$its.student}></th>
-            <th class="text-center"><{$its.class}></th>
-            <th width="60%" class="text-left"><{$its.event_desc}></th>
-            <th class="text-center"><{$its.keyin_date}></th>
-            <th class="text-center"><{$its.update_user}></th>
-        </tr>
-    <{/foreach}>
-        </tbody>
-    </table>
-<{else}>
-    <div class="alert alert-danger">尚無內容</div>
-<{/if}>
 
-</div>
 
 <script type="text/javascript">
     $(document).ready(function($){
@@ -117,45 +85,5 @@
 </script>
 
 <style type="text/css">
-@media screen 
-{
-    /* table th, .table th ,.table td, table.table-bordered > thead > tr > th{
-        vertical-align:middle;
-        text-align:center;
-        border: 2px solid #000000;
-        line-height:2.5em;
-        width:auto;
-        border-bottom: 2px solid #000000;
-    } */
-    /* input , select{
-        position: relative;
-        vertical-align:middle;
-        text-align:center;
-    }  */
-}
-@page  {
-    size:A4;
-    margin:5mm;
-}
-@media print 
-{
-    #printArea { 
-        font-size: 16px;
 
-    }
-    table th, th, td{
-        vertical-align:middle;
-        text-align:center;
-        border: 2px solid black;
-    }   
-
-}
-</style>
-<style type="text/css" media="screen">
-    /* 顯示時隱藏 */
-    #printArea { display: none; }
-</style>
-<style type="text/css" media="print">
-    /* 列印時隱藏 */
-    #high_care_mon,.notprint,#footer-container-display { display: none; }
 </style>

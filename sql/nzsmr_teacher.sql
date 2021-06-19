@@ -491,6 +491,7 @@ CREATE TABLE `yy_reward_punishment` (
   `RP_option` enum('1','2','3','4','5','6','7','8','9','10') NULL COMMENT '1白鴿 2嘉獎 3小功 4大功 5榮舉假 6警告 7小過 8大過 9減少榮舉假 10罰勤',
   `RP_times` varchar(2) NOT NULL COMMENT '獎懲次數',
   `RP_unit` enum('1','2','3') NULL COMMENT '獎懲單位 1次 2小時 3支',
+  `comment` varchar(255) NULL COMMENT '備註',
   `event_date` date NOT NULL COMMENT '批示日期',
   `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
   `update_date` datetime NOT NULL COMMENT '修改日期', 

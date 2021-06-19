@@ -56,10 +56,10 @@ $modversion['tables'][]         = 'yy_term_score_detail';      //學期總成績
 $modversion['tables'][]         = 'yy_high_care';              //高關懷名單
 $modversion['tables'][]         = 'yy_high_care_month';        //每月高關懷名單
 $modversion['tables'][]         = 'yy_config';                 //config
-$modversion['tables'][]         = 'yy_tea_counseling';         //教師認輔
-$modversion['tables'][]         = 'yy_counseling_rec';         //教師認輔
+$modversion['tables'][]         = 'yy_tea_counseling';         //教師認輔設定
+$modversion['tables'][]         = 'yy_counseling_rec';         //認輔紀錄
 $modversion['tables'][]         = 'yy_counseling_option';      //教師認輔選項
-$modversion['tables'][]         = 'yy_reward_punishment';      //教師獎懲紀錄
+$modversion['tables'][]         = 'yy_reward_punishment';      //學生獎懲紀錄
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;
