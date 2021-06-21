@@ -499,7 +499,31 @@ CREATE TABLE `yy_reward_punishment` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
-
+-- 出缺勤管理
+CREATE TABLE `yy_absence_records` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '出缺勤紀錄流水號',
+  `year` varchar(8) NOT NULL COMMENT '學年度',
+  `term` varchar(8) NOT NULL COMMENT '學期',
+  `stu_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `AB_kind` enum('1','2','3','4','5','6','99') NOT NULL COMMENT '1公假 2事假 3病假 4喪假 5曠課 6晤談 99其他',
+  `AB_other_text` varchar(255) NOT NULL COMMENT '其他請假類別',
+  `AB_date` date NOT NULL COMMENT '缺席日期',
+  `earlym_stime` time NULL COMMENT '晨間缺席時間開始',
+  `earlym_etime` time NULL COMMENT '晨間缺席時間結束',
+  `earlym_hour` varchar(3)  NULL COMMENT '晨間缺席時數',
+  `morning_stime` time NULL COMMENT '日間缺席時間開始',
+  `morning_etime` time NULL COMMENT '日間缺席時間結束',
+  `morning_hour` varchar(3)  NULL COMMENT '日間缺席時數',
+  `night_stime` time NULL COMMENT '夜間缺席時間開始',
+  `night_etime` time NULL COMMENT '夜間缺席時間結束',
+  `night_hour` varchar(3) NOT NULL COMMENT '夜間缺席時數',
+  `sum_night_hour` varchar(3) NOT NULL COMMENT '加總夜間缺席時數',
+  `AB_content` text NOT NULL COMMENT '請事由',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 
 -- 學年度

@@ -59,7 +59,7 @@
                 <i class="fa fa-plus-circle " aria-hidden="true"></i>新增獎懲
             </button>
             <button type="button" class="btn btn-success mr-2" onclick="onprint()"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
-            <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=high_care_list';">
+            <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=reward_punishment_sum';">
                 <i class="fa fa-list mr-2" aria-hidden="true"></i>獎懲總表
             </button>
         </div>
@@ -75,7 +75,7 @@
                 <th scope="col" class="text-center">獎懲日期</th>
                 <th scope="col" class="text-center">學生</th>
                 <th scope="col" class="text-center">獎懲事由</th>
-                <th scope="col" class="text-center">獎懲內容</th>
+                <th scope="col" class="text-center text-nowrap">獎懲內容</th>
                 <th scope="col" class="text-center">功能</th>
             </tr>
         </thead>

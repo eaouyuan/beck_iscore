@@ -15,26 +15,30 @@ class SchoolSet
     public $sem_sn; //學年度編號
     public $sem_year; //目前學年度
     public $sem_term; //目前學期
+    public $sem_term_sdate; //目前學期 起始日期
+    public $sem_term_edate; //目前學期 起始日期
     public $all_sems; //所有學年度資料
     public $users; //使用者資料
+    public $uid2name; // uid map 中文姓名
     public $teachers; //教師資料
-    public $class_name; //['1'=>'友仁']班級sn -> name
-    public $class_tutor_name; // ['1'=>'黃淑滿']班級sn -> 導師名稱
+    public $isguidance; //輔導老師
+    public $issocial; //社工師
     public $dept; //所有學程資料
     public $depsnname; //['4'=>'資料處理科']學程中文名稱 sn map name
     public $deptofsch; //處室資料
-    public $isguidance; //輔導老師
-    public $issocial; //社工師
     public $exam_name; //考試名稱
     public $usual_exam_name; //平時考名稱
     public $stage_exam_name; //段考名稱
-    public $tea_course; //本學期教師課表 教師  學程 課程
     public $dep2course; //學程對課程
     public $dep_exam_course; //[學程id][段考ID][課程id] = [課程中文名]
-    public $courese_chn; //課程中文名稱
-    public $all_course; //所有課程 sn-> data
-    public $uid2name; // uid map 中文姓名
     public $major_stu; // [學程id][]= stu sn 
+    public $all_course; //所有課程 sn-> data
+    public $tea_course; //本學期教師課表 教師  學程 課程
+    public $courese_chn; //課程中文名稱
+    public $class_name; //['1'=>'友仁']班級sn -> name
+    public $class_tutor_name; // ['1'=>'黃淑滿']班級sn -> 導師名稱
+    public $classname_stuid; //[友仁][1]=王小明
+    public $classid_stuid; //[class id][stu id]=王小明
     public $stu_name; //  //[stu sn]=name   , 學生sn map name
     public $stu_anonymous; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 學生匿名
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
@@ -46,7 +50,7 @@ class SchoolSet
     public $RP_kind; 
     public $RP_option; 
     public $RP_unit; 
-    public $classname_stuid; //[友仁][1]=王小明
+    public $AB_kind;  //請假種類
     // public $tch_sex; //性別
     
     //建構函數
@@ -68,8 +72,10 @@ class SchoolSet
         $this->stage_exam_name=['2'=>'第一次段考','4'=>'第二次段考','6'=>'期末考'];
         $this->month_ary=['01'=>'01','02'=>'02','03'=>'03','04'=>'04','05'=>'05','06'=>'06','07'=>'07','08'=>'08','09'=>'09','10'=>'10','11'=>'11','12'=>'12'];
         $this->RP_kind=['1'=>'獎勵','2'=>'懲罰']; 
-        $this->RP_option=['1'=>'白鴿','2'=>'嘉獎','3'=>'小功','4'=>'大功','5'=>'榮譽假','6'=>'警告','7'=>'小過','8'=>'大過','9'=>'減少榮舉假','10'=>'罰勤'];          
+        $this->RP_option=['1'=>'白鴿','2'=>'嘉獎','3'=>'小功','4'=>'大功','5'=>'榮譽假時數','6'=>'警告','7'=>'小過','8'=>'大過','9'=>'減少榮舉假','10'=>'罰勤'];          
         $this->RP_unit=['1'=>'次 ','2'=>'小時','3'=>'支']; 
+        $this->AB_kind=['1'=>'公假','2'=>'事假','3'=>'病假','4'=>'喪假','5'=>'曠課','6'=>'晤談']; 
+        
 
     }
 
@@ -753,7 +759,8 @@ class SchoolSet
         $this->sem_sn   = $school_year['sn'];
         $this->sem_year = $school_year['year'];
         $this->sem_term = $school_year['term'];
-
+        $this->sem_term_sdate = $school_year['start_date'];
+        $this->sem_term_edate = $school_year['end_date'];
         $sql            = "SELECT * FROM $tbl";
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $sem_all=[];
@@ -907,6 +914,7 @@ class SchoolSet
             $stu_dep[$user['stusn']] = $user['major_id'];  // [stu sn]= dep id
             $stu_id[$user['stusn']] = $user['stu_id'];  // [stu sn]= stu_id
             $classname_stuid[$user['class_name']??'未編班'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
+            $classid_stuid[$user['class_id']??'0'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
         }
         // var_dump($major_stu);die();
         $this->major_stu=$major_stu;
@@ -916,6 +924,7 @@ class SchoolSet
         $this->stu_dep=$stu_dep;
         $this->stu_id=$stu_id;
         $this->classname_stuid=$classname_stuid;
+        $this->classid_stuid=$classid_stuid;
     }
 
     // 部門名稱->user

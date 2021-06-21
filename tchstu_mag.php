@@ -41,6 +41,7 @@ $RP['class_id'] = Request::getString('class_id');
 $RP['stu_sn'] = Request::getString('stu_sn');
 $RP['sdate'] = Request::getString('sdate');
 $RP['edate'] = Request::getString('edate');
+$AB['class_id'] = Request::getString('class_id');
 
 
 
@@ -219,7 +220,15 @@ switch ($op) {
         $re=reward_punishment_update($sn);
         header("location:tchstu_mag.php?op=reward_punishment_list");
         exit;//離開，結束程式
-    //下載檔案
+    case "reward_punishment_sum":
+        reward_punishment_sum($RP);
+        break;//跳出迴圈,往下執行
+// 出缺勤管理
+    case "absence_record_form":
+        absence_record_form($AB,$sn);
+        break;//跳出迴圈,往下執行
+        
+//下載檔案
     case "tufdl":
         $TadUpFiles=new TadUpFiles("beck_iscore","/counseling",$file="/file",$image="/image",$thumbs="/image/.thumbs");
         $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
@@ -235,7 +244,162 @@ switch ($op) {
 }
 /*-----------function區--------------*/
 // ----------------------------------
+// 出缺勤管理
+    function absence_record_form($pars,$sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 absence_record_form 權限! error:2106201624');
+        }
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#absence_record_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $form_title = '新增學生出缺勤紀錄';
+        if($sn){
+            $form_title = '編輯學生出缺勤紀錄';
+            $tbl     = $xoopsDB->prefix('yy_reward_punishment');
+            $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $stu = $xoopsDB->fetchArray($result);
+            if(!($stu['update_user']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+                redirect_header('tchstu_mag.php?op=reward_punishment_list', 3, '非填報人員，無權限 !error:2106190837');
+            }
+        }
+        $xoopsTpl->assign('form_title', $form_title);
+        // var_dump($stu);die();
+
+
+        $AB_form['year']       = $myts->htmlSpecialChars($stu['year']??$SchoolSet->sem_year);
+        $AB_form['term']       = $myts->htmlSpecialChars($stu['term']??$SchoolSet->sem_term);
+        $AB_form['student_sn'] = $myts->htmlSpecialChars($stu['student_sn']);
+        $AB_form['RP_kind']    = $myts->htmlSpecialChars($stu['RP_kind']);
+        $AB_form['RP_content'] = $myts->displayTarea($stu['RP_content'], 1, 0, 0, 0, 0);
+        $AB_form['RP_option']  = $myts->htmlSpecialChars($stu['RP_option']);
+        $AB_form['RP_times']   = $myts->htmlSpecialChars($stu['RP_times']);
+        $AB_form['RP_unit']    = $myts->htmlSpecialChars($stu['RP_unit']);
+        $AB_form['event_date'] = $myts->htmlSpecialChars($stu['event_date']);
+        $AB_form['update_user'] = $myts->htmlSpecialChars($stu['update_user']);
+        $xoopsTpl->assign('AB_form', $AB_form);
+
+
+        $sel['class_name']=Get_select_opt_htm($SchoolSet->class_name,$pars['class_id'],'1');
+
+        if($pars['class_id']==''){
+            $sel['stu']=Get_select_grp_opt_htm($SchoolSet->classname_stuid, $AB_form['student_sn'],'1');
+        }else{
+            $sel['stu']=Get_select_opt_htm($SchoolSet->classid_stuid[$pars['class_id']], $AB_form['student_sn'],'1');
+        }
+
+        $xoopsTpl->assign('stu_sn_classid', Json_encode($SchoolSet->stu_sn_classid));
+        
+        $sel['AB_kind']=radio_htm($SchoolSet->AB_kind,'AB_kind',$pars['AB_kind'],'1');
+
+
+        // $abcd=$SchoolSet->classid_stuid[$pars['class_id']];
+        // die(var_dump($SchoolSet->AB_kind));
+
+        $xoopsTpl->assign('sel', $sel);
+
+        $rdo_RP_kind=color_radio_htm($SchoolSet->RP_kind,'RP_kind',  $RP_form['RP_kind'],'1');
+        $xoopsTpl->assign('rdo_RP_kind', $rdo_RP_kind);
+
+        $rdo_RP_option=color_radio_htm($SchoolSet->RP_option,'RP_option', $RP_form['RP_option'],'5','0');
+        $xoopsTpl->assign('rdo_RP_option', $rdo_RP_option);
+
+        $rdo_RP_unit=radio_htm($SchoolSet->RP_unit,'RP_unit', $RP_form['RP_unit']);
+        $xoopsTpl->assign('rdo_RP_unit', $rdo_RP_unit);
+
+        // var_dump($counseling_otp_ary);die();
+        // //帶入使用者編號
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $RP_form['update_user'] : $xoopsUser->uid();
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        
+        // 下個動作
+        if ($sn) {
+            $op='reward_punishment_update';
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $op='reward_punishment_insert';
+        }
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+
+
+// ----------------------------------
 // 獎懲管理
+    function reward_punishment_sum($pars=[]){
+        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 3, '無 reward_punishment_sum 權限! error:2106191755');
+        }
+        
+    
+        $sel['sdate']=$pars['sdate'];
+        $sel['edate']=$pars['edate'];
+        $xoopsTpl->assign('sel', $sel);
+
+        $tbl = $xoopsDB->prefix('yy_reward_punishment');
+        $tb2 = $xoopsDB->prefix('yy_student');
+        $sql = "SELECT  student_sn,RP_option,sum(RP_times) as sum_times
+                FROM $tbl as rp LEFT JOIN $tb2 as st ON rp.student_sn =st.sn
+                ";
+        $have_par='0';
+        if(($pars['sdate']!='' AND $pars['edate']!='')){
+            $sql.=" WHERE `event_date` >= '{$pars['sdate']}' AND `event_date` <= '{$pars['edate']}'";
+            $have_par='1';
+        }
+        if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.=" `status`!='2' GROUP BY RP_option,student_sn
+                ORDER BY major_id,st.sort";
+        // echo($sql);die();
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all = $ru =  array();
+        while($ru= $xoopsDB->fetchArray($result)){
+            $ru ['student_sn'] = $myts->htmlSpecialChars($ru['student_sn']);
+            $ru ['RP_option']  = $myts->htmlSpecialChars($ru['RP_option']);
+            $ru ['sum_times']  = $myts->htmlSpecialChars($ru['sum_times']);
+            $all [$ru ['student_sn']][$ru ['RP_option']] = $ru ['sum_times'];
+        }
+        // var_dump($SchoolSet->RP_option);die();
+        $option_sum=[];
+        foreach ($all as $stusn => $v1){
+            foreach ($SchoolSet->RP_option as $key => $opt_name){
+                $option_sum[$stusn][$key]=$all[$stusn][$key]??'0';
+            }
+
+            $option_sum[$stusn]['title']=$SchoolSet->class_name[$SchoolSet->stu_sn_classid[$stusn]].'/'.$SchoolSet->stu_anonymous[$stusn];
+        }
+        // var_dump($SchoolSet->sem_term_sdate);die();
+
+        $xoopsTpl->assign('sem_term_sdate', $SchoolSet->sem_term_sdate);
+        $xoopsTpl->assign('sem_term_edate', $SchoolSet->sem_term_edate);
+        $xoopsTpl->assign('all', $option_sum);
+        $xoopsTpl->assign('RP_option', $SchoolSet->RP_option);
+        $xoopsTpl->assign('op', "reward_punishment_sum");
+    }
     function reward_punishment_update($sn){
         global $xoopsDB,$xoopsUser;
 
@@ -419,8 +583,6 @@ switch ($op) {
             redirect_header('tchstu_mag.php', 3, '無 reward_punishment_list 權限! error:2106171120');
         }
 
-        
-        $SchoolSet->RP_kind;
         $sel['RP_kind']=Get_select_opt_htm($SchoolSet->RP_kind,$pars['RP_kind'],$show_space='1');
         $sel['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['dep_id'],'1');
         $sel['class_name']=Get_select_opt_htm($SchoolSet->class_name,$pars['class_id'],'1');
@@ -2868,7 +3030,10 @@ switch ($op) {
 
         $xoopsTpl->assign('course', $course);
         $xoopsTpl->assign('usual_exam_name', $SchoolSet->usual_exam_name);
-    
+        
+        $table_color=['1'=>'table-primary','3'=>'table-success','5'=>'table-warning'];
+        $xoopsTpl->assign('table_color', $table_color);
+
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");

@@ -143,6 +143,8 @@
 
 </div>
 
+<script src="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css"/>
 <script type="text/javascript">
     $(document).ready(function($){
         $('#dep_id').change(function(e){
@@ -180,7 +182,7 @@
                 onprint();
                 return false;
             }else{
-                alert("表單改變，請先按儲存！");
+                sweetAlert("表單改變，請先按儲存！", "列印錯誤","error");
                 return false;
             }
         })
@@ -213,7 +215,8 @@
             $(".score_jug").each(function(i){ //取得開頭name=student_sn
                 if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
                 {
-                    alert("成績格式有錯，請確認！");
+                    sweetAlert("成績格式錯誤，請重新輸入！", "輸入錯誤","error");
+
                     formstatus=false;
                     return false;
                 }

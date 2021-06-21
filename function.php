@@ -91,7 +91,7 @@ function radio_htm($ary=[],$name,$value='0'){
     foreach ($ary as $k=>$v){
         $chk= ($value==$k)?'checked':'';
         $htm.=<<<HTML
-        <div class="form-check form-check-inline  m-2">
+        <div class="form-check form-check-inline m-1">
             <input class="form-check-input" type="radio" name="{$name}" id="{$name}_{$k}" title="{$v}" value="{$k}" {$chk}>
             <label class="form-check-label" for="{$name}_{$k}">{$v}</label>
         </div>

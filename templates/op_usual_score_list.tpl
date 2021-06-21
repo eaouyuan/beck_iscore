@@ -44,7 +44,7 @@
 
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead>
-            <tr class="table-success">
+            <tr class="<{$table_color.$exam_stage}>">
                 <th scope="col" colspan="<{$score_count.$exam_stage.score_count+2}>">
                     <div class="p-2 text-center"><{$usual_exam_name.$exam_stage}></div>
                 </th>
@@ -93,6 +93,8 @@
     </div>
 <{/if}>
 
+<script src="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css"/>
 
 <script type="text/javascript">
     $(document).ready(function($){
@@ -107,7 +109,8 @@
         $("#add_uscore").click(function() {
             let exam_number_val=$("#exam_number option:selected").val();
             if(exam_number_val==''){
-                alert("請選擇成績階段或目前非成績輸入時間!");
+                sweetAlert("請選擇成績階段或目前非成績輸入時間", "輸入錯誤","error");
+
             }else{
                 let url="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_score_form&dep_id=<{$course.dep_id}>&course_id=<{$course.course_id}>&exam_stage="+exam_number_val;
                 location.href=url;

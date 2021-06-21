@@ -229,7 +229,7 @@ switch ($op) {
         variable_delete($sn);
         header("location:school_affairs.php?op=variable_list");
         exit;//離開，結束程式
-// 認輔管理
+// 認輔設定
     case "counseling_set":
         counseling_set($sn);
         break;//跳出迴圈,往下執行

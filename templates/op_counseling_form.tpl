@@ -32,7 +32,7 @@
                 <th colspan="7" class="p-2 text-left">
                     <{$chk.focus}>
                     <div></div>
-                    <div class="form-check form-check-inline col-12">
+                    <div class="form-check form-check-inline col">
                         <input class="form-check-input" type="checkbox" name="CounselingFocus[]" id="CounselingFocus_99" value="99"
                         <{$chk_99.CounselingFocus}>>
                         <label class="form-check-label mr-2" for="CounselingFocus_99">其他</label>

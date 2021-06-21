@@ -81,7 +81,7 @@
             $('input[type=text]').each(function(i){
                 if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100)) && ($(this).val()!='-'))
                 {
-                    alert("成績格式有錯，請確認！");
+                    sweetAlert("成績格式有錯，請確認！", "輸入錯誤","error");
                     formstatus=false;
                     return false;
                 }

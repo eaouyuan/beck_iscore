@@ -123,7 +123,8 @@
 
 </form>
 
-
+<script src="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.js" type="text/javascript"></script>
+<link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css"/>
 <script type="text/javascript">
     $(document).ready(function($){
         let class_tutor=<{$class_tutor}>;
@@ -187,7 +188,8 @@
 function checkID(formElement) {
         re = /^[A-Z]\d{9}$/;
         if (!re.test(formElement.value))
-        alert("你的身份證號碼格式不對！")
+        sweetAlert("你的身份證號碼格式不對！", "格式錯誤","error");
+
 };
 
 </script>

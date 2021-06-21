@@ -37,106 +37,105 @@ $ann_list['search']=Request::getString('search');
 // die();
 // die(var_dump($op));
 switch ($op) {
-    // 公告分類列表
-        case "announcement_class_list":
-            announcement_class_list();
-            break;//跳出迴圈,往下執行
-        
-        // 新增、編輯 公告分類表單
-        case "announcement_class_form":
-            announcement_class_form($sn);
-            break;//跳出迴圈,往下執行
+// 公告分類列表
+    case "announcement_class_list":
+        announcement_class_list();
+        break;//跳出迴圈,往下執行
+    
+    // 新增、編輯 公告分類表單
+    case "announcement_class_form":
+        announcement_class_form($sn);
+        break;//跳出迴圈,往下執行
 
-        // 新增公告分類
-        case "announcement_class_insert":
-            announcement_class_insert();
-            header("location:index.php?op=announcement_class_list");
-            exit;//離開，結束程式
+    // 新增公告分類
+    case "announcement_class_insert":
+        announcement_class_insert();
+        header("location:index.php?op=announcement_class_list");
+        exit;//離開，結束程式
 
-        // 更新公告分類
-        case "announcement_class_update":
-            announcement_class_update($sn);
-            header("location:index.php?op=announcement_class_list");
-            exit;
+    // 更新公告分類
+    case "announcement_class_update":
+        announcement_class_update($sn);
+        header("location:index.php?op=announcement_class_list");
+        exit;
 
-        // 刪除公告分類
-        case "announcement_class_delete":
-            announcement_class_delete($sn);
-            header("location:index.php?op=announcement_class_list");
-            exit;
+    // 刪除公告分類
+    case "announcement_class_delete":
+        announcement_class_delete($sn);
+        header("location:index.php?op=announcement_class_list");
+        exit;
 
-    // 公告消息列表
-        case "announcement_list":
-            announcement_list($ann_list);
-            break;//跳出迴圈,往下執行
-        
-        // 新增、編輯 公告消息表單
-        case "announcement_form":
-            announcement_form($sn);
-            break;//跳出迴圈,往下執行
+// 公告消息列表
+    case "announcement_list":
+        announcement_list($ann_list);
+        break;//跳出迴圈,往下執行
+    
+    // 新增、編輯 公告消息表單
+    case "announcement_form":
+        announcement_form($sn);
+        break;//跳出迴圈,往下執行
 
-        // 顯示公告消息
-        case "announcement_show":
-            announcement_show($sn);
-            break;//跳出迴圈,往下執行
+    // 顯示公告消息
+    case "announcement_show":
+        announcement_show($sn);
+        break;//跳出迴圈,往下執行
 
-        // 新增公告消息
-        case "announcement_insert":
-            $sn=announcement_insert();
-            if($fileup=='1'){
-                header("location:index.php?op=announcement_form&sn={$sn}");
-            }else{
-                header("location:index.php?op=announcement_show&sn={$sn}");
-            }
-            exit;//離開，結束程式
-
-        // 更新公告消息
-        case "announcement_update":
-            $sn=announcement_update($sn);
-            if($fileup=='1'){
-                header("location:index.php?op=announcement_form&sn={$sn}");
-            }else{
-                header("location:index.php?op=announcement_show&sn={$sn}");
-            }
-            exit;
-
-        // 刪除公告消息
-        case "announcement_delete":
-            announcement_delete($sn);
-            header("location:index.php?op=announcement_list");
-            exit;
-
-        // case "student_show":
-        //     student_show($sn);
-        //     break;//跳出迴圈,往下執行
-    //下載檔案
-        case "tufdl":
-            $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
-            $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
-            $TadUpFiles->add_file_counter($files_sn,false,false);
-            exit;
-        
-    default:
-        // if($sn){
-        //     teacher_show($sn);
-        //     $op="teacher_show";
-        // }else{
-        //     // teacher_list();
-        //     // $op="teacher_list";
-            // announcement_class_list();
-        //     // var_dump($xoopsUser->rank());
-
-            // $op="announcement_class_list";
-        // }
-        // header("location:{$_SERVER['PHP_SELF']}");
-        if (!$xoopsUser) {
-            break;
+    // 新增公告消息
+    case "announcement_insert":
+        $sn=announcement_insert();
+        if($fileup=='1'){
+            header("location:index.php?op=announcement_form&sn={$sn}");
         }else{
-            // announcement_list(null,'0');
-            announcement_list();
-            $op="announcement_list";
-            break;
+            header("location:index.php?op=announcement_show&sn={$sn}");
         }
+        exit;//離開，結束程式
+
+    // 更新公告消息
+    case "announcement_update":
+        $sn=announcement_update($sn);
+        if($fileup=='1'){
+            header("location:index.php?op=announcement_form&sn={$sn}");
+        }else{
+            header("location:index.php?op=announcement_show&sn={$sn}");
+        }
+        exit;
+
+    // 刪除公告消息
+    case "announcement_delete":
+        announcement_delete($sn);
+        header("location:index.php?op=announcement_list");
+        exit;
+
+    // case "student_show":
+    //     student_show($sn);
+    //     break;//跳出迴圈,往下執行
+//下載檔案
+    case "tufdl":
+        $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");
+        $files_sn=isset($_GET['files_sn'])?intval($_GET['files_sn']):"";
+        $TadUpFiles->add_file_counter($files_sn,false,false);
+        exit;
+    
+default:
+    // if($sn){
+    //     teacher_show($sn);
+    //     $op="teacher_show";
+    // }else{
+    //     // teacher_list();
+    //     // $op="teacher_list";
+        // announcement_class_list();
+    //     // var_dump($xoopsUser->rank());
+
+        // $op="announcement_class_list";
+    // }
+    // header("location:{$_SERVER['PHP_SELF']}");
+    if (!$xoopsUser) {
+        break;
+    }else{
+        announcement_list();
+        $op="announcement_list";
+        break;
+    }
 }
 
 /*-----------function區--------------*/

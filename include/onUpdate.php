@@ -11,7 +11,7 @@ function xoops_module_update_beck_iscore(&$module, $old_version) {
     // mk_group("課程管理群", "課程管理");
     // mk_group("輔導室", "輔導室");
     // mk_group("認輔群", "認輔管理");
-    mk_group("學務群", "學務群");
+    // mk_group("學務群", "學務群");
 
 
     // if(!chk_chk1()) go_update1();
