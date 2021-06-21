@@ -165,11 +165,11 @@
 
     });
     
-    $('#sdate').datepicker().on("dp.hide", function () {
+    $('#sdate,#edate').datepicker().on("dp.hide", function () {
         $('#ui-datepicker-div').hide();
         datediff();
     });
-    $('#edate').datepicker().on("dp.hide", function () {
+    $('#sdate,#edate').datepicker().on("dp.show", function () {
         $('#ui-datepicker-div').hide();
         datediff();
     });
