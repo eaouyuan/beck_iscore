@@ -621,7 +621,7 @@ switch ($op) {
             $have_par='1';
         }
         if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        $sql.=" `status`!='2' ORDER BY `rpsn` DESC";
+        $sql.=" `status`!='2' ORDER BY `event_date` DESC";
         // echo($sql);die();
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
         // $PageBar = getPageBar($sql, 100, 10);
