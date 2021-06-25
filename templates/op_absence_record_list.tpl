@@ -1,0 +1,199 @@
+<script type="text/javascript" src="<{$xoops_url}>/modules/beck_iscore/js/moment.min.js"></script>
+<script type="text/javascript" src="<{$xoops_url}>/modules/beck_iscore/js/moment-with-locales.js"></script>
+<script type="text/javascript" src="<{$xoops_url}>/modules/beck_iscore/js/bootstrap-datetimepicker.js"></script>
+<link href="<{$xoops_url}>/modules/beck_iscore/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
+
+
+<form name="absence_record_list" id="absence_record_list" action="tchstu_mag.php" method="get">
+    <h2 class="mb-3">學生出缺勤管理</h2>
+    <div class="col">
+    <div class="form-group row">
+        <label for="AB_year" class="col-form-label text-sm-left px-0 mb-3">學年度：</label>
+        <div class="text-left px-0 mr-3">
+            <select class="custom-select" name="AB_year" id="AB_year">
+                <{$sel.AB_year}>
+            </select>
+        </div>
+
+        <label for="AB_term" class="col-form-label text-sm-right px-0">學期：</label>
+        <div class="text-left px-0 mr-3">
+            <select class="custom-select" name="AB_term" id="AB_term">
+                <{$sel.AB_term}>
+            </select>
+        </div>
+        <label for="major_id" class="col-form-label text-sm-left px-0">學程：</label>
+        <div class="text-left px-0 mr-3">
+            <select class="custom-select" name="major_id" id="major_id">
+                <{$sel.major_htm}>
+            </select>
+        </div>
+
+        <label for="stu_sn" class="col-form-label text-sm-right px-0">學生：</label>
+        <div class="text-left px-0 mr-3">
+            <select class="custom-select" name="stu_sn" id="stu_sn">
+                <{$sel.stu_sn}>
+            </select>
+        </div>
+
+        <label for="AB_period" class="col-form-label text-sm-right px-0">時段：</label>
+        <div class="text-left px-0 mr-3">
+            <select class="custom-select" name="AB_period" id="AB_period">
+                <{$sel.AB_period}>
+            </select>
+        </div>
+
+        <div>
+            <input name="op" id="op" value="<{$op}>" type="hidden">
+        </div>
+    
+        <div class="ml-auto">
+            <button type="button" class="btn btn-outline-success mr-2" onclick="self.location.href='tchstu_mag.php?op=absence_record_list';">目前學期</button>
+            <button type="button" class="btn btn-primary mr-2" onclick="self.location.href='tchstu_mag.php?op=absence_record_form';">
+                <i class="fa fa-plus-circle " aria-hidden="true"></i>新增缺勤紀錄
+            </button>
+            <button type="button" class="btn btn-success mr-2" onclick="onprint()"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
+        </div>
+    </div>
+    </div>
+
+<{if $all}>
+    <table class="table table-bordered table-sm table-hover table-shadow">
+        <thead class="table-info">
+            <tr>
+                <th scope="col" class="text-center">編號</th>
+                <th scope="col" class="text-center">缺席類別</th>
+                <th scope="col" class="text-center">學生</th>
+                <th scope="col" class="text-center">時段</th>
+                <th scope="col" class="text-center">開始時間</th>
+                <th scope="col" class="text-center">結束時間</th>
+                <th scope="col" class="text-center">請假時數</th>
+                <th scope="col" class="text-center">功能</th>
+            </tr>
+        </thead>
+        <tbody>
+    <{foreach from=$all key=i item=its}>
+        <tr> 
+            <th class="text-center text-nowrap"><{$its.ABTimeSN}></th>
+            <th class="text-center text-nowrap"><{$its.AB_kind_name}></th>
+            <th class="text-center text-nowrap"><{$its.stu_info}></th>
+            <th class="text-center text-nowrap"><{$its.AB_period_name}></th>
+            <th class="text-center text-nowrap"><{$its.sdate}></th>
+            <th class="text-center text-nowrap"><{$its.edate}></th>
+            <th class="text-center text-nowrap"><{$its.AB_hour}></th>
+            <th class="text-center text-nowrap">
+                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=absence_record_form&sn=<{$its.AB_sn}>&AB_period=<{$its.AB_period}>" class="btn btn-warning btn-sm mr-2">編輯</a>
+                <a href="javascript:RP_del(<{$its.ABTimeSN}>)" class="btn btn-danger btn-sm">刪除</a>
+            </th>
+        </tr>
+    <{/foreach}>
+        </tbody>
+    </table>
+    <h3 class="text-center mb-3"><{$summary_text}></h3>
+<{else}>
+    <div class="alert alert-danger">尚無內容</div>
+<{/if}>
+</form>
+
+<div id="printArea">
+    <h2 align="center"> 學生出缺勤管理
+    </h2>
+    <br>
+<{if $all}>
+    <table style="font-family:sans-serif;">
+        <thead>
+            <tr>
+                <th class="text-center">編號</th>
+                <th class="text-center">缺席類別</th>
+                <th class="text-center">學生</th>
+                <th class="text-center">時段</th>
+                <th class="text-center">開始時間</th>
+                <th class="text-center">結束時間</th>
+                <th class="text-center">請假時數</th>
+            </tr>
+        </thead>
+        <tbody>
+    <{foreach from=$all key=i item=its}>
+        <tr> 
+            <th class="text-center text-nowrap"><{$its.ABTimeSN}></th>
+            <th class="text-center text-nowrap"><{$its.AB_kind_name}></th>
+            <th class="text-center text-nowrap"><{$its.stu_info}></th>
+            <th class="text-center text-nowrap"><{$its.AB_period_name}></th>
+            <th class="text-center text-nowrap"><{$its.sdate}></th>
+            <th class="text-center text-nowrap"><{$its.edate}></th>
+            <th class="text-center text-nowrap"><{$its.AB_hour}></th>
+        </tr>
+    <{/foreach}>
+        </tbody>
+    </table>
+    <hr>
+    <h3 class="text-center"><{$summary_text}></h3>
+
+<{else}>
+    <div class="alert alert-danger">尚無內容</div>
+<{/if}>
+
+</div>
+<!-- <script src="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.js" type="text/javascript"></script> -->
+<!-- <link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css" /> -->
+<script type="text/javascript">
+    $(document).ready(function($){ 
+        $('#AB_year,#AB_term,#major_id,#stu_sn,#AB_period').change(function(e){
+            document.forms["absence_record_list"].submit();
+        })
+
+    });
+    function onprint() {
+        window.print();
+        return false;
+    }
+
+    
+</script>
+
+
+
+<style type="text/css">
+@media screen 
+{
+    .table > tbody > tr > th,.table > thead > tr > th {
+        vertical-align:middle;
+        text-align:center;
+        border: 1px solid #000;
+        /* line-height:1em; */
+    }
+    /* input , select{
+        position: relative;
+        vertical-align:middle;
+        text-align:center;
+    }  */
+}
+@page  {
+    size:A4;
+    margin:5mm;
+}
+@media print 
+{
+    #printArea { 
+        font-size: 16px;
+
+    }
+    table tr th, th, td{
+        vertical-align:middle;
+        text-align:center;
+        border: 2px solid black;
+    }   
+
+    td,th { 
+        padding: 10px;
+    }
+
+}
+</style>
+<style type="text/css" media="screen">
+    /* 顯示時隱藏 */
+    #printArea { display: none; }
+</style>
+<style type="text/css" media="print">
+    /* 列印時隱藏 */
+    #absence_record_list,.notprint,#footer-container-display,#nav-container { display: none; }
+</style>

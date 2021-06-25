@@ -145,7 +145,7 @@ default:
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
         
         $tbl = $xoopsDB->prefix('yy_announcement_class');
@@ -161,7 +161,7 @@ default:
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
         
         //安全判斷 儲存 更新都要做
@@ -196,7 +196,7 @@ default:
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
         
         //安全判斷 儲存 更新都要做
@@ -230,7 +230,7 @@ default:
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
         //套用formValidator驗證機制
         if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
@@ -306,7 +306,7 @@ default:
     function announcement_class_list(){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
         if (!$xoopsUser->isAdmin()) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
 
         $myts = MyTextSanitizer::getInstance();
@@ -373,7 +373,7 @@ default:
         global $xoopsDB,$xoopsUser;
 
         // if (!$xoopsUser->isAdmin()) {
-        //     redirect_header('index.php', 3, '無操作權限');
+        //     redirect_header('index.php', 2, '無操作權限');
         // }
         // if(!($xoopsUser->isAdmin() AND $_SESSION['xoopsUserId']== $Ann['uid'])){
         //     redirect_header('index.php?op=announcement_list', 3, '無操作權限');
@@ -421,7 +421,7 @@ default:
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
         
         //安全判斷 儲存 更新都要做
@@ -465,7 +465,7 @@ default:
     function announcement_show($sn){
         global $xoopsTpl,$xoopsDB,$xoopsUser;
     
-        if (!$xoopsUser){redirect_header('index.php', 3, '無操作權限。error:2103212230');}
+        if (!$xoopsUser){redirect_header('index.php', 2, '無操作權限。error:2103212230');}
 
         $myts = MyTextSanitizer::getInstance();
     
@@ -528,7 +528,7 @@ default:
         global $xoopsTpl,$xoopsUser,$xoopsDB,$TadUpFiles;
 
         if (!$xoopsUser) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
 
         //套用formValidator驗證機制
@@ -648,7 +648,7 @@ default:
     function announcement_list($parameter=null,$show_add_button=''){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
         if (!$xoopsUser) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
         $myts = MyTextSanitizer::getInstance();
 
@@ -681,7 +681,7 @@ default:
         // echo($sql); // die();
         
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        $PageBar = getPageBar($sql, 10, 10);
+        $PageBar = getPageBar($sql, 25, 10);
         $bar     = $PageBar['bar'];
         $sql     = $PageBar['sql'];
         $total   = $PageBar['total'];
@@ -741,7 +741,7 @@ default:
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
         if (!power_chk('beck_iscore', 1)) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
 
         if($sn){
@@ -930,7 +930,7 @@ default:
         // var_dump($_POST);
         //安全判斷 儲存 更新都要做
         if (!power_chk('beck_iscore', 1)) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
 
         if (!$GLOBALS['xoopsSecurity']->check()) {
@@ -986,7 +986,7 @@ default:
 
         global $xoopsDB;
         if (!power_chk('beck_iscore', 1)) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
 
         // var_dump($_POST);die();  
@@ -1196,7 +1196,7 @@ default:
         global $xoopsTpl, $xoopsDB;
 
         if (!power_chk('beck_iscore', 2)) {
-            redirect_header('index.php', 3, '無操作權限');
+            redirect_header('index.php', 2, '無操作權限');
         }
 
         $TadUpFiles=new TadUpFiles("beck_iscore","/student",$file="/file",$image="/image",$thumbs="/image/.thumbs");

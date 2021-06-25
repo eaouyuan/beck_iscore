@@ -61,6 +61,7 @@ $modversion['tables'][]         = 'yy_counseling_rec';         //認輔紀錄
 $modversion['tables'][]         = 'yy_counseling_option';      //教師認輔選項
 $modversion['tables'][]         = 'yy_reward_punishment';      //學生獎懲紀錄
 $modversion['tables'][]         = 'yy_absence_records';        //出缺勤紀錄
+$modversion['tables'][]         = 'yy_absence_time';           //出缺勤晨日夜間明細
 
 //---後台管理介面設定---//
 $modversion['hasAdmin']   = 1;

@@ -1734,9 +1734,10 @@ switch ($op) {
     function semester_delete($sn){
         global $xoopsDB,$xoopsUser;
 
-        if (!$xoopsUser->isAdmin()) {
-            redirect_header('school_affairs.php?op=semester_list', 3, '無操作權限');
-        }
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=semester_list', 2, '無 semester_delete 權限!error:2104242100');
+        } 
+
         $tbl = $xoopsDB->prefix('yy_semester');
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -1747,10 +1748,10 @@ switch ($op) {
     function semester_update($sn){
 
         global $xoopsDB,$xoopsUser;
-
-        if (!$xoopsUser->isAdmin()) {
-            redirect_header('school_affairs.php?op=semester_list', 3, '無操作權限');
-        }
+        
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=semester_list', 2, '無 semester_update 權限!error:2104242100');
+        } 
         
         //安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
@@ -1795,10 +1796,10 @@ switch ($op) {
 
         global $xoopsDB,$xoopsUser;
 
-        if (!$xoopsUser->isAdmin()) {
-            redirect_header('school_affairs.php?op=semester_list', 3, '無操作權限');
-        }
-        
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?op=semester_list', 2, '無 semester_insert 權限!error:2104242100');
+        } 
+
         //安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
@@ -1847,9 +1848,9 @@ switch ($op) {
     function semester_form($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB,$TadUpFiles;
         
-        if (!$xoopsUser->isAdmin()) {
-            redirect_header('school_affairs.php', 3, '無操作權限');
-        }
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php?', 2, '無 semester_form 權限!error:2104242100');
+        } 
 
         //套用formValidator驗證機制
         if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
