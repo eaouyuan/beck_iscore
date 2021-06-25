@@ -8,17 +8,17 @@
     <h2 class="mb-3">學生出缺勤管理</h2>
     <div class="col">
     <div class="form-group row">
-        <label for="AB_year" class="col-form-label text-sm-left px-0 mb-3">學年度：</label>
+        <label for="year" class="col-form-label text-sm-left px-0 mb-3">學年度：</label>
         <div class="text-left px-0 mr-3">
-            <select class="custom-select" name="AB_year" id="AB_year">
-                <{$sel.AB_year}>
+            <select class="custom-select" name="year" id="year">
+                <{$sel.year}>
             </select>
         </div>
 
-        <label for="AB_term" class="col-form-label text-sm-right px-0">學期：</label>
+        <label for="term" class="col-form-label text-sm-right px-0">學期：</label>
         <div class="text-left px-0 mr-3">
-            <select class="custom-select" name="AB_term" id="AB_term">
-                <{$sel.AB_term}>
+            <select class="custom-select" name="term" id="term">
+                <{$sel.term}>
             </select>
         </div>
         <label for="major_id" class="col-form-label text-sm-left px-0">學程：</label>
@@ -73,7 +73,7 @@
         <tbody>
     <{foreach from=$all key=i item=its}>
         <tr> 
-            <th class="text-center text-nowrap"><{$its.ABTimeSN}></th>
+            <th class="text-center text-nowrap"><{$its.ABsn}></th>
             <th class="text-center text-nowrap"><{$its.AB_kind_name}></th>
             <th class="text-center text-nowrap"><{$its.stu_info}></th>
             <th class="text-center text-nowrap"><{$its.AB_period_name}></th>
@@ -81,8 +81,8 @@
             <th class="text-center text-nowrap"><{$its.edate}></th>
             <th class="text-center text-nowrap"><{$its.AB_hour}></th>
             <th class="text-center text-nowrap">
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=absence_record_form&sn=<{$its.AB_sn}>&AB_period=<{$its.AB_period}>" class="btn btn-warning btn-sm mr-2">編輯</a>
-                <a href="javascript:RP_del(<{$its.ABTimeSN}>)" class="btn btn-danger btn-sm">刪除</a>
+                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=absence_record_form&sn=<{$its.ABsn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
+                <a href="javascript:AB_del(<{$its.ABsn}>)" class="btn btn-danger btn-sm">刪除</a>
             </th>
         </tr>
     <{/foreach}>
@@ -114,7 +114,7 @@
         <tbody>
     <{foreach from=$all key=i item=its}>
         <tr> 
-            <th class="text-center text-nowrap"><{$its.ABTimeSN}></th>
+            <th class="text-center text-nowrap"><{$its.ABsn}></th>
             <th class="text-center text-nowrap"><{$its.AB_kind_name}></th>
             <th class="text-center text-nowrap"><{$its.stu_info}></th>
             <th class="text-center text-nowrap"><{$its.AB_period_name}></th>
@@ -137,7 +137,7 @@
 <!-- <link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css" /> -->
 <script type="text/javascript">
     $(document).ready(function($){ 
-        $('#AB_year,#AB_term,#major_id,#stu_sn,#AB_period').change(function(e){
+        $('#year,#term,#major_id,#stu_sn,#AB_period').change(function(e){
             document.forms["absence_record_list"].submit();
         })
 
