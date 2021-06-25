@@ -354,7 +354,7 @@ switch ($op) {
             // die(var_dump($ru));
             $ru ['ABsn'] = $myts->htmlSpecialChars($ru['ABsn']);
             $ru ['class_name']     = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$ru['stu_sn']]]);
-            $ru ['AB_kind_name']   = $myts->htmlSpecialChars($SchoolSet->AB_kind[$ru['AB_kind']]);
+            $ru ['AB_kind_name']   = $myts->htmlSpecialChars($SchoolSet->AB_kind_anther[$ru['AB_kind']]);
             $ru ['stu_name']   = $myts->htmlSpecialChars($SchoolSet->stu_anonymous[$ru['stu_sn']]);
             $ru ['depsnname']    = $myts->htmlSpecialChars($SchoolSet->depsnname[$SchoolSet->stu_dep[$ru['stu_sn']]]);
             $ru ['stu_info']    = $ru ['depsnname'].'<br>'.$ru ['class_name'].' / '.$ru ['stu_name'];
@@ -367,6 +367,7 @@ switch ($op) {
             $Summary[$ru['AB_kind']]['hour']+=$ru['AB_hour'];
             
         }
+        // die(var_dump($all));
 
         ksort($Summary);
         $remove_AB_option=['G'=>'晤談'];          
@@ -382,7 +383,6 @@ switch ($op) {
 
         $SweetAlert = new SweetAlert();
         $SweetAlert->render('AB_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=absence_record_delete&sn=", 'sn','確定要刪除學生出缺勤紀錄？','學生出缺勤紀錄刪除。');
-        // die(var_dump($ru));
 
         $xoopsTpl->assign('all', $all);
         // $xoopsTpl->assign('bar', $bar);
@@ -445,10 +445,6 @@ switch ($op) {
         $xoopsTpl->assign('form_title', $form_title);
         $xoopsTpl->assign('ru', $ru);
 
-
-        // die(var_dump($ru));
-
-
         // 學年
         foreach ($SchoolSet->all_sems as $k=>$v){
         $sems_year[$v['year']]=$v['year'];
@@ -471,10 +467,9 @@ switch ($op) {
         $xoopsTpl->assign('stu_sn_classid', Json_encode($SchoolSet->stu_sn_classid));
         
         $sel['AB_kind']=radio_htm($SchoolSet->AB_kind,'AB_kind',$ru['AB_kind']);
-        if($AB_form['AB_kind']=='99'){$sel['AB_kind_99']='checked';}
+        if($ru['AB_kind']=='99'){$sel['AB_kind_99']='checked';}
 
         $xoopsTpl->assign('sel', $sel);
-
 
         // //帶入使用者編號
         if ($sn) {
@@ -496,6 +491,7 @@ switch ($op) {
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
+        // die(var_dump($ru));
     }
     function absence_record_update($sn){
         global $xoopsDB,$xoopsUser;

@@ -51,6 +51,7 @@ class SchoolSet
     public $RP_option; 
     public $RP_unit; 
     public $AB_kind;  //請假種類
+    public $AB_kind_anther;  //請假種類(含其他)
     public $AB_period;  //請假時段
     // public $tch_sex; //性別
     
@@ -76,6 +77,7 @@ class SchoolSet
         $this->RP_option=['1'=>'白鴿','2'=>'嘉獎','3'=>'小功','4'=>'大功','5'=>'榮譽假時數','6'=>'警告','7'=>'小過','8'=>'大過','9'=>'減少榮舉假','10'=>'罰勤'];          
         $this->RP_unit=['1'=>'次','2'=>'小時','3'=>'支']; 
         $this->AB_kind=['A'=>'公假','B'=>'事假','C'=>'病假','D'=>'喪假','E'=>'曠課','G'=>'晤談']; 
+        $this->AB_kind_anther=['A'=>'公假','B'=>'事假','C'=>'病假','D'=>'喪假','E'=>'曠課','G'=>'晤談','99'=>'其他']; 
         $this->AB_period=['1'=>'晨間','2'=>'日間','3'=>'夜間']; 
     }
 
