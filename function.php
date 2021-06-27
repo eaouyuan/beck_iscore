@@ -140,6 +140,21 @@ function Get_select_grp_opt_htm($ary=[],$value='',$show_space='1')
 }
 
 
+function Get_select_opt_color_htm($ary=[],$value='',$show_space='1',$sel_val=[])
+{
+    if($show_space=='1'){
+        $return_htm='<option></option>';
+    }else{
+        $return_htm='';
+    }
+    foreach ($ary as $k=>$v){
+        $selected= ($value==strval($k))?'selected':'';
+        $color=(in_array(strval($k),$sel_val))?"class='sel_exist'":'';
+        $return_htm.="<option {$color} value='{$k}' {$selected}>{$v}</option>";
+    }
+    return ($return_htm);
+}
+
 //取得select option htm
 function Get_select_opt_htm($ary=[],$value='',$show_space='1')
 {

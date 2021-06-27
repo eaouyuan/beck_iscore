@@ -519,6 +519,21 @@ CREATE TABLE `yy_absence_time` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+-- 期末導師評語
+CREATE TABLE `yy_mentor_comment` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `year` varchar(8) NOT NULL COMMENT '學年度',
+  `term` varchar(8) NOT NULL COMMENT '學期',
+  `student_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `Comment` text NOT NULL COMMENT '導師評語',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+ALTER TABLE `yy_mentor_comment`
+ADD UNIQUE `year_term_student_sn` (`year`, `term`, `student_sn`);
+
 -- 學年度
 INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`, `create_date`, `update_user`, `update_date`, `activity`, `sort`) VALUES
 (1,	'109',	'2',	'2021-02-01',	'2021-07-04',	1,	'2021-04-09 13:09:58',	1,	'2021-04-09 13:09:58',	'1',	0);

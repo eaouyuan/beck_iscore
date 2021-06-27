@@ -337,9 +337,19 @@ switch ($op) {
         foreach($SchoolSet->users as $k=>$v){
             $teachers[$v['uid']]=$v['name'];
         }
+        // 列出所有認輔教師
+        $tbl = $xoopsDB->prefix('yy_tea_counseling');
+        $sql = "SELECT distinct tea_uid FROM $tbl 
+                WHERE `year` = '{$SchoolSet->sem_year}'
+                AND `term` = '{$SchoolSet->sem_term}'
+                ";
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($data= $xoopsDB->fetchArray($result)){
+            $teacher_sel[] = $data['tea_uid'];
+        }
 
         // 教師列表
-        $tea_sel=Get_select_opt_htm($teachers,$sn,'0');
+        $tea_sel=Get_select_opt_color_htm($teachers,$sn,'0',$teacher_sel);
         $xoopsTpl->assign('tea_sel', $tea_sel);
         $xoopsTpl->assign('tea_name',$teachers[$sn]);
         $counseling  = array();
@@ -1232,11 +1242,6 @@ switch ($op) {
         $formValidator_code = $formValidator->render();
         $xoopsTpl->assign("formValidator_code",$formValidator_code);
 
-        // if (!power_chk('beck_iscore', 1)) {
-        //     redirect_header('school_affairs.php', 3, '無操作權限');
-        // }
-
-
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
 
@@ -1257,6 +1262,7 @@ switch ($op) {
         $class['class_name']   = (!isset($class['class_name'])) ? '' : $class['class_name'];
         $class['class_status'] = (!isset($class['class_status'])) ? '1' : $class['class_status'];
         $class['tutor_sn']     = (!isset($class['tutor_sn'])) ? '' : $class['tutor_sn'];
+        $class['tutor_name']   = ($class['tutor_sn']=='') ? '未設定' : $SchoolSet->uid2name[$class['tutor_sn']];
 
         $xoopsTpl->assign('class', $class);
 
@@ -1269,12 +1275,13 @@ switch ($op) {
         $get_depts_user=$SchoolSet->get_depts_user('teacher');
         // print_r($get_depts_user );die();
         $htm='';
-
+        
         foreach ($get_depts_user as $dep=>$v){
+            if(array_key_exists($class['tutor_sn'],$v)){$backcolor="bg-warning";}else{$backcolor="bg-info";}
             $htm.=<<<HTML
                 <div class="accordion" id="accordionExample">
                     <div class="card">
-                        <div class="card-header bg-info" id="head{$dep}">
+                        <div class="card-header {$backcolor}" id="head{$dep}">
                             <h2 class="mb-0">
                             <button class="btn btn-block text-center text-black font-weight-bold" type="button" data-toggle="collapse" data-target="#{$dep}" aria-expanded="true" aria-controls="{$dep}">
                                 {$dep}

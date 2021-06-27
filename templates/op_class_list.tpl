@@ -1,13 +1,14 @@
 
-<div class="col">
-    <h2 style="float:left">班級 ─ 列表</h2>
-
-    <button type="button" class="btn btn-primary btn-sm" style="float:right" 
-        onclick="self.location.href='school_affairs.php?op=class_form';">
-        <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增處室"> 新增班級
-    </button>
-
-
+<div class="row">
+    <div class="col">
+        <h2>班級 ─ 列表</h2>
+    </div>
+    <div class="ml-auto col">
+        <button type="button" class="btn btn-primary btn-sm" style="float:right" 
+            onclick="self.location.href='school_affairs.php?op=class_form';">
+            <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增處室"> 新增班級
+        </button>
+    </div>
 </div>
 
 <{if $all}>

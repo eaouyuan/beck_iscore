@@ -247,7 +247,15 @@ switch ($op) {
         $re=absence_record_delete($sn);
         header("location:tchstu_mag.php?op=absence_record_list");
         exit;
-        
+// 導師評語
+    case "mentor_comment":
+        mentor_comment($sn);
+        break;//跳出迴圈,往下執行
+    case "mentor_comment_update":
+        $re=mentor_comment_update($sn);
+        header("location:tchstu_mag.php?op=mentor_comment");
+        exit;//離開，結束程式
+
 // 下載檔案
     case "tufdl":
         $TadUpFiles=new TadUpFiles("beck_iscore","/counseling",$file="/file",$image="/image",$thumbs="/image/.thumbs");
@@ -263,6 +271,128 @@ switch ($op) {
 
 }
 /*-----------function區--------------*/
+// 導師評語
+    function mentor_comment_update($sn){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $xoopsUser)){
+            redirect_header('tchstu_mag.php', 3, '無 mentor_comment_update 權限!error:2106261121');
+        }
+        if(!($sn)){
+            redirect_header('tchstu_mag.php?op=mentor_comment', 3, '未選定學生 ! error:2106271014');
+        }
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=mentor_comment&sn={$sn}", 3, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        // die();
+
+        // 再刪除此學生導師評語
+        $tbl = $xoopsDB->prefix('yy_mentor_comment');
+        $sql = "DELETE FROM `$tbl`
+        WHERE `year` = '{$year}'
+        AND `term` = '{$term}'
+        AND `student_sn` = '{$sn}'
+        ";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        
+        $sql = "insert into `$tbl` (
+                    `year`,`term`,`student_sn`,`Comment`,`update_user`,
+                    `update_date`
+                )values(
+                    '{$year}','{$term}','{$sn}','{$tea_Comment}','{$uid}',
+                    now()
+                )";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $returnnewsn = $xoopsDB->getInsertId(); //取得最後新增的編號
+
+        if($returnnewsn){
+            redirect_header("tchstu_mag.php?op=mentor_comment&sn={$sn}", 2, '儲存成功 ! ');
+        }
+
+        return true;
+    }
+    function mentor_comment($sn){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $xoopsUser)){
+            redirect_header('tchstu_mag.php', 3, '無 mentor_comment 權限!error:2106261121');
+        }
+        $xoopsTpl->assign('sem_year', $SchoolSet->sem_year);
+        $xoopsTpl->assign('sem_term', $SchoolSet->sem_term);
+        
+        $class_name=$SchoolSet->class_name[$SchoolSet->tutorid_classid[$xoopsUser->uid()]]==''?'':$SchoolSet->class_name[$SchoolSet->tutorid_classid[$xoopsUser->uid()]].'班';
+        $xoopsTpl->assign('class_name', $class_name);
+
+        $teacher_name=$SchoolSet->uid2name[$xoopsUser->uid()];
+        $xoopsTpl->assign('teacher_name', $teacher_name);
+
+        // 學生列表
+        $student_list=[];
+        if($xoopsUser->isAdmin() or power_chk("beck_iscore", "3")){
+            $student_list=$SchoolSet->stu_anonymous;
+        }else{
+            $student_list=$SchoolSet->classid_stuid[$SchoolSet->tutorid_classid[$xoopsUser->uid()]];
+        }
+        $stu_sel=Get_select_opt_htm($student_list,$sn,'0');
+        $xoopsTpl->assign('stu_sel', $stu_sel);
+
+        $com['A']=Get_select_opt_htm($SchoolSet->MentorCommentA,'','0');
+        $com['B']=Get_select_opt_htm($SchoolSet->MentorCommentB,'','0');
+        $com['C']=Get_select_opt_htm($SchoolSet->MentorCommentC,'','0');
+        $xoopsTpl->assign('com', $com);
+        // die(var_dump($xoopsUser->uid()));
+        // die(var_dump(array_key_exists($xoopsUser->uid(), $student_list)));
+
+        if($sn){
+            $tbl = $xoopsDB->prefix('yy_mentor_comment');
+            $sql = "SELECT * FROM $tbl
+                    WHERE `year` = '{$SchoolSet->sem_year}'
+                    AND `term` = '{$SchoolSet->sem_term}'
+                    AND `student_sn` = '{$sn}'";
+            // echo($sql);die();
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $ru= $xoopsDB->fetchArray($result);
+            if(!(array_key_exists($sn, $student_list) or $xoopsUser->isAdmin())){
+                redirect_header('tchstu_mag.php?op=mentor_comment', 2, '錯誤班級導師身份!error:2106271032');
+            }
+        }
+        $ru ['year']        = $myts->htmlSpecialChars($ru['year']);
+        $ru ['term']        = $myts->htmlSpecialChars($ru['term']);
+        $ru ['student_sn']  = $myts->htmlSpecialChars($ru['student_sn']);
+        $ru ['Comment']     = $myts->displayTarea($ru['Comment'], 1, 0, 0, 0, 0);
+        $ru ['update_user'] = $myts->htmlSpecialChars($ru['update_user']);
+        $xoopsTpl->assign('all', $ru);
+
+
+        if ($sn) {
+            $uid = $_SESSION['beck_iscore_adm'] ? $ru['update_user'] : $xoopsUser->uid();
+            $xoopsTpl->assign('sn', $sn);
+        } else {
+            $uid = $xoopsUser->uid();
+        }
+        $xoopsTpl->assign('uid', $uid);
+        $xoopsTpl->assign('op', 'mentor_comment_update');
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
+
 // ----------------------------------
 // 出缺勤管理
     function absence_record_delete($sn){

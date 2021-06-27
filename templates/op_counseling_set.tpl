@@ -124,4 +124,10 @@
     color: #ffffff;
     background-color: #f3969a;
     }
+
+    .sel_exist{
+        text-decoration: none;
+        color: #000;
+        background-color: #abccfc;
+    }
 </style>

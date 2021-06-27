@@ -7,16 +7,17 @@
 
     <div class="form-group row">
         <label for="class_name" class="col-2 col-form-label text-sm-right">班級名稱</label>
-        <div class="col-lg-4">
+        <div class="col-lg-2">
             <input class="form-control validate[required]" type="text" name="class_name" id="class_name" value="<{$class.class_name}>">
         </div>
         <label for="status" class="col-lg-2 col-form-label text-sm-right">班級狀態</label>
-        <div class="col-lg-4">
+        <div class="col-lg-2">
             <select class="custom-select validate[required]" name="status">
                 <{$class_st_op_htm}>
             </select>
-
         </div>
+        <label for="status" class="col-lg-2 col-form-label text-sm-right">導師名稱：<{$class.tutor_name}></label>
+
     </div>
 
     <div class="form-group row">

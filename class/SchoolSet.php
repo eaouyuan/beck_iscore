@@ -36,6 +36,8 @@ class SchoolSet
     public $tea_course; //本學期教師課表 教師  學程 課程
     public $courese_chn; //課程中文名稱
     public $class_name; //['1'=>'友仁']班級sn -> name
+    public $tutorid_classid; // 導師 id -> 班級id 
+    public $class_tutorid; // 班級sn -> tutor_id 
     public $class_tutor_name; // ['1'=>'黃淑滿']班級sn -> 導師名稱
     public $classname_stuid; //[友仁][1]=王小明
     public $classid_stuid; //[class id][stu id]=王小明
@@ -79,6 +81,9 @@ class SchoolSet
         $this->AB_kind=['A'=>'公假','B'=>'事假','C'=>'病假','D'=>'喪假','E'=>'曠課','G'=>'晤談']; 
         $this->AB_kind_anther=['A'=>'公假','B'=>'事假','C'=>'病假','D'=>'喪假','E'=>'曠課','G'=>'晤談','99'=>'其他']; 
         $this->AB_period=['1'=>'晨間','2'=>'日間','3'=>'夜間']; 
+        $this->MentorCommentA=['1'=>'反應敏捷','2'=>'舉一能反三','3'=>'性情憨厚']; 
+        $this->MentorCommentB=['101'=>'活動力旺盛','102'=>'課業表現佳','103'=>'五育均衡']; 
+        $this->MentorCommentC=['201'=>'常識豐富','202'=>'活動力旺盛','203'=>'反應敏捷']; 
     }
 
     // get config
@@ -820,10 +825,14 @@ class SchoolSet
             $all[]=$data;
             $class_name[$data['sn']]= $data['class_name'];
             $class_tutor_name[$data['sn']]= $data['name'];
+            $class_tutorid[$data['sn']]= $data['tutor_sn'];
+            $tutorid_classid[$data['tutor_sn']]= $data['sn'];
         }
         // die(var_dump($all));
         $this->class_name=$class_name;
+        $this->class_tutorid=$class_tutorid;
         $this->class_tutor_name=$class_tutor_name;
+        $this->tutorid_classid=$tutorid_classid;
     }
     //get 學程資料
     private function get_dept(){
