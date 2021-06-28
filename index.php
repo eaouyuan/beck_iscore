@@ -19,7 +19,7 @@ if (!class_exists('XoopsModules\Beck_iscore\Announcement')) {
 include_once $GLOBALS['xoops']->path('/modules/system/include/functions.php');
 $op = Request::getString('op');
 $sn = Request::getInt('sn');
-$fileup = Request::getInt('fileup');
+$fileup = Request::getString('fileup');
 $ann_list['ann_class_id']=Request::getInt('ann_class_id');
 $ann_list['dept_id']=Request::getInt('dept_id');
 $ann_list['search']=Request::getString('search');
@@ -97,7 +97,8 @@ switch ($op) {
         if($fileup=='1'){
             header("location:index.php?op=announcement_form&sn={$sn}");
         }else{
-            header("location:index.php?op=announcement_show&sn={$sn}");
+            // header("location:index.php?op=announcement_show&sn={$sn}");
+            header("location:index.php?op=announcement_list");
         }
         exit;
 
