@@ -54,7 +54,6 @@ $modversion['tables'][]         = 'yy_query_stage_score';      //段考成績查
 $modversion['tables'][]         = 'yy_term_total_score';       //學期總成績查詢
 $modversion['tables'][]         = 'yy_term_score_detail';      //學期總成績-群組科目成績記錄
 $modversion['tables'][]         = 'yy_high_care';              //高關懷名單
-$modversion['tables'][]         = 'yy_high_care_month';        //每月高關懷名單
 $modversion['tables'][]         = 'yy_config';                 //config
 $modversion['tables'][]         = 'yy_tea_counseling';         //教師認輔設定
 $modversion['tables'][]         = 'yy_counseling_rec';         //認輔紀錄

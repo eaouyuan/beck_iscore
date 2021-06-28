@@ -404,22 +404,6 @@ CREATE TABLE `yy_high_care` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
--- 每月高關懷學生名單列表
-CREATE TABLE `yy_high_care_month` (
-  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
-  `year` varchar(3) NOT NULL COMMENT '年',
-  `month` varchar(2) NOT NULL COMMENT '月',
-  `event_date` date NOT NULL COMMENT '事件日期',
-  `event` varchar(65) NOT NULL COMMENT '事件名稱',
-  `comment` text NOT NULL COMMENT '備註',
-  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
-  `update_date` datetime NOT NULL COMMENT '修改日期', 
-  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
-  PRIMARY KEY (`sn`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-ALTER TABLE `yy_high_care_month`
-ADD UNIQUE `year_month` (`year`, `month`);
-
 -- config
 CREATE TABLE `yy_config` (
   `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '設定檔流水號',

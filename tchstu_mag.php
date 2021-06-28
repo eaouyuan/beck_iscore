@@ -182,7 +182,7 @@ switch ($op) {
         high_care_form($sn);
         break;//跳出迴圈,往下執行
     case "high_care_list":
-        high_care_list();
+        high_care_list($g2p);
         break;//跳出迴圈,往下執行
 // 認輔管理
     case "counseling_list":
@@ -734,8 +734,6 @@ switch ($op) {
         }
         return;
     }
-
-
 
 // ----------------------------------
 // 獎懲管理
@@ -1551,7 +1549,7 @@ switch ($op) {
 // ----------------------------------
 // 每月高關懷名單 
     // 列表- 高關懷名單
-    function high_care_list(){
+    function high_care_list($g2p){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
         $SchoolSet= new SchoolSet;
         if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
@@ -1559,26 +1557,29 @@ switch ($op) {
         }
         $myts = MyTextSanitizer::getInstance();
 
-        $tbl      = $xoopsDB->prefix('yy_high_care_month');
-        $sql      = "SELECT * FROM $tbl ORDER BY `year` DESC  , `month` DESC";
-        
+        $tbl      = $xoopsDB->prefix('yy_high_care');
+        $sql      = "SELECT  `year`,`month`,min(`keyin_date`) as event_date FROM $tbl GROUP BY `year`,`month` ORDER BY `year` DESC  , `month` DESC";
+        // echo($sql);die();
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        $PageBar = getPageBar($sql, 50, 10);
+        $PageBar = getPageBar($sql, 20, 10);
         $bar     = $PageBar['bar'];
         $sql     = $PageBar['sql'];
         $total   = $PageBar['total'];
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
-
+        $i=1;
+        if($g2p==''or $g2p==1){$i=1;}else{$i=($g2p-1)*20+$i;}
         while(  $hcm= $xoopsDB->fetchArray($result)){
-            $hcm['sn']          = $myts->htmlSpecialChars($hcm['sn']);
-            $hcm['year']        = $myts->htmlSpecialChars($hcm['year']);
-            $hcm['month']       = $myts->htmlSpecialChars($hcm['month']);
-            $hcm['event_date']  = $myts->htmlSpecialChars($hcm['event_date']);
-            $hcm['event']       = $myts->htmlSpecialChars($hcm['event']);
-            $all []             = $hcm;
+            $hcm['sn']         = $myts->htmlSpecialChars($i);
+            $hcm['year']       = $myts->htmlSpecialChars($hcm['year']);
+            $hcm['month']      = $myts->htmlSpecialChars($hcm['month']);
+            $hcm['event']      = $myts->htmlSpecialChars($hcm['year'].'年'.$hcm['month'].'月，高關懷名單');
+            $hcm['event_date'] = $myts->htmlSpecialChars($hcm['event_date']);
+            $all []            = $hcm;
+            $i++;
         }
+
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);
         $xoopsTpl->assign('total', $total);
@@ -1606,23 +1607,6 @@ switch ($op) {
         $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
 
-        // 假如該月份沒有高關懷名單紀錄，也需一並刪除 名單列表
-        $tbl     = $xoopsDB->prefix('yy_high_care');
-        $sql     = "SELECT * FROM $tbl 
-                    where `year`='{$stu['year']}'
-                    AND `month`='{$stu['month']}'
-                    ";
-        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $rec_exist = $xoopsDB->fetchArray($result);
-        // die(var_dump($rec_exist));
-        if(!$rec_exist){
-            $tbl     = $xoopsDB->prefix('yy_high_care_month');
-            $sql = "DELETE FROM `$tbl` 
-                    where `year`='{$stu['year']}'
-                    AND `month`='{$stu['month']}'";
-            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        }
-
         return $stu;
     }
     // sql-更新 高關懷名單紀錄
@@ -1647,15 +1631,7 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
         // die();
-
-        // 更新高關懷名單列表的事件日期
-        $tbl = $xoopsDB->prefix('yy_high_care_month');
-        $sql = "update " . $tbl . " set `event_date`=now()  
-            where `year`='{$year}'
-            AND `month`='{$month}'
-            ";
-        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-
+        
         // 更新高關懷名單紀錄
         $tbl = $xoopsDB->prefix('yy_high_care');
         $sql = "update " . $tbl . " 
@@ -1694,34 +1670,6 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
         $class_id=($SchoolSet->stu_sn_classid[$student_sn]);
-
-        // 查看是否為每月高關懷名單第一筆
-        $tbl     = $xoopsDB->prefix('yy_high_care_month');
-        $sql     = "SELECT * FROM $tbl 
-                Where `year`='{$year}'
-                AND `month`='{$month}'
-                ";
-        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $have_data = $xoopsDB->fetchArray($result);
-        if(!$have_data){
-            $event=$year.'年'.$month.'月份，高關懷學生通報';
-            $sql = "insert into `$tbl` (
-                `year`,`month`,`event_date`,`event`,`comment`,
-                `update_user`,`update_date`) 
-                values(
-                '{$year}','{$month}',now(),'{$event}','',
-                '{$uid}',now()
-                )";
-            // echo($sql); 
-            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        }else{
-            $sql = "update " . $tbl . " set `event_date`=now()  
-                    where `year`='{$year}'
-                    AND `month`='{$month}'
-                    ";
-            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        }
-        // die(var_dump(!$have_data));
 
         $tbl = $xoopsDB->prefix('yy_high_care');
         $sql = "insert into `$tbl` (
@@ -1824,6 +1772,7 @@ switch ($op) {
     // 該月高關懷名單
     function high_care_mon($hi_care=[]){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        $myts = MyTextSanitizer::getInstance();
         $SchoolSet= new SchoolSet;
         if(!(power_chk("beck_iscore", "4") or $xoopsUser->isAdmin())){
             redirect_header('tchstu_mag.php', 2, '無 high_care_mon 權限! error:2105272100');
@@ -1833,8 +1782,17 @@ switch ($op) {
         $now_month = date('m');
         $hi_care['year']=($hi_care['year']=='')?(string)$taiwan_year:$hi_care['year'];
         $hi_care['month']=($hi_care['month']=='')?(string)$now_month:$hi_care['month'];
-        // $taiwan_year_v = str_pad($taiwan_year,3,'0',STR_PAD_LEFT);//將數字由左邊補零至3位數
-        $now_year_ary = [$taiwan_year-2=>(string)$taiwan_year-2,$taiwan_year-1=>(string)($taiwan_year-1),$taiwan_year=>(string)($taiwan_year)];
+
+        $tbl      = $xoopsDB->prefix('yy_high_care');
+        $sql      = "SELECT distinct `year` FROM $tbl ORDER BY `year`" ;
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($year_ary= $xoopsDB->fetchArray($result)){
+            $years['year']= $myts->htmlSpecialChars($year_ary['year']);
+            $now_year_ary [$years['year']] = $years['year'];
+        }
+        asort($now_year_ary);
+        // var_dump($all);die();
+
         // 通報時間列表
         $year_sel=Get_select_opt_htm($now_year_ary,$hi_care['year'],'0');
         $xoopsTpl->assign('year_sel', $year_sel);
@@ -1843,7 +1801,6 @@ switch ($op) {
         $xoopsTpl->assign('month_sel', $month_sel);
         $xoopsTpl->assign('hi_care', $hi_care);
         // die(var_dump($hi_care));
-        $myts = MyTextSanitizer::getInstance();
 
         $tbl      = $xoopsDB->prefix('yy_high_care');
         $sql      = "SELECT  * FROM $tbl 
