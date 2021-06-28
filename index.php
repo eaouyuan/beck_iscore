@@ -86,7 +86,8 @@ switch ($op) {
         if($fileup=='1'){
             header("location:index.php?op=announcement_form&sn={$sn}");
         }else{
-            header("location:index.php?op=announcement_show&sn={$sn}");
+            // header("location:index.php?op=announcement_show&sn={$sn}");
+            header("location:index.php?op=announcement_list");
         }
         exit;//離開，結束程式
 
