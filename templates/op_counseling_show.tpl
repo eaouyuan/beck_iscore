@@ -31,12 +31,10 @@
                 <th class="table-info" scope="row">面談地點</th>
                 <th colspan="7" class="text-left">
                     <div class="row">
-                        <{foreach from=$opt_result[$its.sn].AdoptionInterviewLocation key=ind item=optdata}>
-                            <{$optdata}>
-                        <{/foreach}>
+                        <{$its.AdoptionLocation_htm}>
                     </div>
                     <div class="col row">
-                        <{$opt_other[$its.sn].AdoptionInterviewLocation}>
+                        <{$its.AdoptionLocation_oth_htm}>
                     </div>
                 </th>
             </tr>
@@ -44,12 +42,10 @@
                 <th class="table-info" scope="row">輔導重點</th>
                 <th colspan="7" class="text-left">
                     <div class="row">
-                        <{foreach from=$opt_result[$its.sn].CounselingFocus  key=ind item=optdata}>
-                            <{$optdata}>
-                        <{/foreach}>
+                        <{$its.CounselingFocus_htm}>
                     </div>
                     <div class="col row">
-                        <{$opt_other[$its.sn].CounselingFocus}>
+                        <{$its.CounselingFocus_oth_htm}>
                     </div>
                 </th>
             </tr>
@@ -104,12 +100,10 @@
                 <th class="text-center" scope="row">面談地點</th>
                 <th colspan="3" class="text-left">
                     <div class="row">
-                        <{foreach from=$opt_result[$its.sn].AdoptionInterviewLocation  key=ind item=optdata}>
-                            <{$optdata}>
-                        <{/foreach}>
+                        <{$its.AdoptionLocation_htm}>
                     </div>
                     <div class="mrl2">
-                        <{$opt_other[$its.sn].AdoptionInterviewLocation}>
+                        <{$its.AdoptionLocation_oth_htm}>
                     </div>
                 </th>
             </tr>
@@ -117,12 +111,10 @@
                 <th class="text-center" scope="row">輔導重點</th>
                 <th colspan="3" class="text-left">
                     <div class="row">
-                        <{foreach from=$opt_result[$its.sn].CounselingFocus  key=ind item=optdata}>
-                            <{$optdata}>
-                        <{/foreach}>
+                        <{$its.CounselingFocus_htm}>
                     </div>
                     <div class="mrl2">
-                        <{$opt_other[$its.sn].CounselingFocus}>
+                        <{$its.CounselingFocus_oth_htm}>
                     </div>
                 </th>
             </tr>

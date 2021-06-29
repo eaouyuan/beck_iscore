@@ -21,7 +21,7 @@
                     <{$chk.location}>
                     <div></div>
                     <div class="form-check form-check-inline col">
-                        <input class="form-check-input" type="checkbox" name="AdoptionInterviewLocation[]" id="AdoptionInterviewLocation_99" value="99"<{$chk_99.AdoptionInterviewLocation}>>
+                        <input class="form-check-input" type="radio" name="AdoptionInterviewLocation" id="AdoptionInterviewLocation_99" value="99"<{$chk_99.AdoptionInterviewLocation}>>
                         <label class="form-check-label mr-2" for="AdoptionInterviewLocation_99">其他</label>
                         <input type="text" class="form-control col" name="location" id="location" value="<{$info.location}>">
                     </div>
