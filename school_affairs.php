@@ -396,7 +396,7 @@ switch ($op) {
         }
 
         // 學生列表
-        $stu_list_ary=$SchoolSet->stu_name;
+        $stu_list_ary=$SchoolSet->stu_anonymous;
         $stu_list_ary=array_diff_key($stu_list_ary,$counseling);
 
         $stu_sel=Get_select_opt_htm($stu_list_ary,'','0');
