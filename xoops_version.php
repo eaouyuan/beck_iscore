@@ -57,7 +57,6 @@ $modversion['tables'][]         = 'yy_high_care';              //高關懷名單
 $modversion['tables'][]         = 'yy_config';                 //config
 $modversion['tables'][]         = 'yy_tea_counseling';         //教師認輔設定
 $modversion['tables'][]         = 'yy_counseling_rec';         //認輔紀錄
-$modversion['tables'][]         = 'yy_counseling_option';      //教師認輔選項
 $modversion['tables'][]         = 'yy_reward_punishment';      //學生獎懲紀錄
 $modversion['tables'][]         = 'yy_absence_time';           //出缺勤晨日夜間明細
 $modversion['tables'][]         = 'yy_mentor_comment';         //導師評語

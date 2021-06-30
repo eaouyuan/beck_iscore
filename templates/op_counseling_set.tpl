@@ -1,11 +1,31 @@
 <form name="counseling_set" id="counseling_set" action="school_affairs.php" method="post">
-    <h2 class="mb-3 alert alert-success text-center"> <{$sem_year}> 學年度 第 <{$sem_term}> 學期 ─ <{if $tea_name}>「<{$tea_name}>」<{/if}> 認輔教師設定</h2>
+    <h2 class="mb-3 alert alert-success text-center"> <{$pars.cos_year}> 學年度 第 <{$pars.cos_term}> 學期 ─ <{if $tea_name}>「<{$tea_name}>」<{/if}> 認輔教師設定</h2>
+    <div class="form-group col row">
+        <label for="cos_year" class="col-form-label px-0">學年度：</label>
+        <div class="col-1 text-left px-0 mr-3">
+            <select class="custom-select" name="cos_year" id="cos_year">
+                <{$sems_year_htm}>
+            </select>
+        </div>
+        <label for="cos_term" class="col-form-label text-center px-0">學期：</label>
+        <div class="col-1 text-left px-0 mr-3">
+            <select class="custom-select" name="cos_term" id="cos_term">
+                <{$sems_term_htm}>
+            </select>
+        </div>
+        <div>
+            <input name="op" id="op" value="<{$op}>" type="hidden">
+        </div>
+        <button type="button" id="ac_smes" class="btn btn-outline-success col-0.5  mr-3">目前學期</button>
+
+    </div>
+
     <div class="row">
         <div class="col-4">
             <h3 class="text-center bg-info">教師列表</h3>
-            <select class="custom-select custom-select-lg mb-3 dropdown-menu1" size=15
-            onchange="location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=counseling_set&sn=' + this.value">
-                <{$tea_sel}>
+            <select class="custom-select custom-select-lg mb-3 dropdown-menu1" size=15 name="sn" id="sn">
+            <!-- onchange="location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=counseling_set&sn=' + this.value"> -->
+                <{if $show_tea}><{$tea_sel}><{/if}>
             </select>
         </div>
     
@@ -24,8 +44,6 @@
         
     </div>
     <div>
-        <input name="year" id="year" value="<{$sem_year}>" type="hidden">
-        <input name="term" id="term" value="<{$sem_term}>" type="hidden">
         <input name="uid" id="uid" value="<{$uid}>" type="hidden">
         <input name="op" id="op" value="<{$op}>" type="hidden">
         <{if $sn}> <input name="sn" id="sn" value="<{$sn}>" type="hidden"> <{/if}>
@@ -78,15 +96,31 @@
                 d.remove(d.selectedIndex);     
             }           
 
-            // var text_val = $('option:selected', this).text(); //to get selected text
-            // var id = $(this).val();
-            // $('#s_list').append($('<option>', {
-            //     value: id,
-            //     text: text_val,
-            //     selected:true
-            // }));
-            // var x = document.getElementById("d_list");
-            // x.remove(x.selectedIndex);
+        });
+        $('#cos_year').change(function(e){
+            cos_year=$('#cos_year').val();
+            cos_term=$('#cos_term').val('');
+            location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=counseling_set&cos_year='+cos_year;
+            // document.forms["counseling_set"].submit();
+        });
+        $('#cos_term').change(function(e){
+            cos_year=$('#cos_year').val();
+            cos_term=$('#cos_term').val();
+            location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=counseling_set&cos_year='+cos_year+'&cos_term='+cos_term;
+            // document.forms["counseling_set"].submit();
+        });
+        $('#sn').click(function(e){
+            sn=$(this).val();
+            cos_year=$('#cos_year').val();
+            cos_term=$('#cos_term').val();
+            location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=counseling_set&cos_year='+cos_year+'&cos_term='+cos_term+'&sn='+sn;
+            // document.forms["counseling_set"].submit();
+        });
+        $("#ac_smes").click(function() {
+            console.log(<{$sem_term}>);
+            $('#cos_year').val(<{$sem_year}>);
+            $('#cos_term').val(<{$sem_term}>);
+            location.href='<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=counseling_set&cos_year=<{$sem_year}>&cos_term=<{$sem_term}>';
         });
     });
     function selectAll(){

@@ -43,7 +43,9 @@ class SchoolSet
     public $classid_stuid; //[class id][stu id]=王小明
     public $stu_name; //  //[stu sn]=name   , 學生sn map name
     public $stu_anonymous; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 學生匿名
+    public $stu_anonymous_all; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 所有學生匿名
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
+    public $stu_sn_classid_all; //  [stu sn]=class id  , 學生sn map 班級id  所有學生對班級ID
     public $stu_dep; //[stu sn]= dep id 學生 學程
     public $stu_id; // 學生 學號
     public $month_ary; // 月份陣列
@@ -930,10 +932,27 @@ class SchoolSet
             $classname_stuid[$user['class_name']??'未編班'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
             $classid_stuid[$user['class_id']??'0'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
         }
+
+        $tb1 = $xoopsDB->prefix('yy_student');
+        $tb2 = $xoopsDB->prefix('yy_class');
+        $sql = "SELECT *,$tb1.sn as stusn FROM $tb1 
+                LEFT JOIN $tb2 ON $tb1.class_id =$tb2.sn
+                ORDER BY $tb1.sn DESC
+                Limit 150 ";
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($user= $xoopsDB->fetchArray($result)){
+            $stu_anonymous_all[$user['stusn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
+            $stu_sn_classid_all[$user['stusn']] = $user['class_id'];  // [stu sn]= class id
+
+        }
         // var_dump($major_stu);die();
+
+
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;
         $this->stu_anonymous=$stu_anonymous;
+        $this->stu_anonymous_all=$stu_anonymous_all;
+        $this->stu_sn_classid_all=$stu_sn_classid_all;
         $this->stu_sn_classid=$stu_sn_classid;
         $this->stu_dep=$stu_dep;
         $this->stu_id=$stu_id;

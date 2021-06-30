@@ -1300,9 +1300,9 @@ switch ($op) {
             redirect_header('tchstu_mag.php', 2, '無 counseling_show 權限! error:21060120942');
         }
 
-        $info['stu_name']=$SchoolSet->stu_anonymous[$pars['stu_sn']];
+        $info['stu_name']=$SchoolSet->stu_anonymous_all[$pars['stu_sn']];
         $info['tea_name']=$SchoolSet->uid2name[$pars['tea_uid']];
-        $info['class']=$SchoolSet->class_name[$SchoolSet->stu_sn_classid[$pars['stu_sn']]];
+        $info['class']=$SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$pars['stu_sn']]];
         $info['stu_sn']=$pars['stu_sn'];
         $info['tea_uid']=$pars['tea_uid'];
         $info['year']=$pars['year'];
@@ -1417,73 +1417,90 @@ switch ($op) {
         $pars['cos_year']=($pars['cos_year']=='')?(string)$SchoolSet->sem_year:$pars['cos_year'];
         $pars['cos_term']=($pars['cos_term']=='')?(string)$SchoolSet->sem_term:$pars['cos_term'];
 
+
         // 學年度select
-        foreach ($SchoolSet->all_sems as $k=>$v){
-            $sems_year[$v['year']]=$v['year'];
+        $tbl      = $xoopsDB->prefix('yy_counseling_rec');
+        $sql      = "SELECT distinct `year` , `term`  FROM $tbl ORDER BY `year`" ;
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($year_ary= $xoopsDB->fetchArray($result)){
+            $sel['year'][$year_ary['year']]= $year_ary['year'];
+            $sel['term'][$year_ary['year']][$year_ary['term']]= $year_ary['term'];
         }
-        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'1');
+
+        asort($sel['year']);
+        asort($sel['term']);
+
+        // 學年度
+        $sems_year_htm=Get_select_opt_htm($sel['year'],$pars['cos_year'],'1');
         $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
         // 學期
-        $terms=['1'=>'1','2'=>'2'];
-        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],1);
+        $sems_term_htm=Get_select_opt_htm($sel['term'][$pars['cos_year']],$pars['cos_term'],1);
         $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
 
-        $tbl = $xoopsDB->prefix('yy_tea_counseling');
-        $tb2 = $xoopsDB->prefix('yy_student');
-        $tb3 = $xoopsDB->prefix('yy_class');
+        $tbl = $xoopsDB->prefix('yy_counseling_rec');
         if($counseling_manage){
-            $sql = "SELECT  `year`,`term`,`tea_uid`,`student_sn`,`stu_anonymous`,`class_id`,`class_name`
-                    FROM $tbl LEFT JOIN $tb2 on $tbl.student_sn =$tb2.sn LEFT JOIN $tb3 on $tb2.class_id=$tb3.sn";
+            $sql = "SELECT `year`,`term`,`student_sn`,count(sn) count ,max(tea_uid) tea_uid  FROM $tbl ";
             if($pars['cos_year']!=''){
                 $sql.=" WHERE `year`= {$pars['cos_year']} ";
             }
             if($pars['cos_term']!=''){
                 $sql.=" AND `term`= {$pars['cos_term']} ";
             }
-            $sql.=" ORDER BY `tea_uid` , `year` DESC,`term`,`student_sn`" ;
-        }else{
-            $sql = "SELECT  * FROM $tbl LEFT join $tb2 on $tbl.student_sn =$tb2.sn left join $tb3 on $tb2.class_id=$tb3.sn
-                    WHERE `tea_uid`='{$xoopsUser->uid()}'
-                    ORDER BY `tea_uid` , `year` DESC,`term`,`student_sn`" ;
-        }
-        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        $PageBar = getPageBar($sql, 60, 10);
-        $bar     = $PageBar['bar'];
-        $sql     = $PageBar['sql'];
-        $total   = $PageBar['total'];
+            $sql.=" GROUP BY `year`,`term`,`student_sn` ORDER BY `year` DESC,`term`,`tea_uid`  " ;
 
-        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all = $data = array();
-        while($ru= $xoopsDB->fetchArray($result)){
-            $data['year']          = $myts->htmlSpecialChars($ru['year']);
-            $data['term']          = $myts->htmlSpecialChars($ru['term']);
-            $data['tea_uid']       = $myts->htmlSpecialChars($ru['tea_uid']);
-            $data['tea_name']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$ru['tea_uid']]);
-            $data['student_sn']    = $myts->htmlSpecialChars($ru['student_sn']);
-            $data['stu_anonymous'] = $myts->htmlSpecialChars($ru['stu_anonymous']);
-            $data['class_name']    = $myts->htmlSpecialChars($ru['class_name']);
-            $data['class_id']      = $myts->htmlSpecialChars($ru['class_id']);
-            $all  [] = $data;
-        }
-
-        $i=0;
-        foreach($all as $key=> $val){
-            $tbl = $xoopsDB->prefix('yy_counseling_rec');
-            $sql = "SELECT count(sn) as record_sum FROM $tbl
-                    WHERE  `year`='{$val['year']}' 
-                    AND  `term`='{$val['term']}'
-                    AND  `student_sn`='{$val['student_sn']}'
-                    AND  `tea_uid`='{$val['tea_uid']}'
-                    ";
-
-            // echo($sql);die();
+            //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+            $PageBar = getPageBar($sql, 60, 10);
+            $bar     = $PageBar['bar'];
+            $sql     = $PageBar['sql'];
+            $total   = $PageBar['total'];
 
             $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            $da= $xoopsDB->fetchArray($result);
-            $all[$i]['record_sum']= $da['record_sum'];
-            $i++;
+            $all = $data = array();
+            while($ru= $xoopsDB->fetchArray($result)){
+                $data['year']          = $myts->htmlSpecialChars($ru['year']);
+                $data['term']          = $myts->htmlSpecialChars($ru['term']);
+                $data['tea_uid']       = $myts->htmlSpecialChars($ru['tea_uid']);
+                $data['tea_name']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$ru['tea_uid']]);
+                $data['student_sn']    = $myts->htmlSpecialChars($ru['student_sn']);
+                $data['stu_anonymous'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$ru['student_sn']]);
+                $data['class_name']    = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$ru['student_sn']]]);
+                $data['class_id']      = $myts->htmlSpecialChars($SchoolSet->stu_sn_classid_all[$ru['student_sn']]);
+                $data['count']         = $myts->htmlSpecialChars($ru['count']);
+                $all  [] = $data;
+            }
+        }else{
+            $tbl = $xoopsDB->prefix('yy_tea_counseling');
+            $sql = "SELECT  * FROM $tbl 
+                    WHERE `tea_uid`='{$xoopsUser->uid()}' 
+                    ORDER BY `year` DESC, `term` DESC, `student_sn`"; 
+            $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            while($ru= $xoopsDB->fetchArray($result)){
+                $data['year']          = $myts->htmlSpecialChars($ru['year']);
+                $data['term']          = $myts->htmlSpecialChars($ru['term']);
+                $data['tea_uid']       = $myts->htmlSpecialChars($ru['tea_uid']);
+                $data['tea_name']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$ru['tea_uid']]);
+                $data['student_sn']    = $myts->htmlSpecialChars($ru['student_sn']);
+                $data['stu_anonymous'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$ru['student_sn']]);
+                $data['class_name']    = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$ru['student_sn']]]);
+                $data['class_id']      = $myts->htmlSpecialChars($SchoolSet->stu_sn_classid_all[$ru['student_sn']]);
+                $all  [] = $data;
+            }
+            $i=0;
+            $tbl = $xoopsDB->prefix('yy_counseling_rec');
+            foreach($all as $k =>$v){
+                $sql = "SELECT count(sn) count  FROM $tbl 
+                        WHERE `year`= {$v['year']} 
+                        AND `term`= {$v['term']}
+                        AND `student_sn`= {$v['student_sn']}
+                        GROUP BY `year`,`term`,`student_sn`
+                ";
+                $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+                $ru= $xoopsDB->fetchArray($result);
+                $all[$i]['count']=$ru['count']??'0';
+                $i++;
+            }
+            // var_dump($all);die();
         }
-        // var_dump($all);die();
 
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);

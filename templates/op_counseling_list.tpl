@@ -46,7 +46,7 @@
             <th class="text-center"><{$its.term}></th>
             <th class="text-center"><{$its.stu_anonymous}></th>
             <th class="text-center"><{$its.class_name}></th>
-            <th class="text-center"><{$its.record_sum}></th>
+            <th class="text-center"><{$its.count}></th>
             <th class="text-center">
                 <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=counseling_show&year=<{$its.year}>&term=<{$its.term}>&stu_sn=<{$its.student_sn}>&tea_uid=<{$its.tea_uid}>" class="btn btn-primary btn-sm mr-2">觀看</a>
             </th>

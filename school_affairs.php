@@ -25,6 +25,8 @@ $g2p=Request::getInt('g2p');
 $cfg['gpname'] = Request::getString('gpname');
 $cfg['desc']   = Request::getString('desc');
 $cfg['search'] = Request::getString('search');
+$cou['cos_year'] = Request::getString('cos_year');
+$cou['cos_term'] = Request::getString('cos_term');
 
 // var_dump($_POST);
 // die(var_dump($_SESSION));
@@ -231,11 +233,11 @@ switch ($op) {
         exit;//離開，結束程式
 // 認輔設定
     case "counseling_set":
-        counseling_set($sn);
+        counseling_set($sn,$cou);
         break;//跳出迴圈,往下執行
     case "counseling_set_update":
-        counseling_set_update($sn);
-        header("location:school_affairs.php?op=counseling_set&sn={$sn}");
+        $re=counseling_set_update($sn);
+        header("location:school_affairs.php?op=counseling_set&cos_year={$re['year']}&cos_term={$re['term']}&sn={$sn}");
         exit;//離開，結束程式
 
 // 權限管理
@@ -289,8 +291,8 @@ switch ($op) {
             $tbl = $xoopsDB->prefix('yy_tea_counseling');
             // 學生在其它認輔教師紀錄先刪
             $sql = "DELETE FROM `$tbl`
-            WHERE `year` = '{$year}'
-            AND `term` = '{$term}'
+            WHERE `year` = '{$cos_year}'
+            AND `term` = '{$cos_term}'
             AND `student_sn` = '{$stusn}'
             ";
             $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -299,8 +301,8 @@ switch ($op) {
         // 再刪除此教師所有認輔學生
         $tbl = $xoopsDB->prefix('yy_tea_counseling');
         $sql = "DELETE FROM `$tbl`
-        WHERE `year` = '{$year}'
-        AND `term` = '{$term}'
+        WHERE `year` = '{$cos_year}'
+        AND `term` = '{$cos_term}'
         AND `tea_uid` = '{$sn}'
         ";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -311,16 +313,18 @@ switch ($op) {
                 `year`,`term`,`tea_uid`,`student_sn`,`update_user`,
                 `update_date`) 
                 values(
-                '{$year}','{$term}','{$sn}','{$stusn}','{$uid}',
+                '{$cos_year}','{$cos_term}','{$sn}','{$stusn}','{$uid}',
                 now()
                 )";
             $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         }
-        
-        return true;
+        $re['year']=$cos_year;
+        $re['term']=$cos_term;
+        $re['sn']=$sn;
+        return $re;
     }
     // 認輔教師設定
-    function counseling_set($sn){
+    function counseling_set($sn,$pars){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
         $SchoolSet= new SchoolSet;
         $myts = MyTextSanitizer::getInstance();
@@ -330,18 +334,40 @@ switch ($op) {
         if(!(power_chk("beck_iscore", "5") or $xoopsUser->isAdmin())){
             redirect_header('school_affairs.php?op=', 3, '無 counseling_set 權限!error:2106070953');
         }
+
+        $tbl      = $xoopsDB->prefix('yy_semester');
+        $sql      = "SELECT distinct `year` , `term`  FROM $tbl ORDER BY `year`" ;
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($year_ary= $xoopsDB->fetchArray($result)){
+            $sel['year'][$year_ary['year']]= $year_ary['year'];
+            $sel['term'][$year_ary['year']][$year_ary['term']]= $year_ary['term'];
+        }
+ 
         $xoopsTpl->assign('sem_year', $SchoolSet->sem_year);
         $xoopsTpl->assign('sem_term', $SchoolSet->sem_term);
+
+        // 學年度
+        $sems_year_htm=Get_select_opt_htm($sel['year'],$pars['cos_year'],'1');
+        $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
+        // 學期
+        $sems_term_htm=Get_select_opt_htm($sel['term'][$pars['cos_year']],$pars['cos_term'],1);
+        $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
         
+        $xoopsTpl->assign('pars', $pars);
+        // 顯示教師列表
+        if($pars['cos_year']!='' and $pars['cos_term']!=''){
+            $xoopsTpl->assign('show_tea', true);
+        }
+
         $teachers=[];
         foreach($SchoolSet->users as $k=>$v){
             $teachers[$v['uid']]=$v['name'];
         }
-        // 列出所有認輔教師
+        // 列出所有認輔教師，將有認輔的老師加底色
         $tbl = $xoopsDB->prefix('yy_tea_counseling');
         $sql = "SELECT distinct tea_uid FROM $tbl 
-                WHERE `year` = '{$SchoolSet->sem_year}'
-                AND `term` = '{$SchoolSet->sem_term}'
+                WHERE `year` = '{$pars['cos_year']}'
+                AND `term` = '{$pars['cos_term']}'
                 ";
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($data= $xoopsDB->fetchArray($result)){
@@ -356,8 +382,8 @@ switch ($op) {
         if($sn){
             $tbl = $xoopsDB->prefix('yy_tea_counseling');
             $sql = "SELECT * FROM $tbl 
-                    WHERE `year` = '{$SchoolSet->sem_year}'
-                    AND `term` = '{$SchoolSet->sem_term}'
+                    WHERE `year` = '{$pars['cos_year']}'
+                    AND `term` = '{$pars['cos_term']}'
                     AND `tea_uid` = '{$sn}'";
             $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             while($data= $xoopsDB->fetchArray($result)){
@@ -378,6 +404,7 @@ switch ($op) {
         // var_dump($stu_list_ary);die();
 
         $xoopsTpl->assign('uid', $xoopsUser->uid());
+        // $xoopsTpl->assign('op', 'counseling_set');
         $xoopsTpl->assign('op', 'counseling_set_update');
 
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
