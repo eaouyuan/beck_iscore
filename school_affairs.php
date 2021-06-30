@@ -387,7 +387,7 @@ switch ($op) {
                     AND `tea_uid` = '{$sn}'";
             $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             while($data= $xoopsDB->fetchArray($result)){
-                $counseling[$data['student_sn']] = $SchoolSet->stu_name[$data['student_sn']];
+                $counseling[$data['student_sn']] = $SchoolSet->stu_anonymous[$data['student_sn']];
             }
             $xoopsTpl->assign('sn', $sn);
             // 認輔列表
