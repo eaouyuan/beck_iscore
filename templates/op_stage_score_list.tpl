@@ -35,7 +35,11 @@
                 <th scope="col" class="text-center" width="7%">平時成績<br>(<{$course.normal_exam_rate}>%)</th>
                 <th scope="col" class="text-center" width="7%">段考成績<br>(<{$course.section_exam_rate}>%)</th>
                 <th scope="col" class="text-center" width="7%">系統計算總成績</th>
-                <th scope="col" class="text-center" width="7%">教師最終總成績<button class="btn btn-primary btn-sm mr-1" type="button" id="copy_grade">同左</button></th>
+                <th scope="col" class="text-center" width="7%">教師最終總成績
+                    <{if $desc_addEdit}>
+                        <button class="btn btn-primary btn-sm mr-1" type="button" id="copy_grade">同左</button>
+                    <{/if}>
+                </th>
                 <th scope="col" class="text-center" width="18%">質性<br>描述</th>
             </tr>
         </thead>
@@ -79,10 +83,10 @@
         <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
         <{$XOOPS_TOKEN}>
     </div>
-
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
-        <!-- <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
+        <{if $desc_addEdit}>
+            <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <{/if}>
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id=<{$sscore.dep_id}>">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
         <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>

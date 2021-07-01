@@ -534,7 +534,7 @@ class SchoolSet
                 $all[$stu_sn]['usum']='-';
             }else{
                 $all[$stu_sn]['usum']=$sum;
-                $all[$stu_sn]['uavg']=round((float)(($sum/$i)*(float)$score_rate['normal_exam']),2);
+                $all[$stu_sn]['uavg']=round((float)(($sum/$i)*(float)$score_rate['normal_exam']),1);
             }
         }
         
@@ -566,7 +566,7 @@ class SchoolSet
                 $all[$stu_sn]['ssum']='-';
             }else{
                 $all[$stu_sn]['ssum']=$sum;
-                $all[$stu_sn]['savg']=round((float)(($sum/$i)*(float)$score_rate['section_exam']),2);
+                $all[$stu_sn]['savg']=round((float)(($sum/$i)*(float)$score_rate['section_exam']),1);
             }
         }
         // var_dump($all);die();
@@ -580,13 +580,26 @@ class SchoolSet
         }
 
 
-        // 刪除學生 總成績
+        // 先撈出描述，再刪除學生 總成績
         $tbl = $xoopsDB->prefix('yy_stage_sum');
+        $sql = "SELECT *  FROM $tbl 
+                    Where course_id = '{$coursid}'
+                    ORDER BY  `student_sn`
+                ";
+        // echo($sql);die();
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($data= $xoopsDB->fetchArray($result)){
+            $stu_old_desc[$data['student_sn']]['desc']= $data['description'];
+        }
+
         $sql = "DELETE FROM `$tbl` WHERE `course_id` = '{$coursid}'";
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         // die(var_dump($stu_desc));
         
+        if(count($stu_desc)==0){
+            $stu_desc=$stu_old_desc;
+        }
 
         // 新增學生總成績
         $tbl = $xoopsDB->prefix('yy_stage_sum');
