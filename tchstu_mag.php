@@ -1426,16 +1426,34 @@ switch ($op) {
             $sel['year'][$year_ary['year']]= $year_ary['year'];
             $sel['term'][$year_ary['year']][$year_ary['term']]= $year_ary['term'];
         }
+        
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        // $exam_year_htm=Get_select_opt_htm($sems_year,$exam_date['exam_year'],'1');
+        // $xoopsTpl->assign('exam_year_htm', $exam_year_htm);
 
-        asort($sel['year']);
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        // $exam_term_htm=Get_select_opt_htm($terms,$exam_date['exam_term'],1);
+        // $xoopsTpl->assign('exam_term_htm', $exam_term_htm);
+
+
+        asort($sems_year);
         asort($sel['term']);
 
         // 學年度
-        $sems_year_htm=Get_select_opt_htm($sel['year'],$pars['cos_year'],'1');
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'1');
         $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
         // 學期
-        $sems_term_htm=Get_select_opt_htm($sel['term'][$pars['cos_year']],$pars['cos_term'],1);
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],1);
         $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
+        // // 學年度
+        // $sems_year_htm=Get_select_opt_htm($sel['year'],$pars['cos_year'],'1');
+        // $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
+        // // 學期
+        // $sems_term_htm=Get_select_opt_htm($sel['term'][$pars['cos_year']],$pars['cos_term'],1);
+        // $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
 
         
         if($counseling_manage){
@@ -1443,7 +1461,7 @@ switch ($op) {
             $sql = "SELECT  * FROM $tbl 
                     WHERE `year`='{$pars['cos_year']}' 
                     AND  `term`='{$pars['cos_term']}' 
-                    ORDER BY `year` DESC, `term` DESC, `student_sn`"; 
+                    ORDER BY `year` DESC, `term` DESC, `tea_uid`"; 
 
             //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
             $PageBar = getPageBar($sql, 60, 10);
