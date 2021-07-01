@@ -129,7 +129,7 @@
                 <{/foreach}>
                 <th class="text-center"><{$v1.f_usual}></th>
                 <th class="text-center"><{$v1.f_stage}></th>
-                <th class="text-center"><{$v1.f_sum}></th>
+                <th class="text-center"><{$v1.tea_input_score}></th>
                 <th class="text-center"><{$v1.desc}></th>
             </tr>
             <{/foreach}>
