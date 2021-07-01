@@ -1,6 +1,6 @@
-<h2 class="mb-3">學期總成績 ─ 列表</h2>
+<h2 class="mb-3 notprint">學期總成績 ─ 列表</h2>
 
-<form name="course_list" id="course_list" action="tchstu_mag.php" method="post">
+<form name="term_total_score_list" id="term_total_score_list" action="tchstu_mag.php" method="post">
     <div class="col">
         <div class="form-group row">
             <label for="cos_year" class="col-0.5 col-form-label px-0">學年度：</label>
@@ -25,6 +25,7 @@
             <div class="ml-auto row">
                 <!-- <{if $show_ac}><button type="button" id="re_clu" class="btn btn-outline-primary col-0.5 mb-2 mr-3">重新計算</button><{/if}> -->
                 <input name="op" id="op" value="<{$op}>" type="hidden">
+                <button type="button" class="btn btn-success col-0.5 mb-2 mr-3" id="print_web"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
                 <button type="button" id="clear" class="btn btn-outline-dark col-0.5 mb-2 mr-3">清空</button>
                 <button type="button" id="ac_smes" class="btn btn btn-success col-0.5 mb-2 mr-3">目前學期</button>
             </div>
@@ -33,8 +34,6 @@
         </div>
 
     </div> 
-
-</form>
 <{if $all}>
     <table class="table table-bordered table-sm table-hover table-shadow">
         <thead class="table-info">
@@ -102,8 +101,61 @@
         尚無內容
     </div>
 <{/if}>
+</form>
+<div id="printArea">
+    <h2 class="text-center"> <{$pars.cos_year}> 學年度 第<{$pars.cos_term}>學期 <{$pars.dep_name}> 學期總成績 </h2>
+    <table>
+        <thead>
+            <tr>
+                <th width="2%" rowspan="2" class="text-center">序號</th>
+                <th width="2%" rowspan="2" class="text-center">班級</th>
+                <th width="6%"             class="text-center">姓名</th>
+                <{foreach from=$course_groupname.grpname_sumcred key=grp_name item=sumcred}>
+                    <th width="2%" class="text-center"><{$grp_name}></th>
+                <{/foreach}>
+                <th width="2%"             class="text-center">修得學分</th>
+                <th width="2%" rowspan="2" class="text-center">總分</th>
+                <th width="2%" rowspan="2" class="text-center">平均</th>
+                <th width="10%" rowspan="2" class="text-center">獎勵方式</th>
+            </tr>
+            <tr>
+                <th scope="col" class="text-center">學分</th>
+                <{foreach from=$course_groupname.grpname_sumcred key=grp_name item=sumcred}>
+                    <th class="text-center"><{$sumcred}></th>
+                <{/foreach}>
+                <th class="text-center"><{$course_groupname.total_cred}></th>
+            </tr>
+        </thead>
 
 
+        <tbody>
+    <{foreach from=$all key=i item=its}>
+        <tr> 
+            <th class="text-center"><{$its.order}></th>
+            <th class="text-center"><{$its.class_name}></th>
+            <th class="text-center"><{$its.stu_anonymous}></th>
+            <{foreach from=$its.scores key=grpname item=course_total_avg}>
+                <{if $course_total_avg<60 and $course_total_avg!='-'}><th><{$course_total_avg}></th>
+                <{else}><th class="text-center"><{$course_total_avg}></th><{/if}>
+            <{/foreach}>
+            <th class="text-center"><{$its.sum_credits}></td>
+            <th class="text-center"><{$its.total_score}></td>
+            <th class="text-center"><{$its.total_avg}></td>
+            <th class="text-center"><{$its.reward_method}></td>
+        </tr>
+    <{/foreach}>
+        </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+</div>
 <script type="text/javascript">
     $(document).ready(function($){
         $("#clear").click(function() {
@@ -131,6 +183,10 @@
             r=get_pars();
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=term_total_score_list&cos_year='+r.year+'&cos_term='+r.term+'&dep_id='+r.dep;
         });
+        $("#print_web").click(function(){
+            onprint();
+            return false;
+        })
 
     });
     function get_pars(){
@@ -141,11 +197,19 @@
         return re;
     }
 
+    function onprint() {
+        window.print();
+        return false;
+    }
 
 
 </script>
 
 <style type="text/css">
+
+
+@media screen 
+{
     table th, .table th ,.table td, table.table-bordered > thead > tr > th{
         vertical-align:middle;
         text-align:center;
@@ -162,4 +226,42 @@
         text-align:center;
     }
     [data-href] { cursor: pointer; }
+}
+
+@page
+{
+    size:A4;
+    margin:10mm;
+    size: landscape; 
+}
+
+
+@media print 
+{
+
+    #printArea { 
+        font-size: 10px;
+    }
+    table th, th, td {
+    /* table,table th,table td,th,td{ */
+        vertical-align:middle;
+        text-align:center;
+        border: 1px solid black;
+    }   
+
+
+}
+
+
+
+    
+</style>
+
+<style type="text/css" media="screen">
+    /* 顯示時隱藏 */
+    #printArea { display: none; }
+</style>
+<style type="text/css" media="print">
+    /* 列印時隱藏 */
+    #term_total_score_list,.notprint,#footer-container-display,#nav-container { display: none; }
 </style>

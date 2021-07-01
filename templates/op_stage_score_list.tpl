@@ -256,8 +256,7 @@
 @page  {
     size:A4;
     margin:10mm;
-
-   
+    size: landscape; /* 橫向 */
 }
 @media print 
 {

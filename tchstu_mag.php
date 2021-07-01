@@ -1877,6 +1877,7 @@ switch ($op) {
         foreach ($SchoolSet->dept as $k=>$v){
             $major_name[$v['sn']]=$v['dep_name'];
         }
+        $pars['dep_name']=$SchoolSet->depsnname[$pars['dep_id']];
         $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
         $xoopsTpl->assign('major_htm', $major_htm);
         $xoopsTpl->assign('pars', $pars);
