@@ -130,6 +130,8 @@
     <{/foreach}>
         </tbody>
     </table>
+    <h3 class="text-center"><{$summary_text}></h3>
+
 <{else}>
     <div class="alert alert-danger">尚無內容</div>
 <{/if}>
