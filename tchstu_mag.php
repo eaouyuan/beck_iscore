@@ -1318,7 +1318,7 @@ switch ($op) {
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $stu = $xoopsDB->fetchArray($result);
         
-        if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+        if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin() or power_chk("beck_iscore", "5"))){
             redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106131027');
         }
 
