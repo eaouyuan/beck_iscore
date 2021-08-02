@@ -39,7 +39,7 @@
                 <th  class="table-info" scope="row">原就讀學校</th>
                 <td><input type="text" class="form-control validate[required]" name="orig_school" id="orig_school" value="<{$stu.orig_school}>"></td>
                 <th  class="table-info" scope="row">原就讀學校年級</th>
-                <td><select class="custom-select" name="grade" id="grade"><{$stu.orig_grade_htm}></select></td>
+                <td><select class="custom-select" name="orig_grade" id="orig_grade"><{$stu.orig_grade_htm}></select></td>
             </tr>
             <tr>
                 <th class="table-info" scope="row">戶籍地址</th>

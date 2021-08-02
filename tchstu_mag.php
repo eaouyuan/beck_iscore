@@ -2752,6 +2752,7 @@ switch ($op) {
                     `arrival_date` = '{$arrival_date}', 
                     `birthday` = '{$birthday}', 
                     `orig_school` = '{$orig_school}', 
+                    `orig_grade` = '{$orig_grade}', 
                     `household_add` = '{$household_add}', 
                     `address` = '{$address}', 
                     `out_learn` = '{$out_learn}', 
@@ -2807,14 +2808,14 @@ switch ($op) {
         $tbl = $xoopsDB->prefix('yy_student');
         $sql = "insert into `$tbl` (
             `stu_name`,`national_id`,`stu_id`,`stu_no`,`class_id`,
-            `major_id`,`grade`,`arrival_date`,`birthday`,`orig_school`,
+            `major_id`,`grade`,`arrival_date`,`birthday`,`orig_school`,`orig_grade`,
             `household_add`,`address`,`out_learn`,`audit`,`status`,
             `record`,`social_id`,`guidance_id`,`rcv_guidance_id`,`guardian1`,
             `guardian1_relationship`,`guardian1_cellphone1`,`guardian1_cellphone2`,`emergency1_contact1`,`emergency1_contact_rel`,
             `emergency1_cellphone1`,`emergency1_cellphone2`,`uid`,`create_time`,`update_time`,`stu_anonymous`) 
             values(
             '{$stu_name}','{$national_id}','{$stu_id}','{$stu_no}','{$class_id}',
-            '{$major_id}','{$grade}','{$arrival_date}','{$birthday}','{$orig_school}',
+            '{$major_id}','{$grade}','{$arrival_date}','{$birthday}','{$orig_school}','{$orig_grade}',
             '{$household_add}','{$address}','{$out_learn}','{$audit}','{$status}',
             '{$record}','{$social_id}','{$guidance_id}','{$rcv_guidance_id}','{$guardian1}',
             '{$guardian1_relationship}','{$guardian1_cellphone1}','{$guardian1_cellphone2}','{$emergency1_contact1}','{$emergency1_contact_rel}',
