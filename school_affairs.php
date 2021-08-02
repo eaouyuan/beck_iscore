@@ -1403,11 +1403,34 @@ switch ($op) {
         $tch        = $xoopsDB->fetchArray($result);
 
         if(!(($xoopsUser->isAdmin()) or ($_SESSION['xoopsUserId']== $tch['uid']))){
-            redirect_header('index.php?op=teacher_list', 3, '非管理員或該使用者！');
+            redirect_header('school_affairs.php?op=teacher_list', 3, '非管理員或該使用者！');
         }
+
+        $tbl        = $xoopsDB->prefix('groups_users_link');
+        $sql        = "SELECT * FROM $tbl Where `uid`='{$sn}'";
+        $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        while($gul= $xoopsDB->fetchArray($result)){
+            $user['groupid'][]=$gul['groupid'];
+        }
+
+        if(in_array('1',$user['groupid'])){
+            redirect_header('school_affairs.php?op=teacher_list', 2, '該教師是管理員無法刪除！');
+        }
+        // var_dump($user);die();
+
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "DELETE FROM `$tbl` WHERE `uid` = '{$sn}'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        $tbl = $xoopsDB->prefix('groups_users_link');
+        $sql = "DELETE FROM `$tbl` WHERE `uid` = '{$sn}'";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        $tbl = $xoopsDB->prefix('users');
+        $sql = "DELETE FROM `$tbl` WHERE `uid` = '{$sn}'";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        redirect_header('school_affairs.php?op=teacher_list', 2, '刪除成功！');
 
     }
 
@@ -1749,7 +1772,7 @@ switch ($op) {
         // $xoopsTpl->assign('total', $total);
 
         $SweetAlert = new SweetAlert();
-        $SweetAlert->render('tch_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=teacher_delete&sn=", 'sn','確定要刪除教師基本資料','教師基本資料刪除，但保留帳號。');
+        $SweetAlert->render('tch_del', XOOPS_URL . "/modules/beck_iscore/school_affairs.php?op=teacher_delete&sn=", 'sn','確定要刪除教師基本資料','教師刪除!');
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
