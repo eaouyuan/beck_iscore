@@ -2716,7 +2716,7 @@ switch ($op) {
 
     }
 
-    // sql-更新學
+    // sql-更新學生
     function student_update($sn){
 
         global $xoopsDB,$xoopsUser;
@@ -2778,6 +2778,7 @@ switch ($op) {
 
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        redirect_header("tchstu_mag.php?op=student_form&sn={$sn}", 2, '學生更新成功!');
         return $sn;
     }
 
@@ -2824,6 +2825,7 @@ switch ($op) {
         // echo($sql); 
         $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        redirect_header("tchstu_mag.php?op=student_form&sn={$sn}", 2, '學生新增成功!');
 
         return $sn;
     }
