@@ -36,6 +36,7 @@ class SchoolSet
     public $tea_course; //本學期教師課表 教師  學程 課程
     public $courese_chn; //課程中文名稱
     public $class_name; //['1'=>'友仁']班級sn -> name
+    public $class_name_all; //['1'=>'友仁']班級sn -> name
     public $tutorid_classid; // 導師 id -> 班級id 
     public $class_tutorid; // 班級sn -> tutor_id 
     public $class_tutor_name; // ['1'=>'黃淑滿']班級sn -> 導師名稱
@@ -842,17 +843,27 @@ class SchoolSet
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $class_name=$class_tutor_name=[];
         while($data= $xoopsDB->fetchArray($result)){
-            $all[]=$data;
             $class_name[$data['sn']]= $data['class_name'];
             $class_tutor_name[$data['sn']]= $data['name'];
             $class_tutorid[$data['sn']]= $data['tutor_sn'];
             $tutorid_classid[$data['tutor_sn']]= $data['sn'];
         }
+
+        $sql = "SELECT * FROM $tb1 
+                LEFT JOIN $tb2 ON $tb1.tutor_sn=$tb2.uid";
+        // echo($sql);die();
+        $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $class_name=$class_tutor_name=[];
+        while($data= $xoopsDB->fetchArray($result)){
+            $class_name_all[$data['sn']]= $data['class_name'];
+        }
         // die(var_dump($all));
         $this->class_name=$class_name;
+        $this->class_name_all=$class_name_all;
         $this->class_tutorid=$class_tutorid;
         $this->class_tutor_name=$class_tutor_name;
         $this->tutorid_classid=$tutorid_classid;
+
     }
     //get 學程資料
     private function get_dept(){

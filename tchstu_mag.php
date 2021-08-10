@@ -1918,7 +1918,7 @@ switch ($op) {
             $i=1;$stu_data=[];
             foreach ($term_total_score as $stu_sn=>$data){
                 $stu_data[$stu_sn]['order']=$i;
-                $stu_data[$stu_sn]['class_name']=$myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$stu_sn]]);
+                $stu_data[$stu_sn]['class_name']=$myts->htmlSpecialChars($SchoolSet->class_name_all[$SchoolSet->stu_sn_classid_all[$stu_sn]]);
                 $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
 
                 // 填入所有科目\成績 
