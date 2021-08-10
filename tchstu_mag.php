@@ -1808,9 +1808,9 @@ switch ($op) {
         $SchoolSet= new SchoolSet;
         $stu=[];
         $xoopsTpl->assign('pars', $pars);
-        $stu['name']=$SchoolSet->stu_name[$sn];
-        $stu['stu_id']=$SchoolSet->stu_id[$sn];
-        $stu['dep_name']=$SchoolSet->depsnname[$SchoolSet->stu_dep[$sn]];
+        $stu['name']=$SchoolSet->stu_name_all[$sn];
+        $stu['stu_id']=$SchoolSet->stu_id_all[$sn];
+        $stu['dep_name']=$SchoolSet->depsnname[$SchoolSet->stu_dep_all[$sn]];
         
         // 撈出學程總成績
         $course_groupname=$SchoolSet->query_course_groupname($pars['cos_year'],$pars['cos_term'],$pars['dep_id'])['grpname_sumcred'];
@@ -1911,13 +1911,15 @@ switch ($op) {
             $term_total_score=$SchoolSet->query_term_total_score($pars['cos_year'],$pars['cos_term'],$pars['dep_id']);
             $term_score_detail=$SchoolSet->query_term_score_detail($pars['cos_year'],$pars['cos_term'],$pars['dep_id']);
             $xoopsTpl->assign('course_groupname', $course_groupname);
+
+            // die(var_dump($term_score_detail));
             
 
             $i=1;$stu_data=[];
             foreach ($term_total_score as $stu_sn=>$data){
                 $stu_data[$stu_sn]['order']=$i;
-                $stu_data[$stu_sn]['class_name']=$myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$stu_sn]]);
-                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous[$stu_sn]);
+                $stu_data[$stu_sn]['class_name']=$myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$stu_sn]]);
+                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
 
                 // 填入所有科目\成績 
                 foreach ($course_groupname['grpname_sumcred'] as $grpname=>$sumcred){
@@ -1931,7 +1933,6 @@ switch ($op) {
                 $i++;
             }
             
-            // die(var_dump($term_total_score));
         
         }
 

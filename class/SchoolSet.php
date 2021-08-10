@@ -41,13 +41,15 @@ class SchoolSet
     public $class_tutor_name; // ['1'=>'黃淑滿']班級sn -> 導師名稱
     public $classname_stuid; //[友仁][1]=王小明
     public $classid_stuid; //[class id][stu id]=王小明
-    public $stu_name; //  //[stu sn]=name   , 學生sn map name
+    public $stu_name; //  [stu sn]=name   , 學生sn map name
+    public $stu_name_all; //  [stu sn]=name   ,所有學生sn map name
     public $stu_anonymous; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 學生匿名
     public $stu_anonymous_all; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 所有學生匿名
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
     public $stu_sn_classid_all; //  [stu sn]=class id  , 學生sn map 班級id  所有學生對班級ID
     public $stu_dep; //[stu sn]= dep id 學生 學程
     public $stu_id; // 學生 學號
+    public $stu_id_all; // 學生 學號
     public $month_ary; // 月份陣列
     public $sys_config; // config
     public $sys_var; // config
@@ -207,8 +209,8 @@ class SchoolSet
             $all[$data['student_sn']][$data['cos_name_grp']]['course_total_avg']   = $data['course_total_avg'];
             $all[$data['student_sn']][$data['cos_name_grp']]['comment']   = $data['comment'];
         }
-
-        // die(var_dump($all));
+        // echo($sql);die();
+        // die(print_r($all));
         return $all;
     }
 
@@ -956,6 +958,9 @@ class SchoolSet
         while($user= $xoopsDB->fetchArray($result)){
             $stu_anonymous_all[$user['stusn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
             $stu_sn_classid_all[$user['stusn']] = $user['class_id'];  // [stu sn]= class id
+            $stu_name_all[$user['stusn']] = $user['stu_name'];    //[stu sn]=name
+            $stu_id_all[$user['stusn']] = $user['stu_id'];  // [stu sn]= stu_id
+            $stu_dep_all[$user['stusn']] = $user['major_id'];  // [stu sn]= dep id
 
         }
         // var_dump($major_stu);die();
@@ -963,12 +968,15 @@ class SchoolSet
 
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;
+        $this->stu_name_all=$stu_name_all;
         $this->stu_anonymous=$stu_anonymous;
         $this->stu_anonymous_all=$stu_anonymous_all;
         $this->stu_sn_classid_all=$stu_sn_classid_all;
         $this->stu_sn_classid=$stu_sn_classid;
         $this->stu_dep=$stu_dep;
+        $this->stu_dep_all=$stu_dep_all;
         $this->stu_id=$stu_id;
+        $this->stu_id_all=$stu_id_all;
         $this->classname_stuid=$classname_stuid;
         $this->classid_stuid=$classid_stuid;
     }
