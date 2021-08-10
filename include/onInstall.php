@@ -7,6 +7,7 @@ function xoops_module_install_beck_iscore(&$module) {
     mk_group("學生增刪", "學生新增編輯刪除");
     mk_group("課程管理", "課程管理");
     mk_group("輔導室", "輔導室");
+    mk_group("離職教師", "離職教師");
   
     return true;
 }
