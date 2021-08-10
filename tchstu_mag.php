@@ -3013,7 +3013,7 @@ switch ($op) {
             // $have_par='1';
         }
         // if($have_par=='1'){$sql.=" AND status != '2'";}else{$sql.=" WHERE status != '2'";};
-        $sql.=" ORDER BY `major_id` ,`sort` ,`stu_no`";
+        $sql.=" ORDER BY `major_id` ,`sort` ,`stu_no` DESC";
         // echo($sql);  die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
