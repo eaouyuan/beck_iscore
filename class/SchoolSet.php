@@ -853,7 +853,7 @@ class SchoolSet
                 LEFT JOIN $tb2 ON $tb1.tutor_sn=$tb2.uid";
         // echo($sql);die();
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $class_name=$class_tutor_name=[];
+        $class_name_all=[];
         while($data= $xoopsDB->fetchArray($result)){
             $class_name_all[$data['sn']]= $data['class_name'];
         }

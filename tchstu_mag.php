@@ -2902,10 +2902,17 @@ switch ($op) {
         $stu['record']                 = $stu_ifo['record'] ?? '';
 
         $SchoolSet= new SchoolSet;
-        // 班級
-        $stu['class_htm']=Get_select_opt_htm($SchoolSet->class_name,$stu['class_id'],'1');
-        $xoopsTpl->assign('class_tutor', json_encode($SchoolSet->class_tutor_name));
 
+
+        // 班級
+        if($sn){
+            $stu['class_htm']=Get_select_opt_htm($SchoolSet->class_name_all,$stu['class_id'],'1');
+        }else{
+            $stu['class_htm']=Get_select_opt_htm($SchoolSet->class_name,$stu['class_id'],'1');
+        }
+
+        $xoopsTpl->assign('class_tutor', json_encode($SchoolSet->class_tutor_name));
+        // var_dump($SchoolSet->class_name);// die();
         // 學程列表
         $major_name=[];
         foreach ($SchoolSet->dept as $k=>$v){
@@ -2925,8 +2932,7 @@ switch ($op) {
         $stu['status_htm']=Get_select_opt_htm($status_ary,$stu['status'],'1');
 
         // var_dump($stu['status_htm']);
-        // var_dump($class_tutor);
-        // die();
+       
 
         $sex_ary=["0"=>'女',"1"=>'男'];
         $stu['sex_htm']=Get_select_opt_htm($sex_ary,$stu['sex'],'1');
