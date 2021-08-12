@@ -2834,8 +2834,8 @@ switch ($op) {
     // 表單-新增、編輯 學生
     function student_form($sn){
         // var_dump(power_chk("tchstu_mag", "1"));die();
-        if(!power_chk("beck_iscore", "1") or !power_chk("beck_iscore", "3")){
-            redirect_header('index.php', 3, '無 student_form 權限!  error:2104191604');
+        if(!(power_chk("beck_iscore", 1) or power_chk("beck_iscore", 3))){
+            redirect_header('tchstu_mag.php', 3, '無 student_form 權限!  error:2104191604');
         }        
         // if (!power_chk('beck_iscore', 1)) {
         //     redirect_header('school_affairs.php', 3, '無操作權限');
