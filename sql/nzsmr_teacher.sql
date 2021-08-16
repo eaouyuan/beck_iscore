@@ -347,7 +347,7 @@ CREATE TABLE `yy_query_stage_score` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 ALTER TABLE `yy_query_stage_score`
-ADD UNIQUE `dep_id_exam_stage_student_sn` (`dep_id`, `exam_stage`, `student_sn`);
+ADD UNIQUE `dep_id_exam_stage_student_sn` (`dep_id`, `exam_stage`, `student_sn`,`year`, `term`);
 
 -- 學期總成績
 CREATE TABLE `yy_term_total_score` (
