@@ -344,13 +344,17 @@ switch ($op) {
         // 學生列表
         $student_list=[];
         if($xoopsUser->isAdmin() or power_chk("beck_iscore", "3")){
-            $student_list=$SchoolSet->stu_anonymous;
+            // $student_list=$SchoolSet->stu_anonymous;
+            $stu_sel=Get_select_grp_opt_htm($SchoolSet->classname_stuid,$sn,'0');
         }else{
+            $tutor_class_name=$SchoolSet->class_name_all[$SchoolSet->tutorid_classid[$xoopsUser->uid()]];
+            $clss_stusn_stuaname[$tutor_class_name]=$SchoolSet->classname_stuid[$tutor_class_name];
+            $stu_sel=Get_select_grp_opt_htm($clss_stusn_stuaname,$sn,'0');
             $student_list=$SchoolSet->classid_stuid[$SchoolSet->tutorid_classid[$xoopsUser->uid()]];
         }
-        $stu_sel=Get_select_opt_htm($student_list,$sn,'0');
-        $xoopsTpl->assign('stu_sel', $stu_sel);
 
+        $xoopsTpl->assign('stu_sel', $stu_sel);
+ 
         $com['A']=Get_select_opt_htm($SchoolSet->MentorCommentA,'','0');
         $com['B']=Get_select_opt_htm($SchoolSet->MentorCommentB,'','0');
         $com['C']=Get_select_opt_htm($SchoolSet->MentorCommentC,'','0');
@@ -1302,7 +1306,7 @@ switch ($op) {
 
         $info['stu_name']=$SchoolSet->stu_anonymous_all[$pars['stu_sn']];
         $info['tea_name']=$SchoolSet->uid2name[$pars['tea_uid']];
-        $info['class']=$SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$pars['stu_sn']]];
+        $info['class']=$SchoolSet->class_name_all[$SchoolSet->stu_sn_classid_all[$pars['stu_sn']]];
         $info['stu_sn']=$pars['stu_sn'];
         $info['tea_uid']=$pars['tea_uid'];
         $info['year']=$pars['year'];
@@ -1483,7 +1487,7 @@ switch ($op) {
             $data['tea_name']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$ru['tea_uid']]);
             $data['student_sn']    = $myts->htmlSpecialChars($ru['student_sn']);
             $data['stu_anonymous'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$ru['student_sn']]);
-            $data['class_name']    = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid_all[$ru['student_sn']]]);
+            $data['class_name']    = $myts->htmlSpecialChars($SchoolSet->class_name_all[$SchoolSet->stu_sn_classid_all[$ru['student_sn']]]);
             $data['class_id']      = $myts->htmlSpecialChars($SchoolSet->stu_sn_classid_all[$ru['student_sn']]);
             $all  [] = $data;
         }
