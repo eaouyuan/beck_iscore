@@ -354,7 +354,7 @@ switch ($op) {
         }
 
         $xoopsTpl->assign('stu_sel', $stu_sel);
- 
+
         $com['A']=Get_select_opt_htm($SchoolSet->MentorCommentA,'','0');
         $com['B']=Get_select_opt_htm($SchoolSet->MentorCommentB,'','0');
         $com['C']=Get_select_opt_htm($SchoolSet->MentorCommentC,'','0');
@@ -371,7 +371,7 @@ switch ($op) {
             // echo($sql);die();
             $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             $ru= $xoopsDB->fetchArray($result);
-            if(!(array_key_exists($sn, $student_list) or $xoopsUser->isAdmin())){
+            if(!(array_key_exists($sn, $student_list) or $xoopsUser->isAdmin() or power_chk("beck_iscore", "3"))){
                 redirect_header('tchstu_mag.php?op=mentor_comment', 2, '錯誤班級導師身份!error:2106271032');
             }
         }
