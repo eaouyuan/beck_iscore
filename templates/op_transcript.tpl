@@ -41,6 +41,9 @@
     </table>
     <br>
     <div class="row">
+        <div class="col"><h5>導師評語：<b><{$stu.mentor_comment}></b></h5></div>
+    </div>
+    <div class="row">
         <div class="col-4"><h5>總修得學分：<{$stu.sum_credits}>  </h5></div>
         <div class="col-4"><h5>加權總分：<{$stu.total_score}>      </h5></div>
         <div class="col-4"><h5>學期總平均：<{$stu.total_avg}>    </h5></div>
@@ -55,7 +58,6 @@
     $(document).ready(function($){
         window.onafterprint = window.close;
         window.print();
-
         false;
     })
 </script>

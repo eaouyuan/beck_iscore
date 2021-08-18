@@ -1839,9 +1839,22 @@ switch ($op) {
         $stu['total_score']=$term_total_score['total_score'];//加權總分
         $stu['total_avg']=$term_total_score['total_avg'];//學期總平均
 
+        // 導師評語
+        if($sn){
+            $tbl = $xoopsDB->prefix('yy_mentor_comment');
+            $sql = "SELECT * FROM $tbl
+                    WHERE `year` = '{$pars['cos_year']}'
+                    AND `term` = '{$pars['cos_term']}'
+                    AND `student_sn` = '{$sn}'";
+            // echo($sql);die();
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $ru= $xoopsDB->fetchArray($result);
+        }
+        $stu['mentor_comment']=$ru['Comment'];//導師評語
+
         $xoopsTpl->assign('stu', $stu);
         $xoopsTpl->assign('all', $stu_da);
-        // die(var_dump($stu_da));
+        // die(var_dump($stu));
 
 
         
