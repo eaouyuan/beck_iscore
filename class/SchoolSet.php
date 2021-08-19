@@ -963,8 +963,7 @@ class SchoolSet
         $tb2 = $xoopsDB->prefix('yy_class');
         $sql = "SELECT *,$tb1.sn as stusn FROM $tb1 
                 LEFT JOIN $tb2 ON $tb1.class_id =$tb2.sn
-                ORDER BY $tb1.sn DESC
-                Limit 150 ";
+                ORDER BY $tb1.sn DESC ";
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($user= $xoopsDB->fetchArray($result)){
             $stu_anonymous_all[$user['stusn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous

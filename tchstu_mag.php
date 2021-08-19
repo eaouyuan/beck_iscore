@@ -2274,8 +2274,8 @@ switch ($op) {
             // 列出該學程內所有學生sn, name 不含回歸結案
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
             foreach ($major_stu as $dep_id=>$stu_sn){
-                $stu_data[$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$stu_sn]);
-                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous[$stu_sn]);
+                $stu_data[$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name_all[$stu_sn]);
+                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
                 // 列出學生及考試成績 空白表格
                 foreach ($SchoolSet->exam_name as $k=>$exam_name){
                     $stu_data[$stu_sn]['score'][$k]='';
@@ -2285,6 +2285,7 @@ switch ($op) {
                 $stu_data[$stu_sn]['f_sum']='';
                 $stu_data[$stu_sn]['desc']='-';
             }
+            // die(var_dump($major_stu));
             // 三次段考成績時段，是否可keyin
             $addEdit=[];
             foreach($SchoolSet->stage_exam_name as $k=>$name){
@@ -2339,6 +2340,8 @@ switch ($op) {
             // echo($sql);die();
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             while($data= $xoopsDB->fetchArray($result)){
+                $stu_data [$data['student_sn']]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name_all[$data['student_sn']]);
+                $stu_data [$data['student_sn']]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$data['student_sn']]);
                 $stu_data [$data['student_sn']]['f_usual']= $myts->htmlSpecialChars($data['uscore_avg']);
                 $stu_data [$data['student_sn']]['f_stage']= $myts->htmlSpecialChars($data['sscore_avg']);
                 $stu_data [$data['student_sn']]['f_sum']= $myts->htmlSpecialChars($data['sum_usual_stage_avg']);
@@ -2347,7 +2350,7 @@ switch ($op) {
             }
 
 
-            // die(var_dump($score));
+            // die(var_dump($stu_data));
             // die(var_dump($sscore));
             $uid = $_SESSION['beck_iscore_adm'] ? $sscore['tea_id'] : $xoopsUser->uid();
             $xoopsTpl->assign('uid', $uid);
