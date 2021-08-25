@@ -59,11 +59,11 @@
     <{if $show_GrpAIstch}>
         <div class="form-group row alert-info">
             <label for="isteacher" class="col-lg-2 col-form-label text-sm-right">教師身份</label>
-            <div class="col-lg-2"><{$tch_is_html}></div>
+            <div class="col-lg-2 mt-2"><{$tch_is_html}></div>
             <label for="isteacher" class="col-lg-2 col-form-label text-sm-right">輔導教師</label>
-            <div class="col-lg-2"><{$gdc_is_html}></div>
+            <div class="col-lg-2 mt-2"><{$gdc_is_html}></div>
             <label for="isteacher" class="col-lg-2 col-form-label text-sm-right">社工師</label>
-            <div class="col-lg-2"><{$scl_is_html}></div>
+            <div class="col-lg-2 mt-2"><{$scl_is_html}></div>
 
         </div>
         <div class="form-group row">
