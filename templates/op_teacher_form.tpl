@@ -69,6 +69,10 @@
         <div class="form-group row">
             <label for="group" class="col-lg-2 col-form-label text-sm-right">群組</label>
             <div class="col-lg-4"><{$XoopGroupUser}></div>
+
+            <label for="group" class="col-lg-2 col-form-label text-sm-right">啟用</label>
+            <div class="col-lg-2 mt-2"><{$eal_is_html}></div>
+            
         </div>
     <{/if}>
 

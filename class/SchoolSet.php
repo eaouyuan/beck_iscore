@@ -19,6 +19,7 @@ class SchoolSet
     public $sem_term_edate; //目前學期 起始日期
     public $all_sems; //所有學年度資料
     public $users; //使用者資料
+    public $en_users; //啟用狀態的使用者
     public $uid2name; // uid map 中文姓名
     public $teachers; //教師資料
     public $isguidance; //輔導老師
@@ -812,7 +813,7 @@ class SchoolSet
                     LEFT JOIN $tb3 ON $tb2.dep_id=$tb3.sn 
                     WHERE $tb1.uid !='1'
                 ";
-        // echo($sql);
+        // echo($sql_enusr);die();
         $sqlall=$sql." ORDER BY {$tb2}.sort";
         $result      = $xoopsDB->query($sqlall) or Utility::web_error($sql, __FILE__, __LINE__);
         $all=$uid2data=[];
@@ -822,13 +823,24 @@ class SchoolSet
         $this->users=$all;
 
         // get all teachers 
-        $sql.= " AND $tb2.isteacher='1' ORDER BY {$tb2}.sort";
-        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sqltea = $sql." AND $tb2.isteacher='1' ORDER BY {$tb2}.sort";
+        $result = $xoopsDB->query($sqltea) or Utility::web_error($sql, __FILE__, __LINE__);
         $all    = [];
         while($tch= $xoopsDB->fetchArray($result)){
             $all[] = $tch;
         }
         $this->teachers=$all;
+
+        // get enable users 
+        $sql_enusr = $sql." AND $tb2.enable !='0' ";
+        $result = $xoopsDB->query($sql_enusr) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all    = [];
+        while($en_teausers= $xoopsDB->fetchArray($result)){
+            $all[] = $en_teausers;
+        }
+        // var_dump($all);die();
+
+        $this->en_users=$all;
     }
 
     // get 班級資料

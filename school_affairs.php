@@ -360,9 +360,11 @@ switch ($op) {
         }
 
         $teachers=[];
-        foreach($SchoolSet->users as $k=>$v){
+        foreach($SchoolSet->en_users as $k=>$v){
             $teachers[$v['uid']]=$v['name'];
         }
+        // var_dump($SchoolSet->en_users);die();
+
         // 列出所有認輔教師，將有認輔的老師加底色
         $tbl = $xoopsDB->prefix('yy_tea_counseling');
         $sql = "SELECT distinct tea_uid FROM $tbl 
@@ -401,7 +403,6 @@ switch ($op) {
 
         $stu_sel=Get_select_opt_htm($stu_list_ary,'','0');
         $xoopsTpl->assign('stu_sel', $stu_sel);
-        // var_dump($stu_list_ary);die();
 
         $xoopsTpl->assign('uid', $xoopsUser->uid());
         // $xoopsTpl->assign('op', 'counseling_set');
@@ -1522,12 +1523,12 @@ switch ($op) {
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "insert into `$tbl` (
                     `uid`,`dep_id`,`title`,`sex`,`phone`,
-                    `cell_phone`,`enable`,`isteacher`,`isguidance`,`issocial`,`create_uid`,`create_time`,`update_uid`,
-                    `update_time`
+                    `cell_phone`,`enable`,`isteacher`,`isguidance`,`issocial`,
+                    `create_uid`,`create_time`,`update_uid`,`update_time`,`sort`
                 )values(
                     '{$sn}','{$dep_id}','{$title}','{$sex}','{$phone}',
-                    '{$cell_phone}','{$enable}','{$isteacher}','{$isguidance}','{$issocial}','{$create_uid}', now(),
-                    '{$create_uid}',now()
+                    '{$cell_phone}','{$enable}','{$isteacher}','{$isguidance}','{$issocial}',
+                    '{$create_uid}', now(),'{$create_uid}',now(),'99'
                 )";
         // echo($sql);die();
 
@@ -1586,7 +1587,7 @@ switch ($op) {
 
     }
 
-    // 表單-新增、編輯公告消息
+    // 表單-新增、編輯教師消息
     function teacher_form($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB;
 
@@ -1660,7 +1661,10 @@ switch ($op) {
         $issocial = (!isset($tch['issocial'])) ? '0' : $tch['issocial'];
         $scl_is_html=radio_htm($ynary,'issocial',$issocial);
         $xoopsTpl->assign('scl_is_html', $scl_is_html);
-
+        // 教師啟用
+        $isenable = (!isset($tch['enable'])) ? '1' : $tch['enable'];
+        $eal_is_html=radio_htm($ynary,'enable',$isenable);
+        $xoopsTpl->assign('eal_is_html', $eal_is_html);
 
         // //帶入使用者編號
         $xoopsTpl->assign('create_uid', $xoopsUser->uid());

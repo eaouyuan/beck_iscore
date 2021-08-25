@@ -33,13 +33,13 @@
             <tr>
                 <th  class="table-info" scope="row">第一次段考</th>
                 <td id="ftest">
-                    <label class="switch">
+                    <label class="switch m-1">
                         <input type="checkbox" name="first_test" id="first_test" value='1' <{$cour.ftest_htm}>>
                         <span class="slider round"></span></label>
                 </td>
                 <th  class="table-info" scope="row">第二次段考</th>
                 <td id="stest">
-                    <label class="switch">
+                    <label class="switch m-1">
                         <input type="checkbox" name="second_test" id="second_test" value='1' <{$cour.stest_htm}>>
                         <span class="slider round"></span></label>
                 </td>
@@ -54,7 +54,7 @@
                     ]" type="text" name="cos_credits" id="cos_credits" value="<{$cour.cos_credits}>"></td>
                 <th  class="table-info" scope="row">是否計分</th>
                 <td id="isscore">
-                    <label class="switch">
+                    <label class="switch m-1">
                         <input type="checkbox" name="scoring" id="scoring" value='1' <{$cour.score_htm}>>
                         <span class="slider round"></span>
                     </label>
