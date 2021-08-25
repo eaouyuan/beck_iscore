@@ -360,9 +360,17 @@ switch ($op) {
         }
 
         $teachers=[];
-        foreach($SchoolSet->en_users as $k=>$v){
-            $teachers[$v['uid']]=$v['name'];
+        if($pars['cos_year']==$SchoolSet->sem_year and $pars['cos_term']==$SchoolSet->sem_term){
+            foreach($SchoolSet->en_users as $k=>$v){
+                $teachers[$v['uid']]=$v['name'];
+            }
+        }else{
+            foreach($SchoolSet->users as $k=>$v){
+                $teachers[$v['uid']]=$v['name'];
+            }
         }
+        
+
         // var_dump($SchoolSet->en_users);die();
 
         // 列出所有認輔教師，將有認輔的老師加底色
