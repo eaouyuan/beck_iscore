@@ -2,9 +2,10 @@
     <h2 class="mb-3" align="center">高雄市立楠梓特殊學校 瑞平分校 <{$pars.cos_year}>學年度 第<{$pars.cos_term}>學期 學期成績單</h2>
     <!-- <h2 class="mb-3" align="center"></h2> -->
     <div class="row">
-        <div class="col-4"><h4>學程名稱：<{$stu.dep_name}></h4></div>
-        <div class="col-4"><h4>學生姓名：<{$stu.name}></h4></div>
-        <div class="col-4"><h4>學生學號：<{$stu.stu_id}></h4></div>
+        <div class="col-3"><h4>學程：<{$stu.dep_name}></h4></div>
+        <div class="col-3"><h4>年級：<{$stu.grade}></h4></div>
+        <div class="col-3"><h4>姓名：<{$stu.name}></h4></div>
+        <div class="col-3"><h4>學號：<{$stu.stu_id}></h4></div>
     </div>
     <!-- <hr> -->
     <!-- <table border=3 cellpadding="10"; width="100%" border-color="black"> -->
@@ -18,12 +19,9 @@
                 <th class = "text-center" width = "9%"><font size  = "4">總分</font></th>
                 <th class = "text-center" width = "25%"><font size = "4">備註</font></th>
                 
-                
                 <{foreach from=$all key=i item=data}>
-
                 <{/foreach}>
             
-                
             </tr>
         </thead>
         <tbody>

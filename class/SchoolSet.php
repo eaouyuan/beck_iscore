@@ -47,6 +47,7 @@ class SchoolSet
     public $stu_name_all; //  [stu sn]=name   ,所有學生sn map name
     public $stu_anonymous; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 學生匿名
     public $stu_anonymous_all; //  ['390'=>'王*明'] stu_anonymous , 學生sn map 所有學生匿名
+    public $stu_grade; //  ['390'=>'1'] 學生sn map 年級
     public $stu_sn_classid; //  [stu sn]=class id  , 學生sn map 班級id
     public $stu_sn_classid_all; //  [stu sn]=class id  , 學生sn map 班級id  所有學生對班級ID
     public $stu_dep; //[stu sn]= dep id 學生 學程
@@ -189,6 +190,7 @@ class SchoolSet
             $all[$data['student_sn']]['total_avg']     = $data['total_avg'];
             $all[$data['student_sn']]['comment']       = $data['comment'];
             $all[$data['student_sn']]['reward_method'] = $data['reward_method'];
+            $all[$data['student_sn']]['grade']         = $data['grade'];
         }
         return $all;
     }
@@ -265,11 +267,18 @@ class SchoolSet
                 }
             }
         }
+
+        $chn_grade=['1'=>'一年級','2'=>'二年級','3'=>'三年級','畢業或結業'=>'已畢業或結業'];
+        foreach($this->stu_grade as $stusn=>$gd){
+            $stugrd[$stusn]=$chn_grade[$gd];
+        }
+        // die(var_dump($stugrd));
         // die(var_dump($stu_score));
 
         // 再算出該學生的總分、總學分、總平均
         foreach($stu_score as $stu_sn=>$v1){
             $stu_score[$stu_sn]['stu_sum_score']=$stu_score[$stu_sn]['stu_sum_cred']=$stu_score[$stu_sn]['stu_avg_score']='-';
+            $stu_score[$stu_sn]['grade']=$stugrd[$stu_sn]; //年級
             foreach($v1['grp_cos_name'] as $cos_name_grp=>$v2){
                 if(is_numeric($v2['sum_score'])){
                     $stu_score[$stu_sn]['stu_sum_score']+=$v2['sum_score'];
@@ -311,12 +320,12 @@ class SchoolSet
             $sql = "insert into `$tbl` (
                 `year`,`term`,`dep_id`,`student_sn`,`sum_credits`,
                 `total_score`,`total_avg`,`comment`,`update_user`,
-                `update_date`,`reward_method`
+                `update_date`,`reward_method`,`grade`
                 ) 
                 values(
                 '{$year}','{$term}','{$depid}','{$stu_sn}','{$v1['stu_sum_cred']}',
                 '{$v1['stu_sum_score']}','{$v1['stu_avg_score']}','{$stu_tmp_data[$stu_sn]['comment']}','{$xoopsUser->uid()}',now(),
-                '{$v1['reward_method']}'
+                '{$v1['reward_method']}','{$v1['grade']}'
                 )";
             $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         }
@@ -967,6 +976,7 @@ class SchoolSet
             $stu_sn_classid[$user['stusn']] = $user['class_id'];  // [stu sn]= class id
             $stu_dep[$user['stusn']] = $user['major_id'];  // [stu sn]= dep id
             $stu_id[$user['stusn']] = $user['stu_id'];  // [stu sn]= stu_id
+            $stu_grade[$user['stusn']] = $user['grade'];  // [stu sn]= stu_id
             $classname_stuid[$user['class_name']??'未編班'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
             $classid_stuid[$user['class_id']??'0'][$user['stusn']]= $user['stu_anonymous'];  // $[$user['class_id']] [$user['sn']] = $user['stu_anonymous']          
         }
@@ -999,6 +1009,7 @@ class SchoolSet
         $this->stu_dep_all=$stu_dep_all;
         $this->stu_id=$stu_id;
         $this->stu_id_all=$stu_id_all;
+        $this->stu_grade=$stu_grade;
         $this->classname_stuid=$classname_stuid;
         $this->classid_stuid=$classid_stuid;
     }
