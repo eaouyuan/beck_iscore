@@ -20,7 +20,7 @@
 
                 <th class="table-info" scope="row">教師</th>
                 <td >
-                    <select class="custom-select" name="tea_id" id="tea_id"><{$cour.teacher_htm}></select>
+                    <select class="custom-select validate[required]" name="tea_id" id="tea_id"><{$cour.teacher_htm}></select>
                 </td>
             </tr>
 
