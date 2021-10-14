@@ -49,7 +49,6 @@ $AB['stu_sn'] = Request::getString('stu_sn');
 $AB['AB_period'] = Request::getString('AB_period');
 
 
-
 // die(var_dump($_POST));
 // die(var_dump($_GET));
 // die(var_dump($_REQUEST));
@@ -3189,6 +3188,8 @@ switch ($op) {
         if (!$xoopsUser) {
             redirect_header('index.php', 3, '無操作權限');
         }
+        $myts = MyTextSanitizer::getInstance();
+
         $SchoolSet= new SchoolSet;
         // 依課程找 任課教師id、學年、學期、學程
         $uscore['tea_id'] = $SchoolSet->all_course[$pars['course_id']]['tea_id'];
@@ -3220,7 +3221,13 @@ switch ($op) {
         $uscore['course_name']=$SchoolSet->courese_chn[$pars['course_id']];
         $uscore['tea_name']=$SchoolSet->uid2name[$uscore['tea_id']];
     
-        $myts = MyTextSanitizer::getInstance();
+        // 列出該學程內所有學生sn, name 不含回歸結案
+        $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
+        foreach ($major_stu as $k=>$stusn){
+            $stu_data[$stusn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$stusn]);
+            $stu_data[$stusn]['score']='';
+        }
+
         $tbl        = $xoopsDB->prefix('yy_usual_score');
         if($pars['exam_number']==''){
             $sql        = "SELECT max(`exam_number`) as exam_number FROM $tbl  Where 
@@ -3235,28 +3242,26 @@ switch ($op) {
                 $uscore['exam_number']=(string)((int)$exam_number['exam_number']+1);
             }
 
-            // 列出該學程內所有學生sn, name 不含回歸結案
-            $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
-            foreach ($major_stu as $k=>$v){
-                $stu_data[$v]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$v]);
-                $stu_data[$v]['score']='';
-            }
+ 
         }else{
-            $tb2        = $xoopsDB->prefix('yy_student');
+            // 找出，要撈哪些學生的平時成績
+            $sql_stusn = "('".implode("','", $major_stu)."')";
 
+            $tb2        = $xoopsDB->prefix('yy_student');
             $sql        = "SELECT * FROM $tbl
                             LEFT JOIN $tb2 as stu on $tbl.student_sn=stu.sn
                             
                             Where `course_id`='{$pars["course_id"]}' 
                                 AND `exam_stage`='{$pars["exam_stage"]}'
                                 AND `exam_number`='{$pars["exam_number"]}'
+                                AND $tbl.student_sn IN $sql_stusn
                                 ORDER BY stu.sort
                             ";
             // echo($sql);die();
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     
             while($stu= $xoopsDB->fetchArray($result)){
-                $stu_data [$stu['student_sn']]['name']= $myts->htmlSpecialChars($SchoolSet->stu_name[$stu['student_sn']]);
+                // $stu_data [$stu['student_sn']]['name']= $myts->htmlSpecialChars($SchoolSet->stu_name[$stu['student_sn']]);
                 $stu_data [$stu['student_sn']]['score']= $myts->htmlSpecialChars($stu['score']);
             }
         }
@@ -3336,31 +3341,72 @@ switch ($op) {
                     $xoopsTpl->assign('show_select', true);
                 }
             }
-            // die(var_dump($add_uscore_select));
             $course['exam_number_htm']=Get_select_opt_htm($add_uscore_select,'','0');
 
+            $myts = MyTextSanitizer::getInstance();
+            
+            // 找出三次段考前，平時考的次數
+            $tb1      = $xoopsDB->prefix('yy_usual_score');
+            $sql      = "SELECT `year`,
+                                `term`,
+                                `dep_id`,
+                                `course_id`,
+                                `exam_stage`,
+                                MAX(`exam_number`) as `uexam_times`  
+                        FROM $tb1 
+                        Where `course_id`= '{$course["course_id"]}'
+                        GROUP BY 
+                                `year`,
+                                `term`,
+                                `dep_id`,
+                                `course_id`,
+                                `exam_stage`
+                        ORDER BY `exam_stage`
+                                ";
+            // echo($sql);die();
+            $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            while($data= $xoopsDB->fetchArray($result)){
+                $uexam_times[$data['exam_stage']]= $data['uexam_times'];
+            }
+
+            // 列出該學程內所有學生sn, name 不含回歸結案
+            $major_stu=$SchoolSet->major_stu[$course['dep_id']];
+            foreach ($uexam_times as $exam_stage=>$uexam_times){
+                foreach ($major_stu as $stu_sn){
+                    // 做出學生段考成績空白表單
+                    $stu_uscore[$exam_stage][$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name_all[$stu_sn]);
+                    $stu_uscore[$exam_stage][$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
+                    for($i=1;$i<=$uexam_times;$i++){
+                        $stu_uscore[$exam_stage][$stu_sn]['score'][$i]='';
+                    }
+                }
+            }
+        
             // get 每次平時成績
             $xoopsTpl->assign('showtable', true);
-            $myts = MyTextSanitizer::getInstance();
+
+            $sql_stusn = "('".implode("','", $major_stu)."')";
+            // var_dump($sql_stusn);die();
+            
             $tb1      = $xoopsDB->prefix('yy_usual_score');
             $tb2      = $xoopsDB->prefix('yy_student');
             $sql      = "SELECT sco.* ,stu.stu_name  , stu.sort  FROM $tb1  as sco
                             LEFT  JOIN $tb2 as stu ON sco.student_sn       = stu.sn
                             Where sco.course_id= '{$course["course_id"]}'
+                            AND sco.student_sn IN $sql_stusn
                             ORDER BY `exam_stage`,`exam_number`,stu.sort  
                         ";
-            // echo($sql);die();
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            $stu_uscore=array();
+            // $stu_uscore=array();
             while($data= $xoopsDB->fetchArray($result)){
-                $stu_uscore [$data['exam_stage']][$data['student_sn']]['name']= $myts->htmlSpecialChars($data['stu_name']);
-                $stu_uscore [$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
+                $stu_uscore[$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
             }
 
             // 撈出每次段考前平時考的加總平均
             $tb1      = $xoopsDB->prefix('yy_uscore_avg');
             $sql      = "SELECT * FROM $tb1  as sco
                         Where sco.course_id='{$course["course_id"]}' 
+                        AND `student_sn` IN $sql_stusn
                         ORDER BY exam_stage,student_sn
                 ";
             // echo($sql);die();
@@ -3370,19 +3416,19 @@ switch ($op) {
                 $stu_uscore [$data['exam_stage']][$data['student_sn']]['avg']= $myts->htmlSpecialChars($data['avgscore']);
             }
 
-
             foreach($stu_uscore as $exam_stage=>$v2){
                 foreach($v2 as $student_sn=>$v3){
                     $score_count[$exam_stage]['score_count'] = count($v3['score']);
                     $score_count[$exam_stage]['test_ary']    = array_keys($v3['score']);
                 }
-                // $score_count[$exam_stage]['score_count'] = count($stu_uscore[$exam_stage][$student_sn]['score']);
             }
+
             $xoopsTpl->assign('all', $stu_uscore);
             $xoopsTpl->assign('score_count', $score_count);
             // print_r($stu_uscore);
             // print_r($score_count);
             // die();
+
         }
 
         $xoopsTpl->assign('course', $course);

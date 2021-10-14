@@ -689,7 +689,7 @@ class SchoolSet
             if($i==0){
                 $all[$stu_sn]['avg']='-';
             }else{
-                $all[$stu_sn]['avg']=(float)($sum/$i);
+                $all[$stu_sn]['avg']=round((float)($sum/$i),0);
             }
 
         }
