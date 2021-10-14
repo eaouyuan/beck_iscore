@@ -109,7 +109,7 @@
     <table style="font-family:serif;"  cellpadding="5">
         <thead>
             <tr>
-                <th class="text-center" width="14%"><font size="6">姓  名</font></th>
+                <th class="text-center" width="14%"><font size="4">姓  名</font></th>
                 <{foreach from=$exam_name key=exam_sn item=exam_chnname}>
                     <th class="text-center" width="7%"><{$exam_chnname}></th>
                 <{/foreach}>
@@ -123,7 +123,7 @@
         <tbody>
             <{foreach from=$all key=stu_sn item=v1}>
             <tr> 
-                <th class="text-center"><font size="6"><{$v1.stu_anonymous}></font></th>
+                <th class="text-center"><font size="4"><{$v1.stu_anonymous}></font></th>
                 <{foreach from=$v1.score key=k item=score}>
                     <th class="text-center"><{$score}></th>
                 <{/foreach}>
@@ -256,19 +256,20 @@
 @page  {
     size:A4;
     margin:10mm;
-    size: landscape; /* 橫向 */
+    size: portrait; /* 直向 */
+    /* size: landscape; 橫向 */
 }
 @media print 
 {
 
     #printArea { 
-        font-size: 24px;
+        font-size: 14px;
 
     }
     table th, th, td {
         vertical-align:middle;
         text-align:center;
-        border: 4px solid black;
+        border: 3px solid black;
     }   
 
 
