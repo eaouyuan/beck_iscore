@@ -29,6 +29,8 @@ $uscore['dep_id']      = Request::getString('dep_id');
 $uscore['course_id']   = Request::getString('course_id');
 $uscore['exam_stage']  = Request::getString('exam_stage');
 $uscore['exam_number'] = Request::getString('exam_number');
+$uscore['score_syn'] = Request::getString('score_syn');
+
 $hi_care['year']  = Request::getString('year');
 $hi_care['month'] = Request::getString('month');
 $counseling['year']   = Request::getString('year');
@@ -49,7 +51,7 @@ $AB['stu_sn'] = Request::getString('stu_sn');
 $AB['AB_period'] = Request::getString('AB_period');
 
 
-// die(var_dump($_POST));
+// die(var_dump($score_syn));
 // die(var_dump($_GET));
 // die(var_dump($_REQUEST));
 // die(var_dump($_SESSION));
@@ -138,8 +140,12 @@ switch ($op) {
     // 新增、更新 段考成績
     case "stage_score_insert":
         stage_score_insert($uscore);
-        // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}");
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
+        redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}", 3, '存檔成功！');
+        exit;//離開，結束程式
+    case "stage_score_synchronize":
+        stage_score_insert($uscore);
+        header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}&score_syn=1");
         exit;//離開，結束程式
 // 查詢 考科成績 及期末總成績 學期總成績
     //平時成績 列表
@@ -2156,6 +2162,7 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
+
         $stu_score  = Request::getArray('stu_score');//學生編號=>平時成績
         $tea_keyin_score  = Request::getArray('tea_keyin_score');//學生編號=>教師keyin總成績
 
@@ -2201,7 +2208,7 @@ switch ($op) {
         $SchoolSet->sscore_calculate( $dep_id,$course_id,$stu_score,$tea_keyin_score);
 
         // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}", 3, '存檔成功！');
-        redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
+        // redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$dep_id}&course_id={$course_id}", 3, '存檔成功！');
 
     }
 
@@ -2350,13 +2357,14 @@ switch ($op) {
                 $stu_data [$data['student_sn']]['tea_input_score']= ($data['tea_input_score']=='')?$data['sum_usual_stage_avg']:$data['tea_input_score'];
             }
 
-
-            // die(var_dump($stu_data));
+            $score_syn=$pars['score_syn']?$pars['score_syn']:'0';
+            // die(var_dump($pars['score_syn']));
             // die(var_dump($sscore));
             $uid = $_SESSION['beck_iscore_adm'] ? $sscore['tea_id'] : $xoopsUser->uid();
             $xoopsTpl->assign('uid', $uid);
             $xoopsTpl->assign('sscore', $sscore);
             $xoopsTpl->assign('all', $stu_data);
+            $xoopsTpl->assign('score_syn', $score_syn);
     
         }
         // //帶入使用者編號

@@ -78,6 +78,7 @@
     <br>
     <div>
         <input name="op" id="op" value="<{$op}>" type="hidden">
+        <!-- <input name="score_syn" id="score_syn" value="0" type="hidden"> -->
         <input name="year" id="year" value="<{$sscore.year}>" type="hidden">
         <input name="term" id="term" value="<{$sscore.term}>" type="hidden">
         <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
@@ -163,18 +164,29 @@
             // console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
-        // 複製"系統總成績"到"教師總成績
         $("#copy_grade").click(function(){
+            // $(".source_score").each(function(i){ //取得開頭name=student_sn
+            //     console.log(this.id);
+            //     let textval=$(this).text();
+            //     let tea_keyin_id=(this.id.replace('sys_score_', 'stu_finalscore_'));
+            //     $('#'+tea_keyin_id).val(textval);
+            // })
+            $('#op').val('stage_score_synchronize');
+            document.forms["stage_score_list"].submit();
+        });
+
+        // 複製"系統總成績"到"教師總成績
+        var score_syn = '<{$score_syn}>';
+        // console.log('score_syn='+score_syn);
+        if(score_syn=='1') {
             $(".source_score").each(function(i){ //取得開頭name=student_sn
-                console.log(this.id);
+                // console.log(this.id);
                 let textval=$(this).text();
                 let tea_keyin_id=(this.id.replace('sys_score_', 'stu_finalscore_'));
                 $('#'+tea_keyin_id).val(textval);
             })
             document.forms["stage_score_list"].submit();
-        })
-
-
+        }
 
         // 判斷表單是否有改變，沒變才能按列印
         var dataformInit = $("#stage_score_list").serializeArray();
