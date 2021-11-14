@@ -45,13 +45,13 @@
     <table class="table table-bordered table-sm table-hover table-striped table-shadow">
         <thead class="table-info">
             <tr>
-                <th scope="col" class="text-center">編號</th>
+                <th scope="col" class="text-center text-nowrap">編號</th>
                 <th scope="col" class="text-center">類別</th>
                 <th scope="col" class="text-center">單位</th>
                 <th scope="col" class="text-center">標題</th>
                 <th scope="col" class="text-center">建立日期</th>
                 <!-- <th scope="col" class="text-center">結束日期</th> -->
-                <th scope="col" class="text-center">點閱數</th>
+                <th scope="col" class="text-center text-nowrap">點閱</th>
                 <{if $is_admin}>
                 <th scope="col" class="text-center">功能</th>
                 <{/if}>
