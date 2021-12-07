@@ -27,9 +27,8 @@ $cos['cos_term'] = Request::getString('cos_term');
 $cos['dep_id']   = Request::getString('dep_id');
 $uscore['dep_id']      = Request::getString('dep_id');
 $uscore['course_id']   = Request::getString('course_id');
-$uscore['exam_stage']  = Request::getString('exam_stage');
-$uscore['exam_number'] = Request::getString('exam_number');
-$uscore['score_syn'] = Request::getString('score_syn');
+$uscore['exam_stage']  = Request::getString('exam_stage');  //第幾次段考或第幾次段考前平時考
+$uscore['exam_number'] = Request::getString('exam_number'); //第幾次平時考
 
 $hi_care['year']  = Request::getString('year');
 $hi_care['month'] = Request::getString('month');
@@ -51,7 +50,6 @@ $AB['stu_sn'] = Request::getString('stu_sn');
 $AB['AB_period'] = Request::getString('AB_period');
 
 
-// die(var_dump($score_syn));
 // die(var_dump($_GET));
 // die(var_dump($_REQUEST));
 // die(var_dump($_SESSION));
@@ -143,9 +141,9 @@ switch ($op) {
         // header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
         redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}", 3, '存檔成功！');
         exit;//離開，結束程式
-    case "stage_score_synchronize":
-        stage_score_insert($uscore);
-        header("location:tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}&score_syn=1");
+    case "stage_score_keyin_save":
+        stage_score_keyin_save($uscore);
+        redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}", 3, '只存檔教師最終總成績，成功！');
         exit;//離開，結束程式
 // 查詢 考科成績 及期末總成績 學期總成績
     //平時成績 列表
@@ -2142,9 +2140,45 @@ switch ($op) {
 // ----------------------------------
 // 段考成績 管理
     // sql-新增 段考成績
+    function stage_score_keyin_save($pars=[]){
+        global $xoopsDB,$xoopsUser;
+        if (!$xoopsUser) {
+            redirect_header('index.php', 3, 'stage_score_keyin_save! error:2112071112');
+        }
+
+        // 安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$pars['dep_id']}&course_id={$pars['course_id']}", 3, 'stage_score_keyin_save! error:2112071112 檢查結果:'.!$GLOBALS['xoopsSecurity']->check());
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+
+        $tea_keyin_score  = Request::getArray('tea_keyin_score');//學生編號=>教師keyin總成績
+
+        // var_dump($tea_keyin_score);die();        
+        $tbl = $xoopsDB->prefix('yy_stage_sum');
+        foreach($tea_keyin_score as $stu_sn=>$keyin_s){
+            $sql = "update `$tbl` set 
+                        `tea_input_score`   = '{$keyin_s}',
+                        `update_user` = '{$update_user}', 
+                        `update_date` = now()
+                    where 
+                        `student_sn`   = '{$stu_sn}' and 
+                        `course_id`   = '{$course_id}' ";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        }
+    }
+    // sql-新增 段考成績
     function stage_score_insert($pars=[]){
 
-        global $xoopsDB,$xoopsUser,$xoopsTpl;
+        global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser) {
             redirect_header('index.php', 3, 'stage_score_insert! error:2105091725');
@@ -2357,14 +2391,14 @@ switch ($op) {
                 $stu_data [$data['student_sn']]['tea_input_score']= ($data['tea_input_score']=='')?$data['sum_usual_stage_avg']:$data['tea_input_score'];
             }
 
-            $score_syn=$pars['score_syn']?$pars['score_syn']:'0';
+            // $score_syn=$pars['score_syn']?$pars['score_syn']:'0';
             // die(var_dump($pars['score_syn']));
             // die(var_dump($sscore));
             $uid = $_SESSION['beck_iscore_adm'] ? $sscore['tea_id'] : $xoopsUser->uid();
             $xoopsTpl->assign('uid', $uid);
             $xoopsTpl->assign('sscore', $sscore);
             $xoopsTpl->assign('all', $stu_data);
-            $xoopsTpl->assign('score_syn', $score_syn);
+            // $xoopsTpl->assign('score_syn', $score_syn);
     
         }
         // //帶入使用者編號

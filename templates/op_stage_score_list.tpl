@@ -37,7 +37,8 @@
                 <th scope="col" class="text-center" width="7%">系統計算總成績</th>
                 <th scope="col" class="text-center" width="7%">教師最終總成績
                     <{if $desc_addEdit}>
-                        <button class="btn btn-primary btn-sm mr-1" type="button" id="copy_grade">同左</button>
+                        <!-- <button class="btn btn-primary btn-sm" type="button" id="copy_grade">同左</button> -->
+                        <button class="btn btn-primary btn-sm" type="button" id="keyin_save" data-toggle="tooltip" data-placement="right" title="只儲存教師keyin總成績">手動儲存</button>
                     <{/if}>
                 </th>
                 <th scope="col" class="text-center" width="18%">質性<br>描述</th>
@@ -62,7 +63,7 @@
                 <th class="text-center"><{$v1.f_stage}></th>
                 <th class="text-center source_score" id="sys_score_<{$stu_sn}>"><{$v1.f_sum}></th>
                 <th class="text-center">
-                    <input type="text" class="form-control score_jug validate[required,min[0],max[100]]" name="tea_keyin_score[<{$stu_sn}>]" id="stu_finalscore_<{$stu_sn}>" value="<{$v1.tea_input_score}>">
+                    <input type="text" class="form-control keyin_jug" name="tea_keyin_score[<{$stu_sn}>]" id="stu_finalscore_<{$stu_sn}>" value="<{$v1.tea_input_score}>">
                 </th>
                 <th class="text-center">
                     <{if $desc_addEdit}>
@@ -78,7 +79,6 @@
     <br>
     <div>
         <input name="op" id="op" value="<{$op}>" type="hidden">
-        <!-- <input name="score_syn" id="score_syn" value="0" type="hidden"> -->
         <input name="year" id="year" value="<{$sscore.year}>" type="hidden">
         <input name="term" id="term" value="<{$sscore.term}>" type="hidden">
         <input name="update_user" id="update_user" value="<{$uid}>" type="hidden">
@@ -151,6 +151,9 @@
 <script src="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.js" type="text/javascript"></script>
 <link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css"/>
 <script type="text/javascript">
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
     $(document).ready(function($){
         $('#dep_id').change(function(e){
             $('#course_id').val('');
@@ -164,29 +167,34 @@
             // console.log('<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id);
             location.href='<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id='+dep_id+'&course_id='+course_id;
         });
-        $("#copy_grade").click(function(){
-            // $(".source_score").each(function(i){ //取得開頭name=student_sn
-            //     console.log(this.id);
-            //     let textval=$(this).text();
-            //     let tea_keyin_id=(this.id.replace('sys_score_', 'stu_finalscore_'));
-            //     $('#'+tea_keyin_id).val(textval);
-            // })
-            $('#op').val('stage_score_synchronize');
-            document.forms["stage_score_list"].submit();
+
+        $("#keyin_save").click(function(){
+            let formstatus=true;
+            $(".keyin_jug").each(function(i){ //取得開頭name=student_sn
+                if((isNaN($(this).val())|| ($(this).val()<0) || ($(this).val()>100) ||($(this).val()=='') ) && ($(this).val()!='-'))
+                {
+                    sweetAlert("教師總成績格式錯誤，請重新輸入！", "輸入錯誤","error");
+                    formstatus=false;
+                    return false;
+                }
+            })
+            if(formstatus==true){
+                $('#op').val('stage_score_keyin_save');
+                document.forms["stage_score_list"].submit();
+            }
         });
 
-        // 複製"系統總成績"到"教師總成績
-        var score_syn = '<{$score_syn}>';
-        // console.log('score_syn='+score_syn);
-        if(score_syn=='1') {
-            $(".source_score").each(function(i){ //取得開頭name=student_sn
-                // console.log(this.id);
-                let textval=$(this).text();
-                let tea_keyin_id=(this.id.replace('sys_score_', 'stu_finalscore_'));
-                $('#'+tea_keyin_id).val(textval);
-            })
-            document.forms["stage_score_list"].submit();
-        }
+        // 停用 系統計算總成績同步教師keyin總成績
+        // $("#copy_grade").click(function(){
+        //     $(".source_score").each(function(i){ //取得開頭name=student_sn
+        //         console.log(this.id);
+        //         let textval=$(this).text();
+        //         let tea_keyin_id=(this.id.replace('sys_score_', 'stu_finalscore_'));
+        //         $('#'+tea_keyin_id).val(textval);
+        //     })
+        //     $('#op').val('stage_score_synchronize');
+        //     document.forms["stage_score_list"].submit();
+        // });
 
         // 判斷表單是否有改變，沒變才能按列印
         var dataformInit = $("#stage_score_list").serializeArray();

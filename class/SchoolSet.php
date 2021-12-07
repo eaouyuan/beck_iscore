@@ -617,6 +617,19 @@ class SchoolSet
         // 新增學生總成績
         $tbl = $xoopsDB->prefix('yy_stage_sum');
         foreach($all as $stusn=>$v){
+            // 儲存時，系統總成績 與 教師keyin總成績 分開
+            // $sql_1 = "insert into `$tbl` (
+            //     `course_id`,`student_sn`,`uscore_sum`,`uscore_avg`,`sscore_sum`,
+            //     `sscore_avg`,`sum_usual_stage_avg`,`update_user`,`update_date`,
+            //     `description`,`tea_input_score`
+            //     ) 
+            //     values(
+            //     '{$coursid}','{$stusn}','{$v['usum']}','{$v['uavg']}','{$v['ssum']}',
+            //     '{$v['savg']}','{$v['uavg_savg_sum']}','{$xoopsUser->uid()}',now(),
+            //     '{$stu_desc[$stusn]["desc"]}','{$tea_keyin_score[$stusn]}'
+            //     )";
+
+            // 儲存時，系統計算總成績 to 教師keyin總成績
             $sql_1 = "insert into `$tbl` (
                 `course_id`,`student_sn`,`uscore_sum`,`uscore_avg`,`sscore_sum`,
                 `sscore_avg`,`sum_usual_stage_avg`,`update_user`,`update_date`,
@@ -625,7 +638,7 @@ class SchoolSet
                 values(
                 '{$coursid}','{$stusn}','{$v['usum']}','{$v['uavg']}','{$v['ssum']}',
                 '{$v['savg']}','{$v['uavg_savg_sum']}','{$xoopsUser->uid()}',now(),
-                '{$stu_desc[$stusn]["desc"]}','{$tea_keyin_score[$stusn]}'
+                '{$stu_desc[$stusn]["desc"]}','{$v['uavg_savg_sum']}'
                 )";
                 // echo($sql_1);die();
             $xoopsDB->queryF($sql_1) or Utility::web_error($sql, __FILE__, __LINE__);
