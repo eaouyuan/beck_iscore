@@ -1892,18 +1892,18 @@ switch ($op) {
         $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
 
 
-        // die(var_dump($terms));
 
         // 學程列表
-        $major_name=[];
-        foreach ($SchoolSet->dept as $k=>$v){
-            $major_name[$v['sn']]=$v['dep_name'];
+        // 假如 學年度 學期非目前學期，列出所有學程
+        if($pars['cos_year']==$SchoolSet->sem_year AND  $pars['cos_term']==$SchoolSet->sem_term){
+            $major_htm=Get_select_opt_htm($SchoolSet->depsnname,$pars['dep_id'],'1');
+        }else{
+            $major_htm=Get_select_opt_htm($SchoolSet->all_depsnname,$pars['dep_id'],'1');
         }
         $pars['dep_name']=$SchoolSet->depsnname[$pars['dep_id']];
-        $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
+        // $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
         $xoopsTpl->assign('major_htm', $major_htm);
         $xoopsTpl->assign('pars', $pars);
-
 
         //套用formValidator驗證機制
         if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
@@ -2139,7 +2139,7 @@ switch ($op) {
 
 // ----------------------------------
 // 段考成績 管理
-    // sql-新增 段考成績
+    // sql- 修改教師keyin總成績
     function stage_score_keyin_save($pars=[]){
         global $xoopsDB,$xoopsUser;
         if (!$xoopsUser) {
@@ -2391,14 +2391,11 @@ switch ($op) {
                 $stu_data [$data['student_sn']]['tea_input_score']= ($data['tea_input_score']=='')?$data['sum_usual_stage_avg']:$data['tea_input_score'];
             }
 
-            // $score_syn=$pars['score_syn']?$pars['score_syn']:'0';
-            // die(var_dump($pars['score_syn']));
             // die(var_dump($sscore));
             $uid = $_SESSION['beck_iscore_adm'] ? $sscore['tea_id'] : $xoopsUser->uid();
             $xoopsTpl->assign('uid', $uid);
             $xoopsTpl->assign('sscore', $sscore);
             $xoopsTpl->assign('all', $stu_data);
-            // $xoopsTpl->assign('score_syn', $score_syn);
     
         }
         // //帶入使用者編號
@@ -2412,9 +2409,6 @@ switch ($op) {
         $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
         
-
-
-
 
     }
 // ----------------------------------

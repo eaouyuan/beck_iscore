@@ -24,8 +24,10 @@ class SchoolSet
     public $teachers; //教師資料
     public $isguidance; //輔導老師
     public $issocial; //社工師
-    public $dept; //所有學程資料
+    public $dept; //學程資料 enable
     public $depsnname; //['4'=>'資料處理科']學程中文名稱 sn map name
+    public $all_dept;
+    public $all_depsnname; //所有學程
     public $deptofsch; //處室資料
     public $exam_name; //考試名稱
     public $usual_exam_name; //平時考名稱
@@ -911,8 +913,20 @@ class SchoolSet
             $major_ary[$rut['sn']]=$rut['dep_name'];
             $all[$rut['sn']] = $rut;
         }
+
+
+        $sql2 = "SELECT * FROM $tb1";
+        // echo($sql);
+        $result      = $xoopsDB->query($sql2) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all_dept=$all_major=[];
+        while($rut= $xoopsDB->fetchArray($result)){
+            $all_major[$rut['sn']]=$rut['dep_name'];
+            $all_dept[$rut['sn']] = $rut;
+        }
         $this->depsnname=$major_ary;
         $this->dept=$all;
+        $this->all_depsnname=$all_major;
+        $this->all_dept=$all_dept;
     }
     //get 學校處室
     private function get_deptofsch(){
