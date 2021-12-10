@@ -146,11 +146,11 @@ switch ($op) {
         redirect_header("tchstu_mag.php?op=stage_score_list&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}", 3, '只存檔教師最終總成績，成功！');
         exit;//離開，結束程式
 // 查詢 考科成績 及期末總成績 學期總成績
-    //平時成績 列表
+    // 考科成績查詢
     case "query_stage_score":
         query_stage_score($uscore);
         break;//跳出迴圈,往下執行
-    // 新增、更新 考科成績
+    // 新增、更新 考科成績註
     case "add_query_stage_score_comment":
         add_query_stage_score_comment($uscore);
         header("location:tchstu_mag.php?op=query_stage_score&dep_id={$uscore['dep_id']}&course_id={$uscore['course_id']}");
@@ -2014,7 +2014,7 @@ switch ($op) {
         redirect_header("tchstu_mag.php?op=query_stage_score&dep_id={$dep_id}&exam_stage={$exam_stage}", 3, '存檔成功！');
     }
 
-    // 列表- 段考成績查詢
+    // 列表- 考科成績查詢
     function query_stage_score($pars=[]){
         global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
         $SchoolSet= new SchoolSet;
@@ -2103,10 +2103,12 @@ switch ($op) {
                         $stu_data[$stu_sn]['reward_method']=score_range($stu_data[$stu_sn]['avg'],$pars['exam_stage']);
                     }
 
-                    if($pars['exam_stage']=='4' AND $stu_first_exam_avg_score[$stu_sn]>='60'){
+                    if($pars['exam_stage']=='4'){
                         $stu_data[$stu_sn]['frist_exam_score']=$stu_first_exam_avg_score[$stu_sn];
                         $stu_data[$stu_sn]['progress_score']=round($stu_data[$stu_sn]['avg']-$stu_first_exam_avg_score[$stu_sn],0);
-                        $stu_data[$stu_sn]['reward_method'].=progress_award($stu_data[$stu_sn]['progress_score']);
+                        if($stu_first_exam_avg_score[$stu_sn]>='60'){
+                            $stu_data[$stu_sn]['reward_method'].=progress_award($stu_data[$stu_sn]['progress_score']);
+                        }
                     }else{
                         $stu_data[$stu_sn]['progress_score']='';
                     }
@@ -2116,7 +2118,8 @@ switch ($op) {
                 }
                 $i++;
             }
-            // die(var_dump($stu_data));
+            // die(var_dump($stu_first_exam_avg_score));
+
             // 建立考科總成績檔
             $SchoolSet->add_query_stage_score($pars['dep_id'],$pars['exam_stage'],$stu_data);
 
