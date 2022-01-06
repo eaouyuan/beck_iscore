@@ -2484,12 +2484,6 @@ switch ($op) {
         $sql.=" ORDER BY `cos_year` DESC , `cos_term` DESC ,`dep_id` ,`sort`,`tea_id` , `cos_name`";
         // echo($sql);die();
 
-        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        // $PageBar = getPageBar($sql, 30, 10);
-        // $bar     = $PageBar['bar'];
-        // $sql     = $PageBar['sql'];
-        // $total   = $PageBar['total'];
-
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $all      = array();
 
@@ -2602,7 +2596,7 @@ switch ($op) {
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         return $re_val;
     }
-    // sql-新增 學程
+    // sql-新增 課程
     function course_insert(){
         global $xoopsDB,$xoopsUser;
 
