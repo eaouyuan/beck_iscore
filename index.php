@@ -508,7 +508,7 @@ default:
         // 顯示附檔
         $TadUpFiles=new TadUpFiles("beck_iscore","/announcement");
         $TadUpFiles->set_col('ann_file',$sn);
-        $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'filename');
+        $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'',1);
         
         // var_dump($Ann);die();
         $xoopsTpl->assign('Ann', $Ann);
