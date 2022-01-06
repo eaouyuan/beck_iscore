@@ -4,7 +4,7 @@
    
     <button type="button" class="btn btn-primary btn-sm" style="float:right" 
         onclick="self.location.href='index.php?op=announcement_class_form';">
-        <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增分類"> 新增分類
+        <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增分類"> 新增分類
     </button>
 
 

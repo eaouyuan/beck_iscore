@@ -3,7 +3,7 @@
 
     <button type="button" class="btn btn-primary btn-sm" style="float:right" 
         onclick="self.location.href='school_affairs.php?op=department_form';">
-        <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增學程"> 新增學程
+        <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增學程"> 新增學程
     </button>
 
 

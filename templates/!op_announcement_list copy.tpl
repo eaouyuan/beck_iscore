@@ -2,7 +2,7 @@
 <div class="row col"></div>
 <{if $show_add_button=='1'}>
     <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='index.php?op=announcement_form';" style="float:right">
-    <img src="http://localhost/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
+    <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增公告">新增公告
     </button>
 <{/if}>
 <{if $show_add_button=='0'}><div class="col"><{/if}>
