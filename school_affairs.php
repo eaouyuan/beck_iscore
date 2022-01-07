@@ -748,11 +748,15 @@ switch ($op) {
             echo "<p>\${$key}={$$key}</p>";
         }
         // die();
+        $SchoolSet= new SchoolSet;
+        $exam_value = strval(array_search($exam_name,$SchoolSet->exam_name));
+
         $tbl = $xoopsDB->prefix('yy_exam_keyin_daterange');
         $sql = "update `$tbl` set 
                     `exam_year`   = '{$exam_year}',
                     `exam_term`= '{$exam_term}',
                     `exam_name` = '{$exam_name}', 
+                    `exam_value` = '{$exam_value}', 
                     `start_date` = '{$start_date}', 
                     `end_date` = '{$end_date}', 
                     `status` = '{$status}', 
@@ -786,11 +790,17 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
-                
-        $tbl   = $xoopsDB->prefix('yy_exam_keyin_daterange');
+            
+        $SchoolSet= new SchoolSet;
+        $exam_value = strval(array_search($exam_name,$SchoolSet->exam_name));
 
-        $sql      = "SELECT * FROM $tbl WHERE `exam_year`='{$exam_year}' AND `exam_term`='{$exam_term}'
-                    AND `exam_name`='{$exam_name}' ";
+
+        $tbl   = $xoopsDB->prefix('yy_exam_keyin_daterange');
+        $sql      = "SELECT * FROM $tbl 
+                    WHERE `exam_year`='{$exam_year}'
+                    AND `exam_term`='{$exam_term}'
+                    AND `exam_name`='{$exam_name}'
+                    ";
         // echo($sql);die();
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $data_exist= $xoopsDB->fetchArray($result);
@@ -798,11 +808,11 @@ switch ($op) {
     
         if (!$data_exist) {
             $sql = "insert into `$tbl` (
-                        `exam_year`,`exam_term`,`exam_name`,`start_date`,`end_date`,
+                        `exam_year`,`exam_term`,`exam_name`,`exam_value`,`start_date`,`end_date`,
                         `status`,`update_user`,`update_date`
                     )values(
-                        '{$exam_year}','{$exam_term}','{$exam_name}','{$start_date}', '{$end_date}',
-                        '{$status	}','{$uid}',now()
+                        '{$exam_year}','{$exam_term}','{$exam_name}','{$exam_value}','{$start_date}',
+                        '{$end_date}' ,'{$status}'   ,'{$uid}'      ,now()
                     )";
             // echo($sql);die();
             $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -874,7 +884,7 @@ switch ($op) {
         $xoopsTpl->assign('exam_name_htm', $exam_name_htm);
 
         // 目前狀況
-        $status_ary=['0'=>'關閉','1'=>'啟用','2'=>'暫停'] ;
+        $status_ary=['0'=>'關閉','1'=>'開啟','2'=>'暫停'] ;
         $status_htm=Get_select_opt_htm($status_ary,$exam_date['status'],'1');
         $xoopsTpl->assign('status_htm', $status_htm);
 
@@ -916,7 +926,7 @@ switch ($op) {
 
         $tb1      = $xoopsDB->prefix('yy_exam_keyin_daterange');
         $sql      = "SELECT  * FROM $tb1
-                    ORDER BY sort,exam_year desc, exam_term desc, exam_name 
+                    ORDER BY exam_year desc , exam_term desc , exam_value 
                         " ;
         
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
