@@ -2659,12 +2659,13 @@ switch ($op) {
     }
     // 表單 課程
     function course_form($sn){
-        // var_dump(power_chk("tchstu_mag", "1"));die();
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
             redirect_header('tchstu_mag.php?op=course_list', 3, '無 course_form 權限!error:2104221800');
         }        
+        // var_dump('sadfsad');die();
 
-        global $xoopsTpl,$xoopsUser,$xoopsDB;
 
         //套用formValidator驗證機制
         if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
