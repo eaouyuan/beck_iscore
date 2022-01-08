@@ -765,7 +765,7 @@ class SchoolSet
         $data= $xoopsDB->fetchArray($result);
         $today= date("Y-m-d");
 
-        if($data['status']=='0'){
+        if($data['status']=='1'){
             return true;
         }elseif (((strtotime($data['start_date']))<=(strtotime($today)))&&((strtotime($data['end_date']))>=(strtotime($today)))){
             return true;

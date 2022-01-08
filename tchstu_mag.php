@@ -2330,7 +2330,6 @@ switch ($op) {
                 $stu_data[$stu_sn]['f_sum']='';
                 $stu_data[$stu_sn]['desc']='-';
             }
-            // die(var_dump($major_stu));
             // 三次段考成績時段，是否可keyin
             $addEdit=[];
             foreach($SchoolSet->stage_exam_name as $k=>$name){
@@ -2341,6 +2340,8 @@ switch ($op) {
                     $addEdit[$k]=$SchoolSet->exam_date_check($name);
                 // }
             }
+            // die(var_dump($addEdit));
+
             $xoopsTpl->assign('addEdit', $addEdit);
             foreach($addEdit as $k=>$val){
                 // 只要其中一次段考成績有開，就可以寫描述 

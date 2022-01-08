@@ -943,7 +943,7 @@ switch ($op) {
 
         // var_dump($stu= $xoopsDB->fetchArray($result));die();
         // 目前狀況
-        $status_ary=['0'=>'關閉 ','1'=>'啟用','2'=>'暫停'] ;
+        $status_ary=['0'=>'關閉 ','1'=>'開啟','2'=>'暫停'] ;
 
         while($exam_data= $xoopsDB->fetchArray($result)){
             $exam_data['i']          = $i;

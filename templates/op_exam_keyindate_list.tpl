@@ -29,7 +29,7 @@
                 <th scope="col" class="text-center">考試階段</th>
                 <th scope="col" class="text-center">起始日期</th>
                 <th scope="col" class="text-center">結束日期</th>
-                <th scope="col" class="text-center">狀態</th>
+                <th scope="col" class="text-center">輸入</th>
                 <th scope="col" class="text-center">功能</th>
             </tr>
         </thead>
