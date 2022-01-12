@@ -150,7 +150,7 @@
             <!--  夜間缺席時間 -->
             <{if $AB_period_show.3}>
                 <tr>
-                    <th class="table-info p-2" scope="row">夜間缺席時間<br>16:30~23:59</th>
+                    <th class="table-info p-2" scope="row">夜間缺席時間<br>16:30~00:00</th>
                     <th class="p-2 text-left">
                         <div class="input-group">
                             <div class="input-group-prepend">
@@ -329,19 +329,17 @@
                 return false;
             }
         });
+    });
 
-
-        $('#earlym_stime,#earlym_etime,#morning_stime,#morning_etime,#night_stime,#night_etime').datepicker().on("dp.hide", function (e) {
-            event_date=document.getElementById("AB_date").value;
-            if(event_date==''){
-                sweetAlert("請輸入缺席日期！", "日期未輸入錯誤","error");
-                false;
-            }else{
-                idname=$(this).prop('id');
-                timerange(idname);
-            }
-        });
-
+    $('#earlym_stime,#earlym_etime,#morning_stime,#morning_etime,#night_stime,#night_etime').datepicker().on("dp.hide", function (e) {
+        event_date=document.getElementById("AB_date").value;
+        if(event_date==''){
+            sweetAlert("請輸入缺席日期！", "日期未輸入錯誤","error");
+            false;
+        }else{
+            idname=$(this).prop('id');
+            timerange(idname);
+        }
     });
     $('#earlym_stime,#earlym_etime,#morning_stime,#morning_etime,#night_stime,#night_etime').datepicker().on("dp.show", function () {
         $('#ui-datepicker-div').hide();
@@ -394,7 +392,9 @@
             break;
         case 'night_stime':
         case 'night_etime':
-            if(Date.parse(a_datetime).valueOf() < Date.parse(event_date+' 16:30').valueOf()){
+            if(Date.parse(a_datetime).valueOf() < Date.parse(event_date+' 16:30').valueOf() && 
+                Date.parse(a_datetime).valueOf() != Date.parse(event_date+' 00:00').valueOf())
+            {
                 sweetAlert("夜間時間未在區段內", "時間錯誤","error");
                 return '1';
             }
@@ -408,34 +408,19 @@
 
     //計算小時
     function compute(a,b,h) {
-        // console.log(a);
-        a_time=document.getElementById(a).value; //開始時間
-        b_time=document.getElementById(b).value; //結束時間
-        event_date=document.getElementById("AB_date").value;
-        
-        if(a_time!='' && b_time!=''){
-            if(event_date==''){
-                sweetAlert("請輸入缺席日期！", "日期未輸入錯誤","error");
-                return false;
-            }else{
-                let a_date = event_date+' '+a_time;
-                let b_date = event_date+' '+b_time;
-                if(Date.parse(a_date).valueOf() > Date.parse(b_date).valueOf()){
-                    sweetAlert("注意開始時間不能晚於結束時間！", "日期輸入錯誤","error");
-                    $('#'+b).val(a_time);
-                    return false;
-                }else{
-                    let hour = new Date(Date.parse(b_date.replace(/-/g, "/")))-new Date(Date.parse(a_date.replace(/-/g, "/")));
-                    hour = Math.ceil(Math.round(hour/3600000*100)/100);
-                    document.getElementById(h).innerHTML = hour;
-                    $('[name='+h+']').val(hour);
-                    // if(hour == 0){hour++; }
-                }
-            }
-        }
+        datediff(a,b,h);
+        let hour = Date.parse(end_datetime)-Date.parse(start_datetime);
+        // let hour = new Date(Date.parse(b_date.replace(/-/g, "/")))-new Date(Date.parse(a_date.replace(/-/g, "/")));
+        // console.log(Date.parse(start_datetime));
+        hour = Math.ceil(Math.round(hour/3600000*100)/100);
+        document.getElementById(h).innerHTML = hour;
+        $('[name='+h+']').val(hour);
+        // if(hour == 0){hour++; }
+
     }
     // 比較時間
     function datediff(a,b,h) {
+        // console.log(a,b,h);
         a_time=document.getElementById(a).value; //開始時間
         b_time=document.getElementById(b).value; //結束時間
         event_date=document.getElementById("AB_date").value;
@@ -444,10 +429,19 @@
             if(event_date==''){
                 sweetAlert("請輸入缺席日期！", "日期未輸入錯誤","error");
             }else{
-                let a_date = event_date+' '+a_time;
-                let b_date = event_date+' '+b_time;
-                if(Date.parse(a_date).valueOf() > Date.parse(b_date).valueOf()){
-                    sweetAlert("注意開始時間不能晚於結束時間！", "日期輸入錯誤","error");
+                a_datetime = event_date+' '+a_time;
+                b_datetime = event_date+' '+b_time;
+                start_datetime=new Date(a_datetime);
+                end_datetime=new Date(b_datetime);
+
+                if(h=='night_hour' && b_time=='00:00'){
+                    end_datetime.setDate(end_datetime.getDate()+1); 
+                }
+                // console.log('s:'+start_datetime);
+                // console.log('e:'+end_datetime);
+                // if(Date.parse(a_date).valueOf() > Date.parse(b_date).valueOf()){
+                if(Date.parse(start_datetime) > Date.parse(end_datetime)){
+                    sweetAlert("注意開始時間不能晚於結束時間！", "日期輸入錯誤(error:datediff)","error");
                     $('#'+b).val(a_time);
                     return false;
                 }
@@ -455,17 +449,6 @@
         }
     }
 
-    // function absenceTime(){
-    //     var StartDate = document.getElementById("dateee").value+' '+document.getElementById("morrow1").value;
-    //     var EndDate = document.getElementById("dateee").value+' '+document.getElementById("morrow2").value;
-        
-    //     var hour = new Date(Date.parse(EndDate.replace(/-/g, "/")))-new Date(Date.parse(StartDate.replace(/-/g, "/")));
-    //     hour = Math.round(Math.round(hour/3600000*100)/100);
-    //     if(hour == 0){
-    //         hour++;
-    //     }
-    //     document.getElementById("Absence_date").value = hour;
-    // }
 
 </script>
 
