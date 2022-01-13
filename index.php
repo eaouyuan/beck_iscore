@@ -597,7 +597,8 @@ default:
         if(isset($Ann['end_date'])){
             $end_date=$Ann['end_date'];
         }else{
-            $end_date=gmdate('Y-m-d',strtotime('+3 month'));
+            $end_date=gmdate('Y-m-d',strtotime('+12 month'));
+            // $end_date=gmdate('Y-m-d',strtotime('+3 month'));
         }
         $xoopsTpl->assign('end_date', $end_date);
 
