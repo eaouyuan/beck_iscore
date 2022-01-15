@@ -530,7 +530,7 @@ switch ($op) {
         global $xoopsTpl,$xoopsUser,$xoopsDB;
         $SchoolSet= new SchoolSet;
         $myts = MyTextSanitizer::getInstance();
-
+        
         if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
             redirect_header('tchstu_mag.php', 2, '無 absence_record_form 權限! error:2106201624');
         }
@@ -2328,7 +2328,7 @@ switch ($op) {
                 $stu_data[$stu_sn]['f_usual']='';
                 $stu_data[$stu_sn]['f_stage']='';
                 $stu_data[$stu_sn]['f_sum']='';
-                $stu_data[$stu_sn]['desc']='-';
+                $stu_data[$stu_sn]['desc']='';
             }
             // 三次段考成績時段，是否可keyin
             $addEdit=[];

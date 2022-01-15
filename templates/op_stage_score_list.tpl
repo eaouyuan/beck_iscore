@@ -41,7 +41,7 @@
                         <button class="btn btn-primary btn-sm" type="button" id="keyin_save" data-toggle="tooltip" data-placement="right" title="只儲存教師keyin總成績">手動儲存</button>
                     <{/if}>
                 </th>
-                <th scope="col" class="text-center" width="18%">質性<br>描述</th>
+                <th scope="col" class="text-center" width="18%">質性評述<br>(務必以文字描述)</th>
             </tr>
         </thead>
 
@@ -67,7 +67,7 @@
                 </th>
                 <th class="text-center">
                     <{if $desc_addEdit}>
-                        <input type="text" class="form-control validate[required]" name="stu_score[<{$stu_sn}>][desc]" id="stu_<{$stu_sn}>" value="<{$v1.desc}>">
+                        <input type="text" class="form-control class_desc validate[required]" name="stu_score[<{$stu_sn}>][desc]" id="stu_<{$stu_sn}>" value="<{$v1.desc}>">
                     <{else}>
                         <{$v1.desc}>
                     <{/if}>
@@ -245,6 +245,17 @@
                     return false;
                 }
             })
+            $(".class_desc").each(function(i){ //取得開頭name=student_sn
+                if($(this).val()==''|| ($(this).val()=='-'))
+                // if($(this).val()==''|| $(this).val().includes('-'))
+                {
+                    sweetAlert("請輸入質性評述！", "欄位不可為「-」","error");
+
+                    formstatus=false;
+                    return false;
+                }
+            })
+            
             if(formstatus==true){document.forms["stage_score_list"].submit();}
         }
     }
