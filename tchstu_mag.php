@@ -530,7 +530,7 @@ switch ($op) {
         global $xoopsTpl,$xoopsUser,$xoopsDB;
         $SchoolSet= new SchoolSet;
         $myts = MyTextSanitizer::getInstance();
-
+        
         if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
             redirect_header('tchstu_mag.php', 2, '無 absence_record_form 權限! error:2106201624');
         }
