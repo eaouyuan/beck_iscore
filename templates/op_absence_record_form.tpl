@@ -293,7 +293,7 @@
             $("#night_stime").val('16:30');
             $("#night_etime").val('00:00');
             document.getElementById('night_hour').innerHTML="7.5";
-            $("[name=night_hour]").val('7/5');
+            $("[name=night_hour]").val('7.5');
         });
         $("#calculate_night").click(function(){
             compute('night_stime','night_etime','night_hour');
