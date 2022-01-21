@@ -27,7 +27,235 @@ function endKey($array){
     end($array);
     return key($array);
 }
+function testdate1($sdate_time,$edate_time){
+    $date_data=$date_result=[];
+    // $sdate_time='2022-01-03 08:30';
+    // $edate_time='2022-01-06 00:00';
+    $daterange=date_range(date('Y-m-d',strtotime($sdate_time)),date('Y-m-d',strtotime($edate_time)));
+    var_dump($sdate_time,$edate_time);
+    // 判斷是否連續一整天 
+    foreach($daterange as $k=>$v) {
+        if($k==0){
+            $date_data[]['head']=$v;
+        }elseif($k==endkey($daterange)){
+            $date_data[]['tail']=$v;
+        }else{
+            $date_data[]['body']=$v;
+        }
+    }
+    // var_dump($date_data);
+    $s=strtotime($sdate_time);
+    $e=strtotime($edate_time);
+    $i=0;
+    foreach($date_data as $vue){
+        foreach($vue as $period=>$datetime_v){
+            $a_str=$datetime_v.' 00:00';
+            $b_str=$datetime_v.' 08:30';
+            $c_str=$datetime_v.' 16:30';
+            $d_str=date('Y-m-d H:i',strtotime($datetime_v.' 00:00 +1 day'));
+            $a=strtotime($a_str);
+            $b=strtotime($b_str);
+            $c=strtotime($c_str);
+            $d=strtotime($d_str);
+            // var_dump($a_str,$b_str,$c_str,$d_str);
+            // var_dump($a,$b,$c,$d);die();
+            if($period=='head'){
+                if($s<$b){
+                    $date_result[$i]['period']='before';
+                    $date_result[$i]['s']=$sdate_time;
+                    if($e<=$b){
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$s)/3600;
+                        $i++;
+                    }elseif($e<=$c){
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$b)/3600;
+                        $i++;
+                    }elseif($e<=$d){
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$b)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$c)/3600;
+                        $i++;
+                    }else{
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$b)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$d_str;
+                        $date_result[$i]['hours']=($d-$c)/3600;
+                        $i++;
+                    }
+                }elseif($s>=$b && $s<$c){
+                    $date_result[$i]['period']='day';
+                    $date_result[$i]['s']=$sdate_time;
+                    if($e<=$c){
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$s)/3600;
+                        $i++;
+                    }elseif($e<$d){
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($c-$e)/3600;
+                        $i++;
+                    }else{
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$d_str;
+                        $date_result[$i]['hours']=($c-$d)/3600;
+                        $i++;
+                    }
+                }elseif($s>=$c && $s<$d){
+                    $date_result[$i]['period']='night';
+                    $date_result[$i]['night']['s']=$sdate_time;
+                    if($e<$d){
+                        $date_result[$i]['night']['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$s)/3600;
+                        $i++;
+                    }else{
+                        $date_result[$i]['night']['e']=$d_str;
+                        $date_result[$i]['hours']=($d-$s)/3600;
+                        $i++;
+                    }
+                }
+            }
+            if($period=='body'){
+                $date_result[$i]['period']='before';
+                $date_result[$i]['s']=$datetime_v.' 00:00';
+                $date_result[$i]['e']=$datetime_v.' 08:30';
+                $date_result[$i]['hours']=8.5;
+                $i++;
+                $date_result[$i]['period']='day';
+                $date_result[$i]['s']=$datetime_v.' 08:30';
+                $date_result[$i]['e']=$datetime_v.' 16:30';
+                $date_result[$i]['hours']=8;
+                $i++;
+                $date_result[$i]['period']='night';
+                $date_result[$i]['s']=$datetime_v.' 16:30';
+                $date_result[$i]['e']=date('Y-m-d H:i',strtotime($datetime_v.' 00:00 +1 day'));
+                $date_result[$i]['hours']=7.5;
+                $i++;
+            }
+            if($period=='tail'){
+                if($s<$a){
+                    $date_result[$i]['period']='before';
+                    $date_result[$i]['s']=$a_str;
+                    if($e<=$b){
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$a)/3600;
+                        $i++;
+                    }elseif($e<=$c){
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$a)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$b)/3600;
+                        $i++;
+                    }else{
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$a)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$b)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$c)/3600;
+                        $i++;
+                    }
+                }elseif($s>=$a && $s<$b){
+                    $date_result[$i]['period']='before';
+                    $date_result[$i]['s']=$sdate_time;
+                    if($e<=$b){
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$s)/3600;
+                        $i++;
+                    }elseif($e<=$c){
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$b)/3600;
+                        $i++;
+                    }else{
+                        $date_result[$i]['e']=$b_str;
+                        $date_result[$i]['hours']=($b-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='day';
+                        $date_result[$i]['s']=$b_str;
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$b)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$c)/3600;
+                        $i++;
+                    }
+                }elseif($s>=$b && $s<$c){
+                    $date_result[$i]['period']='day';
+                    $date_result[$i]['s']=$sdate_time;
+                    if($e<=$c){
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$s)/3600;
+                        $i++;
+                    }elseif($e<=$d){
+                        $date_result[$i]['e']=$c_str;
+                        $date_result[$i]['hours']=($c-$s)/3600;
+                        $i++;
+                        $date_result[$i]['period']='night';
+                        $date_result[$i]['s']=$c_str;
+                        $date_result[$i]['e']=$edate_time;
+                        $date_result[$i]['hours']=($e-$c)/3600;
+                        $i++;
+                    }
+                }elseif($s>=$c && $s<=$d){
+                    $date_result[$i]['period']='night';
+                    $date_result[$i]['s']=$sdate_time;
+                    $date_result[$i]['e']=$edate_time;
+                    $date_result[$i]['hours']=($e-$s)/3600;
+                    $i++;
+                }
+            }
 
+        }
+    }
+    print_r($date_result);
+    // die();
+}
 function testdate($sdate_time,$edate_time){
     $date_data=$date_result=[];
     // $sdate_time='2022-01-03 08:30';
