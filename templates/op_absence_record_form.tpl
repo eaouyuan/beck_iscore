@@ -86,6 +86,7 @@
                     <th class="p-2 text-left">
                         <div class="input-group">
                             <div class="input-group-prepend">
+                                <button class="btn btn-success" type="button"  id="all_before" type="button">全區間</button>
                                 <span class="input-group-text">日期起</span>
                             </div>
                             <input type="text" class="form-control" id="earlym_stime" name="earlym_stime" value="<{$ru.stime}>">
@@ -120,6 +121,7 @@
                     <th class="p-2 text-left">
                         <div class="input-group">
                             <div class="input-group-prepend">
+                                <button class="btn btn-success" type="button"  id="all_day" type="button">全區間</button>
                                 <span class="input-group-text">日期起</span>
                             </div>
                             <input type="text" class="form-control" id="morning_stime" name="morning_stime" value="<{$ru.stime}>">
@@ -154,6 +156,7 @@
                     <th class="p-2 text-left">
                         <div class="input-group">
                             <div class="input-group-prepend">
+                                <button class="btn btn-success" type="button"  id="all_night" type="button">全區間</button>
                                 <span class="input-group-text">日期起</span>
                             </div>
                             <input type="text" class="form-control" id="night_stime" name="night_stime" value="<{$ru.stime}>">
@@ -254,6 +257,12 @@
             document.getElementById('earlym_hour').innerHTML="";
             $("[name=earlym_hour]").val('');
         });
+        $("#all_before").click(function(){
+            $("#earlym_stime").val('00:00');
+            $("#earlym_etime").val('08:30');
+            document.getElementById('earlym_hour').innerHTML="8.5";
+            $("[name=earlym_hour]").val('8.5');
+        });
         $("#calculate_early").click(function(){
             compute('earlym_stime','earlym_etime','earlym_hour');
         });
@@ -264,15 +273,27 @@
             document.getElementById('morning_hour').innerHTML="";
             $("[name=morning_hour]").val('');
         });
+        $("#all_day").click(function(){
+            $("#morning_stime").val('08:30');
+            $("#morning_etime").val('16:30');
+            document.getElementById('morning_hour').innerHTML="8";
+            $("[name=morning_hour]").val('8');
+        });
         $("#calculate_morning").click(function(){
             compute('morning_stime','morning_etime','morning_hour');
         });
-        // 夜間f
+        // 夜間
         $("#clear_night").click(function(){
             $("#night_stime").val('');
             $("#night_etime").val('');
             document.getElementById('night_hour').innerHTML="";
             $("[name=night_hour]").val('');
+        });
+        $("#all_night").click(function(){
+            $("#night_stime").val('16:30');
+            $("#night_etime").val('00:00');
+            document.getElementById('night_hour').innerHTML="7.5";
+            $("[name=night_hour]").val('7/5');
         });
         $("#calculate_night").click(function(){
             compute('night_stime','night_etime','night_hour');
