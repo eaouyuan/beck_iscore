@@ -478,7 +478,7 @@ switch ($op) {
         }
 
         if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        $sql.=" `status`!='2' ORDER BY `AB_date` DESC , `stu_sn` , `AB_period` ";
+        $sql.=" `status`!='2' ORDER BY `ABsn` DESC,`AB_date` DESC , `stu_sn` , `AB_period` ";
         // echo($sql);die();
         // getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
         // $PageBar = getPageBar($sql, 100, 10);
@@ -664,6 +664,14 @@ switch ($op) {
         }elseif($AB_period=='3'){
             $sql_sdate=$AB_date.' '.$night_stime.':00';
             $sql_edate=$AB_date.' '.$night_etime.':00';
+
+            if($night_etime=='00:00'){
+                $sql_edate=date('Y-m-d H:i:s',strtotime($AB_date.' '.$night_etime.':00 +1 day'));
+            }else{
+                $sql_edate=$AB_date.' '.$night_etime.':00';
+            }
+
+
             $sql_AB_hour=$night_hour;
         }
 
@@ -719,7 +727,11 @@ switch ($op) {
         }
         if($night_hour!=''){
             $Ab_times['3']['sdate']=$AB_date.' '.$night_stime.':00';
-            $Ab_times['3']['edate']=$AB_date.' '.$night_etime.':00';
+            if($night_etime=='00:00'){
+                $Ab_times['3']['edate']=date('Y-m-d H:i:s',strtotime($AB_date.' '.$night_etime.':00 +1 day'));
+            }else{
+                $Ab_times['3']['edate']=$AB_date.' '.$night_etime.':00';
+            }
             $Ab_times['3']['hour']=$night_hour;
         }
         // var_dump($Ab_times);die();
