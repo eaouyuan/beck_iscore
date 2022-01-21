@@ -246,10 +246,10 @@
                 }
             })
             $(".class_desc").each(function(i){ //取得開頭name=student_sn
-                if($(this).val()==''|| ($(this).val()=='-'))
+                if($(this).val()=='')
                 // if($(this).val()==''|| $(this).val().includes('-'))
                 {
-                    sweetAlert("請輸入質性評述！", "欄位不可為「-」","error");
+                    sweetAlert("請輸入質性評述！", "欄位不可為「空白」","error");
 
                     formstatus=false;
                     return false;
