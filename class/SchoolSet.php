@@ -229,6 +229,7 @@ class SchoolSet
                 Where `cos_year`='{$year}' 
                 AND `cos_term`='{$term}' 
                 AND `dep_id`='{$depid}' 
+                AND `scoring`='1'
                 ORDER BY `student_sn`,$tb2.sort
                         ";
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);

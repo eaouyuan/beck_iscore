@@ -1946,7 +1946,7 @@ switch ($op) {
             $term_score_detail=$SchoolSet->query_term_score_detail($pars['cos_year'],$pars['cos_term'],$pars['dep_id']);
             $xoopsTpl->assign('course_groupname', $course_groupname);
 
-            // die(var_dump($term_score_detail));
+            // die(var_dump($term_total_score));
             
 
             $i=1;$stu_data=[];
