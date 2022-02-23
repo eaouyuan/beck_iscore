@@ -1,9 +1,3 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/beck_iscore/js/moment.min.js"></script>
-<script type="text/javascript" src="<{$xoops_url}>/modules/beck_iscore/js/moment-with-locales.js"></script>
-<script type="text/javascript" src="<{$xoops_url}>/modules/beck_iscore/js/bootstrap-datetimepicker.js"></script>
-<link href="<{$xoops_url}>/modules/beck_iscore/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css">
-
-
 <form name="reward_punishment_list" id="reward_punishment_list" action="tchstu_mag.php" method="get">
     <h2 class="mb-3">學生獎懲管理</h2>
     <div class="col">
@@ -141,18 +135,13 @@
 <!-- <link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css" /> -->
 <script type="text/javascript">
     $(document).ready(function($){
-        $('#sdate').datetimepicker({
+        $('#sdate,#edate').datetimepicker({
             format: 'L', // date
             // format: 'LT', //time
             locale: 'zh-tw',
             // stepping: 5,
         });
-        $('#edate').datetimepicker({
-            format: 'L', // date
-            // format: 'LT', //time
-            locale: 'zh-tw',
-            // stepping: 5,
-        });     
+    
         $('#RP_kind').change(function(e){
             document.forms["reward_punishment_list"].submit();
         })

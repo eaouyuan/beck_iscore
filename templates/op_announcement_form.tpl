@@ -1,4 +1,3 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
 
 <form name="announcement_form" id="announcement_form" action="index.php" method="post" enctype='multipart/form-data'>
@@ -37,8 +36,7 @@
     <div class="form-group row">
         <label for="ann_class_name" class="col-lg-2 col-form-label text-sm-right">公告到期日</label>
         <div class="col-lg-10">
-            <input class="form-control" type="text" name="end_date" id="end_date"  value="<{$end_date}>"
-            onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:'<{$end_date}>'})">
+            <input class="form-control" type="text" name="end_date" id="end_date"  value="<{$end_date}>">
         </div>
     </div>
 
@@ -76,6 +74,12 @@
         $("#upload_files").click(function() {
             let fileup=$('#fileup').val("1");
             document.forms["announcement_form"].submit();
+        });
+        $('#end_date').datetimepicker({
+            format: 'L', // date
+            // format: 'LT', //time
+            locale: 'zh-tw',
+            // stepping: 5,
         });
     });
     function onprint() {

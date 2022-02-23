@@ -1,9 +1,8 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
 
 <form name="student_form" id="student_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
     <h3><{$form_title}></h3>
-    <table class="table table-bordered table-sm">
+    <table class="table table-sm">
         <tbody>
             <tr>
                 <th class="table-info" scope="row">姓名</th>
@@ -12,33 +11,33 @@
                 <td><input type="text" class="form-control validate[required]" name="national_id" onblur="checkID(this)" id="national_id" value="<{$stu.national_id}>"></td>
             </tr>
             <tr>
-                <th  class="table-info" scope="row">學號</th>
+                <th class="table-info" scope="row">學號</th>
                 <td><input type="text" class="form-control validate[required]"  name="stu_id" id="stu_id" value="<{$stu.stu_id}>"></td>
-                <th  class="table-info" scope="row">入學編號</th>
+                <th class="table-info" scope="row">入學編號</th>
                 <td><input type="text" class="form-control validate[required]"  name="stu_no" id="stu_no" value="<{$stu.stu_no}>"></td>
             </tr>
             <tr>
-                <th  class="table-info" scope="row">班級</th>
+                <th class="table-info" scope="row">班級</th>
                 <td><select class="custom-select" name="class_id" id="class_id"><{$stu.class_htm}></select></td>
-                <th  class="table-info" scope="row">導師</th>
+                <th class="table-info" scope="row">導師</th>
                 <td  id="tutor"></td>
             </tr>
             <tr>
-                <th  class="table-info" scope="row">學程</th>
+                <th class="table-info" scope="row">學程</th>
                 <td><select class="custom-select" name="major_id" id="major_id"><{$stu.major_htm}></select></td>
-                <th  class="table-info" scope="row">年級</th>
+                <th class="table-info" scope="row">年級</th>
                 <td><select class="custom-select" name="grade" id="grade"><{$stu.grade_htm}></select></td>
             </tr>
             <tr>
-                <th  class="table-info" scope="row">入校日期</th>
-                <td><input class="form-control" type="text" name="arrival_date" id="arrival_date" value="<{$stu.arrival_date}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})"></td>
-                <th  class="table-info" scope="row">生日</th>
-                <td><input class="form-control" type="text" name="birthday" id="birthday" value="<{$stu.birthday}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})"></td>
+                <th class="table-info" scope="row">入校日期</th>
+                <td><input class="form-control" type="text" name="arrival_date" id="arrival_date" value="<{$stu.arrival_date}>"></td>
+                <th class="table-info" scope="row">生日</th>
+                <td><input class="form-control" type="text" name="birthday" id="birthday" value="<{$stu.birthday}>"></td>
             </tr>
             <tr>
-                <th  class="table-info" scope="row">原就讀學校</th>
+                <th class="table-info" scope="row">原就讀學校</th>
                 <td><input type="text" class="form-control validate[required]" name="orig_school" id="orig_school" value="<{$stu.orig_school}>"></td>
-                <th  class="table-info" scope="row">原就讀學校年級</th>
+                <th class="table-info" scope="row">原就讀學校年級</th>
                 <td><select class="custom-select" name="orig_grade" id="orig_grade"><{$stu.orig_grade_htm}></select></td>
             </tr>
             <tr>
@@ -132,20 +131,6 @@
         let tutor_name=class_tutor[class_id];
         $('#tutor').text(tutor_name);
 
-        // $('#out_learn').click(function(){
-        //     if($('#out_learn_0').prop('checked')){　　
-        //         $('#out_learn_1').prop('checked',true);
-        //     }else{ 
-        //         $('#out_learn_0').prop('checked',true);
-        //     }
-        // });
-        // $('#audit').click(function(){
-        //     if($('#audit_0').prop('checked')){　　
-        //         $('#audit_1').prop('checked',true);
-        //     }else{ 
-        //         $('#audit_0').prop('checked',true);
-        //     }
-        // });
 
         $("#copy_guardian").click(function() {
             $('#emergency1_contact1').val($('#guardian1').val());
@@ -182,6 +167,12 @@
             let naidnew=nastring.replace(/^./, nastring[0].toUpperCase());
             $('#national_id').val(naidnew);
         });
+        $('#arrival_date,#birthday').datetimepicker({
+            format: 'L', // date
+            // format: 'LT', //time
+            locale: 'zh-tw',
+            // stepping: 5,
+        });
 
     });
 
@@ -195,12 +186,10 @@ function checkID(formElement) {
 </script>
 
 <style>
-.table th ,.table td{
+.table > tbody > tr > th,.table > tbody > tr > td {
     vertical-align:middle;
     text-align:center;
     border: 1px solid #000000;
-    /* width:auto; */
-    /* border-bottom: 2px solid #000000; */
 }
 input {
     /* width:auto; */

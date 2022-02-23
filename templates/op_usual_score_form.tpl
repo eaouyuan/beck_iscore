@@ -1,6 +1,4 @@
-<!-- <link rel="stylesheet" href="../beck_iscore/css/jquery-ui.css">
-<script src="<{$xoops_url}>/modules/beck_iscore/js/jquery-ui.js"></script> -->
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
+
 
 <{$formValidator_code}>
 

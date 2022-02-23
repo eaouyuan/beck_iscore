@@ -1,4 +1,3 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <link href="css/module.css" rel="stylesheet" type="text/css">
 <{$formValidator_code}>
 

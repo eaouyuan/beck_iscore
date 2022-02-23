@@ -66,19 +66,12 @@
 <link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css" />
 <script type="text/javascript">
     $(document).ready(function($){
-        $('#sdate').datetimepicker({
+        $('#sdate,#edate').datetimepicker({
             format: 'L', // date
             // format: 'LT', //time
             locale: 'zh-tw',
             // stepping: 5,
         });
-        $('#edate').datetimepicker({
-            format: 'L', // date
-            // format: 'LT', //time
-            locale: 'zh-tw',
-            // stepping: 5,
-        });     
-
     });
     
     $('#sdate').datepicker().on("dp.hide", function () {

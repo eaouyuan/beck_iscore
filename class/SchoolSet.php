@@ -815,7 +815,7 @@ class SchoolSet
         $this->sem_term = $school_year['term'];
         $this->sem_term_sdate = $school_year['start_date'];
         $this->sem_term_edate = $school_year['end_date'];
-        $sql            = "SELECT * FROM $tbl";
+        $sql            = "SELECT * FROM $tbl ORDER BY `year` DESC";
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $sem_all=[];
         while($all= $xoopsDB->fetchArray($result)){

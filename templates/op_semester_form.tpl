@@ -1,4 +1,3 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
 
 <form name="semester_form" id="semester_form" action="school_affairs.php" method="post" enctype='multipart/form-data'>
@@ -26,13 +25,11 @@
     <div class="form-group row">
         <label for="start_date" class="col-lg-2 col-form-label text-sm-right">開始時間</label>
         <div class="col-lg-4">
-            <input class="form-control validate[required]" type="text" name="start_date" id="start_date"  value="<{$Sems.start_date}>"
-            onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:'<{$start_date}>'})">
+            <input class="form-control validate[required]" type="text" name="start_date" id="start_date"  value="<{$Sems.start_date}>">
         </div>
         <label for="end_date" class="col-lg-2 col-form-label text-sm-right">結束時間</label>
         <div class="col-lg-4">
-            <input class="form-control validate[required]" type="text" name="end_date" id="end_date"  value="<{$Sems.end_date}>"
-            onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:'<{$end_date}>'})">
+            <input class="form-control validate[required]" type="text" name="end_date" id="end_date"  value="<{$Sems.end_date}>">
         </div>
     </div>
     
@@ -58,6 +55,15 @@
     </div>
 </form>
 
-
+<script type="text/javascript">
+    $(document).ready(function($){
+        $('#start_date,#end_date').datetimepicker({
+            format: 'L', // date
+            // format: 'LT', //time
+            locale: 'zh-tw',
+            // stepping: 5,
+        });
+    });
+</script>
 
 

@@ -17,7 +17,9 @@
             </tr>
             <tr>
                 <th class="table-info">批示日期</th>
-                <th><input type="text" class="form-control validate[required]" name="event_date" id="event_date" value="<{$RP_form.event_date}>"></th>
+                <th>
+                    <input type="text" class="form-control validate[required]" name="event_date" id="event_date" value="<{$RP_form.event_date}>">
+                </th>
             </tr>
             <tr>    
                 <th class="table-info">獎懲類別</th>
@@ -125,8 +127,6 @@
     /* text-align:center; */
     border: 1px solid #000;
     }
-    #event_date{
-        border:0px;
-    }
+
 
 </style>

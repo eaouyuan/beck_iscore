@@ -1,12 +1,8 @@
-<!-- <link rel="stylesheet" href="../beck_iscore/css/jquery-ui.css">
-<script src="<{$xoops_url}>/modules/beck_iscore/js/jquery-ui.js"></script> -->
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
-
 <{$formValidator_code}>
 
 <form name="exam_keyindate_form" id="exam_keyindate_form" action="school_affairs.php" method="post" enctype='multipart/form-data'>
     <h3><{$form_title}></h3>
-    <table class="table table-bordered table-sm">
+    <table class="table table-sm">
         <tbody>
             <tr>
                 <th class="table-info" scope="row">學年度</th>
@@ -29,15 +25,14 @@
                 </td>
             </tr>
             <tr>
-                <th class="table-info" scope="row">開放時間</th>
+                <th class="table-info" scope="row">開放日期</th>
                 <td>
-                    <input class="form-control validate[required]" type="text" name="start_date" id="start_date"
-                    value="<{$exam_date.start_date}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})">
+                    <input class="form-control" type="text" name="start_date" id="start_date" value="<{$exam_date.start_date}>">
                 </td>
-                <th class="table-info" scope="row">結束時間</th>
+                <th class="table-info" scope="row">結束日期</th>
                 <td>
                     <input class="form-control validate[required]" type="text" name="end_date" id="end_date" 
-                    value="<{$exam_date.end_date}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd', startDate:''})">
+                    value="<{$exam_date.end_date}>">
                 </td>
             </tr>
         </tbody>
@@ -64,7 +59,13 @@
 
 <script type="text/javascript">
     $(document).ready(function($){
-    
+        $('#start_date ,#end_date').datetimepicker({
+            format: 'L', // date
+            // format: 'LT', //time
+            locale: 'zh-tw',
+            // stepping: 5,
+        });
+
     });
 
 
@@ -73,12 +74,10 @@
 
 <style>
 
-.table th ,.table td{
+.table > tbody > tr > th ,.table > tbody > tr > td{
     vertical-align:middle;
     text-align:center;
-    border: 1px solid #000000;
-    /* width:auto; */
-    /* border-bottom: 2px solid #000000; */
+    border: 1px solid #000;
 }
 input , select{
     /* width:auto; */

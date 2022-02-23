@@ -1,15 +1,14 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
 
 <form name="counseling_form" id="counseling_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
     <h3><{$form_title}> ─  <{$info.year}> 學年度 第 <{$info.term}> 學期
     </h3>
-    <table class="table table-bordered table-sm">
+    <table class="table table-sm">
         <tbody>
             <tr>
-                <th class="table-info">通報日期</th>
+                <th class="table-info">晤談日期</th>
                 <th class="col-3">
-                    <input class="form-control" type="text" name="notice_time" id="notice_time" value="<{$info.notice_time}>"onClick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss', startDate:''})">
+                    <input class="form-control" type="text" name="notice_time" id="notice_time" value="<{$info.notice_time}>">
                 </th>
                 <th class="table-info">學生姓名</th><th><{$info.stu_name}></th>
                 <th class="table-info">班級</th>    <th><{$info.class}></th>
@@ -94,6 +93,12 @@
                 $("#focus").val('');
             }
         });
+        $('#notice_time').datetimepicker({
+            // format: 'L', // date
+            // format: 'LT', //time
+            locale: 'zh-tw',
+            // stepping: 5,
+        });
 
     });
     $('#location').on('change', function() {
@@ -111,21 +116,17 @@
 </script>
 
 <style>
-.table > tbody > tr > th > .form-check {
-    text-align:left;
-}
-/* #counseling_form > table > tbody > tr:nth-child(2) > th:nth-child(2) */
-.table th {
-    vertical-align:middle;
-    text-align:center;
-    border: 1px solid #000000;
-    /* width:auto; */
-    /* border-bottom: 2px solid #000000; */
-}
-input ,.custom-select,textarea {
-    /* width:auto; */
-    position: relative
-}
-
-
+    .table > tbody > tr > th > .form-check {
+        text-align:left;
+    }
+    /* #counseling_form > table > tbody > tr:nth-child(2) > th:nth-child(2) */
+    .table > tbody > tr > th,.table > thead > tr > th {
+        vertical-align:middle;
+        text-align:center;
+        border: 1px solid #000000;
+    }
+    input ,.custom-select,textarea {
+        /* width:auto; */
+        position: relative
+    }
 </style>

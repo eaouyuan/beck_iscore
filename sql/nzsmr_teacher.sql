@@ -495,6 +495,26 @@ CREATE TABLE `yy_absence_time` (
   PRIMARY KEY (`sn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
+-- -- 新版出缺勤管理
+CREATE TABLE `yy_leave_day` (
+  `LD_sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '新版出缺勤紀錄流水號',
+  `LD_year` varchar(8) NOT NULL COMMENT '學年度',
+  `LD_term` varchar(8) NOT NULL COMMENT '學期',
+  `LD_stu_sn` mediumint(8) unsigned NOT NULL COMMENT '學生編號',
+  `LD_kind` enum('A','B','C','D','E','G','99') NOT NULL COMMENT 'A公假 B事假 C病假 D喪假 E曠課 G晤談 99其他',
+  `LD_other_text` varchar(255) NOT NULL COMMENT '其他請假類別',
+  `LD_sdate` datetime NOT NULL COMMENT '請假日期開始',
+  `LD_edate` datetime NOT NULL COMMENT '請假日期結束',
+  `LD_content` text NOT NULL COMMENT '請假事由',
+  `LD_day_hours` varchar(5)  NULL COMMENT '日間請假時數',
+  `LD_night_hours` varchar(5)  NULL COMMENT '夜間請假時數',
+  `LD_update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `LD_update_date` datetime NOT NULL COMMENT '修改日期', 
+  `LD_sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`LD_sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+
 -- 期末導師評語
 CREATE TABLE `yy_mentor_comment` (
   `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',

@@ -1,4 +1,3 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
 
 <form name="department_form" id="class_form" action="school_affairs.php" method="post" enctype='multipart/form-data'>

@@ -1,6 +1,4 @@
-<script type="text/javascript" src="<{$xoops_url}>/modules/tadtools/My97DatePicker/WdatePicker.js"></script>
 <{$formValidator_code}>
-
 <form name="op_high_care_form" id="op_high_care_form" action="tchstu_mag.php" method="post" enctype='multipart/form-data'>
     <h3><{$form_title}></h3>
     <table class="table table-bordered table-sm">
