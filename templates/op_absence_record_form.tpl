@@ -59,7 +59,7 @@
                 <th colspan="2">
                     <{$sel.AB_kind}>
                     <div></div>
-                    <div class="form-check form-check-inline m-1 col">
+                    <div class="form-check form-check-inline col">
                         <input class="form-check-input" type="radio" name="AB_kind" id="AB_kind_99" title="其他" <{$sel.AB_kind_99}> value="99">
                         <label class="form-check-label mr-2" for="AB_kind_99">其他</label>
                         <input type="text" class="form-control col" name="AB_other_text" id="AB_other_text" value="<{$ru.AB_other_text}> ">

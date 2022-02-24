@@ -16,7 +16,7 @@
     <table class="table table-bordered table-sm">
         <tbody>
             <tr>
-                <th class="table-info">通報日期</th><th><{$its.notice_time}></th>
+                <th class="table-info">晤談日期</th><th><{$its.notice_time}></th>
                 <th class="table-info">編號</th><th><{$its.sn}></th>
                 <th class="table-info">認輔教師</th><th><{$info.tea_name}></th>
                 <th class="table-info">功能</th>
@@ -91,7 +91,7 @@
     <table class="inonepage" style="font-family:sans-serif;">
         <tbody>
             <tr>
-                <th width="15%" class="text-center">通報日期</th>
+                <th width="15%" class="text-center">晤談日期</th>
                 <th class="text-center"><{$its.notice_time}></th>
                 <th class="text-center">認輔教師</th>
                 <th class="text-center"><{$info.tea_name}></th>
