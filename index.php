@@ -4,6 +4,8 @@ use XoopsModules\Tadtools\Utility;
 use XoopsModules\Beck_iscore\Announcement;
 use XoopsModules\Beck_iscore\Dept_school;
 use XoopsModules\Beck_iscore\TadUpFiles;
+use XoopsModules\Beck_iscore\SchoolSet;
+
 
 /*-----------引入檔案區--------------*/
 include_once "header.php";
@@ -508,7 +510,7 @@ default:
         // 顯示附檔
         $TadUpFiles=new TadUpFiles("beck_iscore","/announcement");
         $TadUpFiles->set_col('ann_file',$sn);
-        $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'filename',1);
+        $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'',1);
         // 要修改modules\tadtools\class\TadUpFiles.php
         // if ($kind === 'img') {
         //     ...
@@ -536,6 +538,7 @@ default:
     // 表單-新增、編輯公告消息
     function announcement_form($sn){
         global $xoopsTpl,$xoopsUser,$xoopsDB,$TadUpFiles;
+        $SchoolSet= new SchoolSet;
 
         if (!$xoopsUser) {
             redirect_header('index.php', 2, '無操作權限');
@@ -570,15 +573,23 @@ default:
                 redirect_header('index.php?op=announcement_list', 3, '無操作權限或此公告不存在!');
             }
 
-
+            $Ann["dept_name"]=$SchoolSet->depid_depname[$Ann["dept_id"]];
             $space='1';
+            $uid = $_SESSION['beck_iscore_adm'] ? $Ann['uid'] : $xoopsUser->uid();
+        }else{
+            $uid = $xoopsUser->uid();
+            $Ann["dept_id"]=$SchoolSet->uid_deptid[$uid]??'0';
+            $Ann['dept_name']=$SchoolSet->uid_deptname[$uid]??'未設定';
         }
-        // die(var_dump($Ann));
+        
+
+        $xoopsTpl->assign('uid', $uid);
+        $xoopsTpl->assign('Ann', $Ann);
+
 
         // 給預設值
         $xoopsTpl->assign('form_title', $form_title);
         $sn = (!isset($Ann['sn'])) ? '' : $Ann['sn'];
-        $xoopsTpl->assign('sn', $sn);
 
         // 公告分類
         $ann_class_id = (!isset($Ann['ann_class_id'])) ? '' : $Ann['ann_class_id'];
@@ -586,13 +597,11 @@ default:
         $xoopsTpl->assign('ann_c_sel_htm', $ann_c_sel_htm);
         
         // 處室分類
-        $ann_dept_id = (!isset($Ann['dept_id'])) ? '' : $Ann['dept_id'];
-        $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id,$space);
-        $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
+        // $ann_dept_id = (!isset($Ann['dept_id'])) ? '' : $Ann['dept_id'];
+        // $dept_c_sel_htm=Dept_school::GetDept_Class_Sel_htm($ann_dept_id,$space);
+        // $xoopsTpl->assign('dept_c_sel_htm', $dept_c_sel_htm);
         
-        // 標題
-        $xoopsTpl->assign('title', $Ann['title']);
-
+    
         //內容ckeditor
         include_once XOOPS_ROOT_PATH . "/modules/tadtools/ck.php";
         $ck = new CKEditor("beck_iscore", "content", $Ann['content']);
@@ -601,7 +610,7 @@ default:
         $content=$ck->render();
         $xoopsTpl->assign('content', $content);
 
-        // 公告結束日期 預設三個月後
+        // 公告結束日期 預設十二個月後
         if(isset($Ann['end_date'])){
             $end_date=$Ann['end_date'];
         }else{
@@ -630,16 +639,6 @@ default:
         $TadUpFiles->set_col('ann_file',$sn); //若 $show_list_del_file ==true 時一定要有
         $upform=$TadUpFiles->upform(true,'ann_file');
         $xoopsTpl->assign('upform', $upform);
-
-    
-        // //帶入使用者編號
-        if ($sn) {
-            $uid = $_SESSION['beck_iscore_adm'] ? $Ann['uid'] : $xoopsUser->uid();
-        } else {
-            $uid = $xoopsUser->uid();
-        }
-        $xoopsTpl->assign('uid', $uid);
-        
 
         // //下個動作
         if ($sn) {

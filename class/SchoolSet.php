@@ -20,6 +20,8 @@ class SchoolSet
     public $all_sems; //所有學年度資料
     public $users; //使用者資料
     public $en_users; //啟用狀態的使用者
+    public $uid_deptname; //uid對映deptname
+    public $uid_deptid; //uid_deptid
     public $uid2name; // uid map 中文姓名
     public $teachers; //教師資料
     public $isguidance; //輔導老師
@@ -29,6 +31,7 @@ class SchoolSet
     public $all_dept;
     public $all_depsnname; //所有學程
     public $deptofsch; //處室資料
+    public $depid_depname; //處室id=處室名稱
     public $exam_name; //考試名稱
     public $usual_exam_name; //平時考名稱
     public $stage_exam_name; //段考名稱
@@ -847,6 +850,16 @@ class SchoolSet
         }
         $this->users=$all;
 
+        // get uid_dept_name
+        $uid_deptname=[];
+        foreach ($all as $k=>$v){
+            $uid_deptname[$v['uid']]=$v['dept_name']??'未設定';
+            $uid_deptid[$v['uid']]=$v['dep_id']??0;
+        }
+        $this->uid_deptname=$uid_deptname;
+        $this->uid_deptid=$uid_deptid;
+
+
         // get all teachers 
         $sqltea = $sql." AND $tb2.isteacher='1' ORDER BY {$tb2}.sort";
         $result = $xoopsDB->query($sqltea) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -936,11 +949,13 @@ class SchoolSet
         $sql = "SELECT * FROM $tb1 WHERE enable='1'";
         // echo($sql);
         $result      = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all=[];
+        $all=$depid_depname=[];
         while($rut= $xoopsDB->fetchArray($result)){
             $all[] = $rut;
+            $depid_depname[$rut['sn']] = $rut['dept_name'];
         }
-        $this->deptofsch=$all;
+        $this->deptofsch=$all; 
+        $this->depid_depname=$depid_depname; 
     }
 
     // get 社工師及輔導老師 $a['uid']=value;
@@ -1055,6 +1070,7 @@ class SchoolSet
             $v['dept_name']=$v['dept_name']??'未設定';
             $data[$v['dept_name']][$v['uid']]=$v['name'];
         }
+
         return $data;
     }
 

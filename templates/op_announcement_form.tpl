@@ -13,9 +13,7 @@
 
         <label for="dept_id" class="col-lg-2 col-form-label text-sm-right">發佈處室</label>
         <div class="col-lg-4">
-            <select class="custom-select validate[required]" name="dept_id">
-                <{$dept_c_sel_htm}>
-            </select>
+            <label class="form-control"><{$Ann.dept_name}></label>
         </div>
     </div>
 
@@ -24,7 +22,7 @@
     <div class="form-group row">
         <label for="ann_class_name" class="col-lg-2 col-form-label text-sm-right">標題</label>
         <div class="col-lg-10">
-            <input class="form-control validate[required] " type="text" name="title" title="標題" id="title" value="<{$title}>">
+            <input class="form-control validate[required] " type="text" name="title" title="標題" id="title" value="<{$Ann.title}>">
         </div>
     </div>
     <div class="form-group row">
@@ -64,6 +62,7 @@
         <input name="uid" id="uid" value="<{$uid}>" type="hidden">
         <input name="op" id="op" value="<{$op}>" type="hidden">
         <input name="fileup" id="fileup" value="0" type="hidden">
+        <input name="dept_id" id="dept_id" value="<{$Ann.dept_id}>" type="hidden">
         <{if $sn}> <input name="sn" id="sn" value="<{$sn}>" type="hidden"> <{/if}>
         <{$XOOPS_TOKEN}>
     </div>
