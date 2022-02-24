@@ -3,7 +3,7 @@ use Xmf\Request;
 use XoopsModules\Tadtools\Utility;
 use XoopsModules\Beck_iscore\Announcement;
 use XoopsModules\Beck_iscore\Dept_school;
-use XoopsModules\Tadtools\TadUpFiles;
+use XoopsModules\Beck_iscore\TadUpFiles;
 
 /*-----------引入檔案區--------------*/
 include_once "header.php";
