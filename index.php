@@ -510,7 +510,7 @@ default:
         // 顯示附檔
         $TadUpFiles=new TadUpFiles("beck_iscore","/announcement");
         $TadUpFiles->set_col('ann_file',$sn);
-        $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'',1);
+        $Ann['files'] = $TadUpFiles->show_files('ann_file',false,'filename',1);
         // 要修改modules\tadtools\class\TadUpFiles.php
         // if ($kind === 'img') {
         //     ...

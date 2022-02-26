@@ -42,7 +42,7 @@
 
 
 <{if $all}>
-    <table class="table table-bordered table-sm table-hover table-striped table-shadow">
+    <table class="table table-bordered table-hover table-striped">
         <thead class="table-info">
             <tr>
                 <th scope="col" class="text-center text-nowrap">編號</th>
@@ -64,7 +64,7 @@
             <th class="text-center clickable-row text-nowrap" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"scope="row"><{$its.sn}></th>
             <td class="text-center clickable-row text-nowrap" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.ann_class_id}></td>
             <td class="text-center clickable-row text-nowrap" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>"><{$its.dept_id}></td>
-            <td class="text-left clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>">
+            <td style="line-height: 1.8em;" class="text-left clickable-row" data-href="<{$xoops_url}>/modules/beck_iscore/index.php?op=announcement_show&sn=<{$its.sn}>">
                 <{if $its.top=='1'}><span class="badge" style="background-color:blue;font-weight:normal;color:white;text-shadow:none;">置頂</span><{/if}>
                 <{$its.title}>
             </td>
