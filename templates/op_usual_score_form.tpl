@@ -12,12 +12,12 @@
     <table class="table table-bordered table-sm">
         <tbody>
             <tr class="table-info">
-                <th scope="row">學生姓名</th>
+                <th scope="row">學生姓名／學號</th>
                 <th scope="row">第<{$uscore.exam_number}>次平時成績</th>
             </tr>
         <{foreach from=$all key=i item=its}>
             <tr id="odr_<{$its.uid}>"> 
-                <th class="text-center"><{$its.name}></th>
+                <th class="text-center"><{$its.stu_anonymous_all}>／<{$its.stu_id_all}></th>
                 <td>
                     <input type="text" class="form-control validate[required,min[0],max[100]]" name="student_sn[<{$i}>]" id="stu_<{$i}>" value="<{$its.score}>">
                 </td>

@@ -50,7 +50,7 @@
                 </th>
             </tr>
             <tr class="table-info">
-                <th class="text-center">姓名</th>
+                <th class="text-center">姓名／學號</th>
                 <{foreach from=$score_count.$exam_stage.test_ary key=k item=exam_number}>
                         <th scope="col" class="text-center">第<{$exam_number}>次
                             <{if $addEdit.$exam_stage}>
@@ -69,7 +69,7 @@
             <{foreach from=$v1 key=student_sn item=v2}>
             <tr id="odr_<{$its.sn}>"> 
 
-                <th class="text-center"><{$v2.name}></th>
+                <th class="text-center"><{$v2.stu_anonymous}>／<{$v2.stu_id}></th>
 
                 <{foreach from=$v2.score key=k item=score}>
                 <th class="text-center"><{$score}></th>

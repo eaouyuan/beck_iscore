@@ -3633,6 +3633,8 @@ switch ($op) {
         $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
         foreach ($major_stu as $k=>$stusn){
             $stu_data[$stusn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name[$stusn]);
+            $stu_data[$stusn]['stu_anonymous_all']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stusn]);
+            $stu_data[$stusn]['stu_id_all']=$myts->htmlSpecialChars($SchoolSet->stu_id_all[$stusn]);
             $stu_data[$stusn]['score']='';
         }
 
@@ -3784,6 +3786,7 @@ switch ($op) {
                     // 做出學生段考成績空白表單
                     $stu_uscore[$exam_stage][$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name_all[$stu_sn]);
                     $stu_uscore[$exam_stage][$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
+                    $stu_uscore[$exam_stage][$stu_sn]['stu_id']=$myts->htmlSpecialChars($SchoolSet->stu_id_all[$stu_sn]);
                     for($i=1;$i<=$uexam_times;$i++){
                         $stu_uscore[$exam_stage][$stu_sn]['score'][$i]='';
                     }
@@ -3798,13 +3801,14 @@ switch ($op) {
             
             $tb1      = $xoopsDB->prefix('yy_usual_score');
             $tb2      = $xoopsDB->prefix('yy_student');
-            $sql      = "SELECT sco.* ,stu.stu_name  , stu.sort  FROM $tb1  as sco
+            $sql      = "SELECT sco.* ,stu.stu_name  , stu.stu_id  FROM $tb1  as sco
                             LEFT  JOIN $tb2 as stu ON sco.student_sn       = stu.sn
                             Where sco.course_id= '{$course["course_id"]}'
                             AND sco.student_sn IN $sql_stusn
-                            ORDER BY `exam_stage`,`exam_number`,stu.sort  
+                            ORDER BY `exam_stage`,`exam_number`,stu.stu_id  
                         ";
             $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            // echo($sql);die();
             // $stu_uscore=array();
             while($data= $xoopsDB->fetchArray($result)){
                 $stu_uscore[$data['exam_stage']][$data['student_sn']]['score'][$data['exam_number']]= $myts->htmlSpecialChars($data['score']);
