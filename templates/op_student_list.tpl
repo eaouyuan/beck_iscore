@@ -45,7 +45,7 @@
                 <th scope="col" class="text-center">生日</th>
                 <th scope="col" class="text-center">班級</th>
                 <th scope="col" class="text-center">學程</th>
-                <!-- <th scope="col" class="text-center">導師</th> -->
+                <th scope="col" class="text-center">導師</th>
                 <th scope="col" class="text-center">社工師</th>
                 <th scope="col" class="text-center">輔導老師</th>
                 <!-- <th scope="col" class="text-center">認輔教師</th> -->
@@ -66,7 +66,7 @@
             <td class="text-center"><{$its.birthday}></td>
             <td class="text-center"><{$its.class_name}></td>
             <td class="text-center"><{$its.dep_name}></td>
-            <!-- <td class="text-center"><{$its.tutor_name}></td> -->
+            <td class="text-center"><{$its.tutor_name}></td>
             <td class="text-center"><{$its.social_id}></td>
             <td class="text-center"><{$its.guidance_id}></td>
             <!-- <td class="text-center"><{$its.rcv_guidance_id}></td> -->
