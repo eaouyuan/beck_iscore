@@ -20,6 +20,8 @@ define('_MI_SNEWS_SHOW_NUM_DESC', '請填數字');
 define('s_MI_BECK_ISCORE_BLOCK_FOCUS', '精選文章');
 define('s_MI_BECK_ISCORE_BLOCK_FOCUS_DESC', '精選文章列表');
 
+define('_MI_YYLINK_BNAME1', 'YY圖片連結');
+define('_MI_YYLINK_BDESC1', '圖片連結 (yy_link_show)');
 
 
 

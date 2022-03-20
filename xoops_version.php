@@ -120,14 +120,13 @@ $modversion['search']['func'] = "beck_iscore_search";
 //---區塊設定---//
 $modversion['blocks'] = array();
 $i=1;
-$modversion['blocks'][$i]['file']        = "beck_iscore_block_focus.php";
-$modversion['blocks'][$i]['name']        = _MI_BECK_ISCORE_BLOCK_FOCUS;
-$modversion['blocks'][$i]['description'] = _MI_BECK_ISCORE_BLOCK_FOCUS_DESC;
-$modversion['blocks'][$i]['show_func']   = "beck_iscore_block_focus";
-$modversion['blocks'][$i]['template']    = "beck_iscore_block_focus.tpl";
-$modversion['blocks'][$i]['edit_func']   = "beck_iscore_block_focus_edit";
-$modversion['blocks'][$i]['options']     = "2|240";
-
+$modversion['blocks'][$i]['file']        = "yy_link_show.php";
+$modversion['blocks'][$i]['name']        = _MI_YYLINK_BNAME1;
+$modversion['blocks'][$i]['description'] = _MI_YYLINK_BDESC1;
+$modversion['blocks'][$i]['show_func']   = "yy_link_show";
+$modversion['blocks'][$i]['template']    = "yy_link_block_show.tpl";
+$modversion['blocks'][$i]['edit_func']   = "yy_link_show_edit";
+$modversion['blocks'][$i]['options']     = "10|1|1|0|new|1||0|3";
 $i++;
 
 //---評論---//
