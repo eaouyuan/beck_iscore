@@ -2692,8 +2692,9 @@ switch ($op) {
             // 列出該學程內所有學生sn, name 不含回歸結案
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
             foreach ($major_stu as $dep_id=>$stu_sn){
-                $stu_data[$stu_sn]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name_all[$stu_sn]);
-                $stu_data[$stu_sn]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
+                $stu_data[$stu_sn]['name']          = $myts->htmlSpecialChars($SchoolSet->stu_name_all[$stu_sn]);
+                $stu_data[$stu_sn]['stu_anonymous'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
+                $stu_data[$stu_sn]['stu_id_all']    = $myts->htmlSpecialChars($SchoolSet->stu_id_all[$stu_sn]);
                 // 列出學生及考試成績 空白表格
                 foreach ($SchoolSet->exam_name as $k=>$exam_name){
                     $stu_data[$stu_sn]['score'][$k]='';

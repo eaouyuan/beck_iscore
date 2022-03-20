@@ -28,7 +28,7 @@
         <thead>
             <tr class="table-info">
                 
-                <th style="border: 2px solid #000000;"class="text-center" width="9%" >姓名</th>
+                <th style="border: 2px solid #000000;"class="text-center" width="9%" >姓名／學號</th>
                 <{foreach from=$exam_name key=exam_sn item=exam_chnname}>
                     <th scope="col" class="text-center" width="7%"><{$exam_chnname}></th>
                 <{/foreach}>
@@ -48,7 +48,7 @@
         <tbody>
             <{foreach from=$all key=stu_sn item=v1}>
             <tr class=""> 
-                <th class="text-center"><{$v1.name}></th>
+                <th class="text-center"><{$v1.stu_anonymous}>／<{$v1.stu_id_all}></th>
                 <{foreach from=$v1.score key=k item=score}>
                     <{if $addEdit.$k}>
                     <th class="text-center">
@@ -101,8 +101,8 @@
 </form>
 
 <div id="printArea">
-    <h1 class="mb-3" align="center">段考成績登錄</h1>
-    <br>
+    <h1 class="" align="center">段考成績登錄</h1>
+    <!-- <br> -->
     <h3><{$sscore.year}>學年度 第<{$sscore.term}>學期</h3>
     <h3>學程名稱：<{$sscore.dep_name}>／課程名稱：<{$sscore.course_name}>／教師姓名：<{$sscore.tea_name}></h3>
     <hr>
@@ -110,41 +110,36 @@
     <table style="font-family:serif;"  cellpadding="5">
         <thead>
             <tr>
-                <th class="text-center" width="14%"><font size="4">姓  名</font></th>
+                <th class="text-center" width="14%">姓  名</th>
+                <!-- <th class="text-center" width="14%"><font size="4">姓  名</font></th> -->
                 <{foreach from=$exam_name key=exam_sn item=exam_chnname}>
-                    <th class="text-center" width="7%"><{$exam_chnname}></th>
+                    <th class="text-center font-size-s" width="7%"><{$exam_chnname}></th>
                 <{/foreach}>
-                <th class="text-center" width="7%">平時成績(<{$course.normal_exam_rate}>%)</th>
-                <th class="text-center" width="7%">段考成績(<{$course.section_exam_rate}>%)</th>
-                <th class="text-center" width="7%">總成績</th>
-                <th class="text-center" width="18%">質性描述</th>
+                <th class="text-center font-size-s" width="7%">平時成績(<{$course.normal_exam_rate}>%)</th>
+                <th class="text-center font-size-s" width="7%">段考成績(<{$course.section_exam_rate}>%)</th>
+                <th class="text-center font-size-s" width="7%">總成績</th>
+                <th class="text-center font-size-s" width="18%">質性描述</th>
                 
             </tr>
         </thead>
         <tbody>
             <{foreach from=$all key=stu_sn item=v1}>
             <tr> 
-                <th class="text-center"><font size="4"><{$v1.stu_anonymous}></font></th>
+                <th class="text-center"><{$v1.stu_anonymous}></th>
+                <!-- <th class="text-center"><font size="4"><{$v1.stu_anonymous}></font></th> -->
                 <{foreach from=$v1.score key=k item=score}>
-                    <th class="text-center"><{$score}></th>
+                    <th class="text-center "><{$score}></th>
                 <{/foreach}>
                 <th class="text-center"><{$v1.f_usual}></th>
                 <th class="text-center"><{$v1.f_stage}></th>
                 <th class="text-center"><{$v1.tea_input_score}></th>
-                <th class="text-center"><{$v1.desc}></th>
+                <th class="text-center font-size-s"><{$v1.desc}></th>
             </tr>
             <{/foreach}>
         </tbody>
     </table>
-    <hr>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <h3>教師簽名:_______________________</h3>
+    <h3 id="buton">教師簽名:_______________________</h3>
+
 
 </div>
 
@@ -285,23 +280,30 @@
     }
 }
 @page  {
-    size:A4;
-    margin:10mm;
-    size: portrait; /* 直向 */
-    /* size: landscape; 橫向 */
+    size: A4 portrait;
+    margin:0mm;
+    /* size: portrait; 直向 */
+     size: landscape; /*橫向 */
 }
 @media print 
 {
 
     #printArea { 
-        font-size: 14px;
-
+        font-size: 20px;
     }
+    .font-size-s { 
+        font-size: 16px;
+    }
+    
     table th, th, td {
         vertical-align:middle;
         text-align:center;
         border: 3px solid black;
     }   
+    #buton {
+        position: fixed;
+        bottom: 1em;
+    }
 
 
 }
@@ -310,10 +312,14 @@
 <style type="text/css" media="screen">
     /* 顯示時隱藏 */
     #printArea { display: none; }
+    /* #stage_score_list,.notprint,#footer-container,#nav-container-sticky-wrapper { display: none; } */
+
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #stage_score_list,.notprint,#footer-container-display,#nav-container { display: none; }
+    #stage_score_list,.notprint,#footer-container,#nav-container-sticky-wrapper { display: none; }
+
+    /* #stage_score_list,.notprint,#footer-container-display,#nav-container,#nav-container-sticky-wrapper { display: none; } */
 </style>
 
 

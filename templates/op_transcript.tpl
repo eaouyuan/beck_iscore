@@ -101,7 +101,7 @@
     #buton {
         position: fixed;
         bottom: 0;
-   }
+    }
 
 
 }
