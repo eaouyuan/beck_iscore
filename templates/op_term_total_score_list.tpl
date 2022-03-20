@@ -260,8 +260,10 @@
 <style type="text/css" media="screen">
     /* 顯示時隱藏 */
     #printArea { display: none; }
+    /* #term_total_score_list,.notprint,#footer-container,#nav-container-sticky-wrapper { display: none; } */
+
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #term_total_score_list,.notprint,#footer-container-display,#nav-container { display: none; }
+    #term_total_score_list,.notprint,#footer-container,#nav-container-sticky-wrapper { display: none; }
 </style>
