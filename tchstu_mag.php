@@ -5,7 +5,7 @@ use XoopsModules\Beck_iscore\SchoolSet;
 use XoopsModules\Beck_iscore\Dept_school;
 use XoopsModules\Tadtools\TadUpFiles;
 use XoopsModules\Tadtools\SweetAlert;
-
+use XoopsModules\Tadtools\BootstrapTable;
 
 /*-----------引入檔案區--------------*/
 include_once "header.php";
@@ -3504,6 +3504,7 @@ switch ($op) {
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $xoopsTpl->assign('op', "student_list");
+        BootstrapTable::render();
 
     }
 // ----------------------------------
