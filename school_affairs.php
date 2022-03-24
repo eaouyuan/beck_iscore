@@ -236,9 +236,14 @@ switch ($op) {
         counseling_set($sn,$cou);
         break;//跳出迴圈,往下執行
     case "counseling_set_update":
-        $re=counseling_set_update($sn);
-        header("location:school_affairs.php?op=counseling_set&cos_year={$re['year']}&cos_term={$re['term']}&sn={$sn}");
-        exit;//離開，結束程式
+        if($sn!=0){
+            $re=counseling_set_update($sn);
+            header("location:school_affairs.php?op=counseling_set&cos_year={$re['year']}&cos_term={$re['term']}&sn={$sn}");
+            exit;//離開，結束程式
+        }else{
+            header("location:school_affairs.php?op=counseling_set&cos_year={$cou['cos_year']}&cos_term={$cou['cos_term']}");
+            break;//跳出迴圈
+        }
 
 // 權限管理
     case "permission":
@@ -342,7 +347,7 @@ switch ($op) {
             $sel['year'][$year_ary['year']]= $year_ary['year'];
             $sel['term'][$year_ary['year']][$year_ary['term']]= $year_ary['term'];
         }
- 
+
         $xoopsTpl->assign('sem_year', $SchoolSet->sem_year);
         $xoopsTpl->assign('sem_term', $SchoolSet->sem_term);
 
@@ -360,6 +365,7 @@ switch ($op) {
         }
 
         $teachers=[];
+        // 假如所選學年度為目前學年度，只列出有啟用教師，否則列出所有教師
         if($pars['cos_year']==$SchoolSet->sem_year and $pars['cos_term']==$SchoolSet->sem_term){
             foreach($SchoolSet->en_users as $k=>$v){
                 $teachers[$v['uid']]=$v['name'];
@@ -369,24 +375,41 @@ switch ($op) {
                 $teachers[$v['uid']]=$v['name'];
             }
         }
-        
-
         // var_dump($SchoolSet->en_users);die();
 
         // 列出所有認輔教師，將有認輔的老師加底色
         $tbl = $xoopsDB->prefix('yy_tea_counseling');
-        $sql = "SELECT distinct tea_uid FROM $tbl 
+        $tb2 = $xoopsDB->prefix('users');
+        $sql = "SELECT `tea_uid` , `student_sn`, `name` FROM $tbl a left join $tb2 b on a.tea_uid = b.uid
                 WHERE `year` = '{$pars['cos_year']}'
                 AND `term` = '{$pars['cos_term']}'
+                ORDER BY `tea_uid`
                 ";
+        // echo($sql);die();
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($data= $xoopsDB->fetchArray($result)){
-            $teacher_sel[] = $data['tea_uid'];
+            // 認輔教師uid
+            $teacher_sel[$data['tea_uid']] = $data['tea_uid'];
+            // 優先排在上方教師欄位
+            $teacher_first[$data['tea_uid']] = $data['name'];
+            // 已經認輔學生
+            $already_recognized_stu[$data['student_sn']]=$SchoolSet->stu_anonymous[$data['student_sn']];
         }
 
+        // 將有認輔的教師，排在前面，依tea_uid
+        $teachers_nc=[];
+        $teachers_nc=array_diff_assoc($teachers, $teacher_first);
+        $teacher_order=$teacher_first+$teachers_nc;
+        // var_dump($teacher_first);
+        // var_dump($teachers_nc);
+
         // 教師列表
-        $tea_sel=Get_select_opt_color_htm($teachers,$sn,'0',$teacher_sel);
+        $tea_sel=Get_select_opt_color_htm($teacher_order,$sn,'0',$teacher_sel);
+
+        // var_dump($tea_sel);
+        // die();
         $xoopsTpl->assign('tea_sel', $tea_sel);
+
         $xoopsTpl->assign('tea_name',$teachers[$sn]);
         $counseling  = array();
         if($sn){
@@ -407,8 +430,7 @@ switch ($op) {
 
         // 學生列表
         $stu_list_ary=$SchoolSet->stu_anonymous;
-        $stu_list_ary=array_diff_key($stu_list_ary,$counseling);
-
+        $stu_list_ary=array_diff_key($stu_list_ary,$already_recognized_stu);
         $stu_sel=Get_select_opt_htm($stu_list_ary,'','0');
         $xoopsTpl->assign('stu_sel', $stu_sel);
 

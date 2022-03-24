@@ -871,6 +871,7 @@ class SchoolSet
 
         // get enable users 
         $sql_enusr = $sql." AND $tb2.enable !='0' ";
+        // echo($sql_enusr);die();
         $result = $xoopsDB->query($sql_enusr) or Utility::web_error($sql, __FILE__, __LINE__);
         $all    = [];
         while($en_teausers= $xoopsDB->fetchArray($result)){

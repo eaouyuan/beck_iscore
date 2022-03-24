@@ -640,7 +640,7 @@ function Get_select_opt_color_htm($ary=[],$value='',$show_space='1',$sel_val=[])
     }
     foreach ($ary as $k=>$v){
         $selected= ($value==strval($k))?'selected':'';
-        $color=(in_array(strval($k),$sel_val))?"class='sel_exist'":'';
+        $color=(in_array(strval($k),$sel_val))?"class='tea_list sel_exist'":"class='tea_list'";
         $return_htm.="<option {$color} value='{$k}' {$selected}>{$v}</option>";
     }
     return ($return_htm);

@@ -32,7 +32,7 @@
         <div class="col-4">
             <h3 class="text-center bg-info">學生列表</h3>
             <select id="s_list" class="custom-select custom-select-lg mb-3" size=15>
-                <{if $sn}><{$stu_sel}><{/if}>
+                <{if $show_tea}><{$stu_sel}><{/if}>
             </select>
         </div>
         <div class="col-4">
@@ -163,5 +163,10 @@
         text-decoration: none;
         color: #000;
         background-color: #abccfc;
+    }
+    option.tea_list:checked{
+        text-decoration: none;
+        color: #000000;
+        background-color: #d1ff9d;
     }
 </style>
