@@ -52,13 +52,42 @@ switch ($op) {
     case "course_stest_sw":
         course_test_sw($sn,$check_status,'second_test');
         exit;
-        
+    case "sw_examkeyindate":
+        sw_examkeyindate($sn,$check_status);
+        exit;
+
     default:
         echo('this is default switch in op_teacher.php');
     break;
-
-
 }
+
+function sw_examkeyindate($sn,$check_status){
+    global $xoopsDB,$xoopsUser;
+    if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+        $return['msg']['error']='無 exam_keyindate_list 權限! error:202203262343!';
+        echo json_encode($return);
+    } 
+
+    $myts = MyTextSanitizer::getInstance();
+    foreach ($_POST as $key => $value) {
+        $$key = $myts->addSlashes($value);
+        // echo "<p>\${$key}={$$key}</p>";
+        $return[$key]=$myts->addSlashes($value);
+    }
+    // var_dump($return);die();
+    $tbl = $xoopsDB->prefix('yy_exam_keyin_daterange');
+    $sql = "update `$tbl` set 
+                `status`='{$check_status}',
+                `update_user`='{$_SESSION['xoopsUserId']}',
+                `update_date`=now()
+            where `sn`   = '{$sn}'";
+    // var_dump($sql);die();
+    $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+    $return['msg']['success']='修改成功!';
+    echo json_encode($return);
+}
+
 function variable_sort($odr_ary){
     global $xoopsDB,$xoopsUser;
     $tbl   = $xoopsDB->prefix('yy_config');
@@ -128,7 +157,7 @@ function course_test_sw($sn,$check_status,$field){
             where `sn`   = '{$sn}'";
     // var_dump($sql);die();
     $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-  
+
     $return['msg']='修改成功!';
     echo json_encode($return);
 }

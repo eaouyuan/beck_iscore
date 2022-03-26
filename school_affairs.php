@@ -906,7 +906,7 @@ switch ($op) {
         $xoopsTpl->assign('exam_name_htm', $exam_name_htm);
 
         // 目前狀況
-        $status_ary=['0'=>'關閉','1'=>'開啟','2'=>'暫停'] ;
+        $status_ary=['0'=>'關閉','1'=>'開啟'] ;
         $status_htm=Get_select_opt_htm($status_ary,$exam_date['status'],'1');
         $xoopsTpl->assign('status_htm', $status_htm);
 
@@ -965,7 +965,8 @@ switch ($op) {
 
         // var_dump($stu= $xoopsDB->fetchArray($result));die();
         // 目前狀況
-        $status_ary=['0'=>'關閉 ','1'=>'開啟','2'=>'暫停'] ;
+        // $status_ary=['0'=>'關閉 ','1'=>'開啟','2'=>'暫停'] ;
+        $is_chk=["0"=>'',"1"=>'checked'];
 
         while($exam_data= $xoopsDB->fetchArray($result)){
             $exam_data['i']          = $i;
@@ -974,7 +975,7 @@ switch ($op) {
             $exam_data['exam_name']  = $myts->htmlSpecialChars($exam_data['exam_name']);
             $exam_data['start_date'] = $myts->htmlSpecialChars($exam_data['start_date']);
             $exam_data['end_date']   = $myts->htmlSpecialChars($exam_data['end_date']);
-            $exam_data['status']     = $myts->htmlSpecialChars($status_ary[$exam_data['status']]);
+            $exam_data['status']     = $myts->htmlSpecialChars($is_chk[$exam_data['status']]);
             $all       []            = $exam_data;
             $i++;
         }
