@@ -8,6 +8,8 @@ $op = Request::getString('op');
 $sn = Request::getInt('sn');
 $check_status = Request::getString('check_status');
 $odr_ary = Request::getArray('odr');
+$sdate = Request::getString('sdate');
+$edate = Request::getString('edate');
 
 
 
@@ -55,12 +57,26 @@ switch ($op) {
     case "sw_examkeyindate":
         sw_examkeyindate($sn,$check_status);
         exit;
-
+    case "calculate_hrs":
+        calculate_hrs($sdate,$edate);
+        exit;
+        
     default:
         echo('this is default switch in op_teacher.php');
     break;
 }
+function calculate_hrs($sdate,$edate){
+    global $xoopsDB,$xoopsUser;
+    if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+        $return['msg']['error']='無 leave_day_form 權限! error:202203271317';
+        echo json_encode($return);
+    } 
 
+    $return=Calculation_days_off($sdate,$edate);
+
+    $return['msg']['success']='修改成功!';
+    echo json_encode($return);
+}
 function sw_examkeyindate($sn,$check_status){
     global $xoopsDB,$xoopsUser;
     if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){

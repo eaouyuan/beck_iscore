@@ -48,7 +48,12 @@ $AB['term'] = Request::getString('term');
 $AB['major_id'] = Request::getString('major_id');
 $AB['stu_sn'] = Request::getString('stu_sn');
 $AB['AB_period'] = Request::getString('AB_period');
-
+$LD['year'] = Request::getString('year');
+$LD['term'] = Request::getString('term');
+$LD['major_id'] = Request::getString('major_id');
+$LD['stu_sn'] = Request::getString('stu_sn');
+$LD['period'] = Request::getString('period');
+$LD['class_id'] = Request::getString('class_id');
 
 // die(var_dump($_GET));
 // die(var_dump($_REQUEST));
@@ -233,7 +238,7 @@ switch ($op) {
         break;//跳出迴圈,往下執行
 // 新版出缺勤管理
     case "leave_day_form":
-        leave_day_form($AB,$sn);
+        leave_day_form($LD,$sn);
         break;//跳出迴圈,往下執行
     case "leave_day_insert":
         $re=leave_day_insert();
@@ -244,7 +249,7 @@ switch ($op) {
         header("location:tchstu_mag.php?op=leave_day_list");
         exit;//離開，結束程式
     case "leave_day_list":
-        leave_day_list($AB);
+        leave_day_list($LD);
         break;//跳出迴圈,往下執行
     case "leave_day_delete":
         $re=leave_day_delete($sn);
@@ -425,12 +430,12 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
-            redirect_header('tchstu_mag.php', 2, '無 absence_record_delete 權限! error:2106190045');
+            redirect_header('tchstu_mag.php', 2, '無 leave_day_delete 權限! error:2106190045');
         }
         
         // 刪除學生出缺勤紀錄
-        $tbl    = $xoopsDB->prefix('yy_absence_time');
-        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+        $tbl    = $xoopsDB->prefix('yy_leave_day');
+        $sql = "DELETE FROM `$tbl` WHERE `LD_sn` = '{$sn}'";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         return;
     }
@@ -441,7 +446,7 @@ switch ($op) {
         if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
             redirect_header('tchstu_mag.php', 2, '無 leave_day_list 權限! error:202202151136');
         }
-
+        // var_dump($pars);die();
         $pars['year']=($pars['year']=='')?(string)$SchoolSet->sem_year:$pars['year'];
         $pars['term']=($pars['term']=='')?(string)$SchoolSet->sem_term:$pars['term'];
         
@@ -449,85 +454,78 @@ switch ($op) {
         for ($i=0 ; $i<5 ; $i++ ) {
             $sems_year[$SchoolSet->all_sems[$i]['year']]=$SchoolSet->all_sems[$i]['year'];
         }
-        // var_dump($sems_year);die();
         
+        // 學年
         $sel['year']=Get_select_opt_htm($sems_year,$pars['year'],'1');
         // 學期
         $terms=['1'=>'1','2'=>'2'];
         $sel['term']=Get_select_opt_htm($terms,$pars['term'],1);
         // 學程
         $sel['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['major_id'],'1');
-        // 班級
-        $sel['class_name']=Get_select_opt_htm($SchoolSet->class_name,$pars['class_id'],'1');
         // 學生
         $sel['stu_sn']=Get_select_grp_opt_htm($SchoolSet->classname_stuid,$pars['stu_sn'],'1');
         // 時段: 日 夜間 
         $LD_period=['LD_day_hours'=>'日間','LD_night_hours'=>'夜間'];
-        $sel['period']=Get_select_opt_htm($LD_period,'','1');
+        $sel['period']=Get_select_opt_htm($LD_period,$pars['period'],'1');
         $xoopsTpl->assign('sel', $sel);
-
 
         $tbl = $xoopsDB->prefix('yy_leave_day');
         $tb2 = $xoopsDB->prefix('yy_student');
         $sql = "SELECT  * FROM $tbl as a
                 LEFT JOIN $tb2 as b
-                ON a.LD_stu_sn =b.sn";
+                ON a.LD_stu_sn =b.sn
+                WHERE 1";
         // echo($sql);die();
 
-        // $have_par='0';
-        // if($pars['year']!=''){
-        //     $sql.=" WHERE `year`='{$pars['year']}'";
-        //     $have_par='1';
-        // }
-        // if($pars['term']!=''){
-        //     if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        //     $sql.="`term`='{$pars['term']}'";
-        //     $have_par='1';
-        // }
-        // if(($pars['major_id']!='')){
-        //     if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        //     $sql.="`major_id` = '{$pars['major_id']}'";
-        //     $have_par='1';
-        // }
-        // if(($pars['stu_sn']!='')){
-        //     if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        //     $sql.="`stu_sn` = '{$pars['stu_sn']}'";
-        //     $have_par='1';
-        // }
-        // if(($pars['AB_period']!='')){
-        //     if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        //     $sql.="`AB_period` = '{$pars['AB_period']}'";
-        //     $have_par='1';
-        // }
-
-        // if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        // $sql.=" `status`!='2' ORDER BY `ABsn` DESC,`AB_date` DESC , `stu_sn` , `AB_period` ";
-        // echo($sql);die();
-        // getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-        // $PageBar = getPageBar($sql, 100, 10);
-        // $bar     = $PageBar['bar'];
-        // $sql     = $PageBar['sql'];
-        // $total   = $PageBar['total'];
-        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all = $ru = array();
-        while($ru= $xoopsDB->fetchArray($result)){
-            // die(var_dump($ru));
-            $ru ['ABsn'] = $myts->htmlSpecialChars($ru['ABsn']);
-            $ru ['class_name']     = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$ru['stu_sn']]]);
-            $ru ['AB_kind_name']   = $myts->htmlSpecialChars($SchoolSet->AB_kind_anther[$ru['AB_kind']]);
-            $ru ['stu_name']   = $myts->htmlSpecialChars($SchoolSet->stu_anonymous[$ru['stu_sn']]);
-            $ru ['depsnname']    = $myts->htmlSpecialChars($SchoolSet->depsnname[$SchoolSet->stu_dep[$ru['stu_sn']]]);
-            $ru ['stu_info']    = $ru ['depsnname'].'<br>'.$ru ['class_name'].' / '.$ru ['stu_name'];
-            $ru ['AB_period_name']   = $myts->htmlSpecialChars($SchoolSet->AB_period[$ru['AB_period']]);
-            $ru ['sdate']   = $myts->htmlSpecialChars($ru['sdate']);
-            $ru ['edate']   = $myts->htmlSpecialChars($ru['edate']);
-            $ru ['AB_hour']   = $myts->htmlSpecialChars($ru['AB_hour']);
-            $all []            = $ru;
-            $Summary[$ru['AB_kind']]['name']=$ru['AB_kind_name'];
-            $Summary[$ru['AB_kind']]['hour']+=$ru['AB_hour'];
-            
+        if($pars['year']!=''){
+            $sql.=" AND  `LD_year`='{$pars['year']}'";
         }
-        // die(var_dump($all));
+        if($pars['term']!=''){
+            $sql.=" AND  `LD_term`='{$pars['term']}'";
+        }
+        if(($pars['major_id']!='')){
+            $sql.=" AND `major_id` = '{$pars['major_id']}'";
+        }
+        if(($pars['stu_sn']!='')){
+            $sql.=" AND `LD_stu_sn` = '{$pars['stu_sn']}'";
+        }
+        if(($pars['period']=='LD_day_hours')){
+            $sql.=" AND `LD_day_hours` > 0 ";
+        }
+        if(($pars['period']=='LD_night_hours')){
+            $sql.=" AND `LD_night_hours` > 0 ";
+        }
+        $sql.=" ORDER BY `LD_sn` DESC ";
+        // echo($sql);die();
+
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all = $r = array();
+        while($r= $xoopsDB->fetchArray($result)){
+            $ru['LD_sn']          = $myts->htmlSpecialChars($r['LD_sn']);
+            $ru['LD_year']        = $myts->htmlSpecialChars($r['LD_year']);
+            $ru['LD_term']        = $myts->htmlSpecialChars($r['LD_term']);
+            $ru['LD_stu_sn']      = $myts->htmlSpecialChars($r['LD_stu_sn']);
+            $ru['LD_kind']        = $myts->htmlSpecialChars($r['LD_kind']);
+            $ru['LD_other_text']  = $myts->htmlSpecialChars($r['LD_other_text']);
+            $ru['LD_sdate']       = $myts->htmlSpecialChars($r['LD_sdate']);
+            $ru['LD_edate']       = $myts->htmlSpecialChars($r['LD_edate']);
+            $ru['LD_content']     = $myts->displayTarea($r['LD_content'], 1, 0, 0, 0, 0);
+            $ru['LD_day_hours']   = $myts->htmlSpecialChars($r['LD_day_hours']);
+            $ru['LD_night_hours'] = $myts->htmlSpecialChars($r['LD_night_hours']);
+            $ru['LD_update_user'] = $myts->htmlSpecialChars($r['LD_update_user']);
+            $ru['LD_update_date'] = $myts->htmlSpecialChars($r['LD_update_date']);
+            $ru['stu_name']       = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$r['LD_stu_sn']]);
+            $ru['class_name']     = $myts->htmlSpecialChars($SchoolSet->class_name[$r['class_id']]);
+            $ru['depsnname']      = $myts->htmlSpecialChars($SchoolSet->depsnname[$r['major_id']]);
+            $ru['LD_kind_name']   = $myts->htmlSpecialChars($SchoolSet->AB_kind_anther[$r['LD_kind']]);
+            $ru['stu_info']       = $ru['depsnname'].'<br>'.$ru ['class_name'].' / '.$ru ['stu_name'];
+            $all []            = $ru;
+            $Summary[$ru['LD_kind']]['name']=$ru['LD_kind_name'];
+            $Summary[$ru['LD_kind']]['hour']+=$ru['LD_day_hours']+$ru['LD_night_hours'];
+        }
+
+        // die(var_dump($Summary));
 
         ksort($Summary);
         $remove_AB_option=['G'=>'晤談'];          
@@ -542,11 +540,9 @@ switch ($op) {
         }
 
         $SweetAlert = new SweetAlert();
-        $SweetAlert->render('AB_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=absence_record_delete&sn=", 'sn','確定要刪除學生出缺勤紀錄？','學生出缺勤紀錄刪除。');
+        $SweetAlert->render('LD_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=leave_day_delete&sn=", 'sn','確定要刪除新版學生出缺勤紀錄？','新版學生出缺勤紀錄刪除。');
 
         $xoopsTpl->assign('all', $all);
-        // $xoopsTpl->assign('bar', $bar);
-        // $xoopsTpl->assign('total', $total);
         $xoopsTpl->assign('op', "leave_day_list");
     }
     function leave_day_form($pars=[],$sn){
@@ -574,27 +570,26 @@ switch ($op) {
         $data ['LD_term'] = $SchoolSet->sem_term;
         if($sn){
             $form_title = '新版─編輯學生出缺勤紀錄';
-            $tbl     = $xoopsDB->prefix('yy_leave_day');
-            $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
-            $result            = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            $data                = $xoopsDB->fetchArray($result);
-
-            // $ru ['stime']          = date("H:i", strtotime($ru['sdate']));
-            // $ru ['etime']          = date("H:i", strtotime($ru['edate']));
+            $tbl        = $xoopsDB->prefix('yy_leave_day');
+            $sql        = "SELECT * FROM $tbl Where `LD_sn`='{$sn}'";
+            $result     = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $data   = $xoopsDB->fetchArray($result);
             $data ['LD_sn']          = $myts->htmlSpecialChars($data['LD_sn']);
             $data ['LD_year']        = $myts->htmlSpecialChars($data['LD_year']);
             $data ['LD_term']        = $myts->htmlSpecialChars($data['LD_term']);
             $data ['LD_stu_sn']      = $myts->htmlSpecialChars($data['LD_stu_sn']);
-            $data ['class_name']     = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$ru['stu_sn']]]);
-            $data ['LD_kind']        = $myts->htmlSpecialChars($SchoolSet->AB_kind[$data['LD_kind']]);
+            $data ['LD_kind']        = $myts->htmlSpecialChars($data['LD_kind']);
+            $data ['LD_other_text']  = $myts->htmlSpecialChars($data['LD_other_text']);
+            $data ['LD_sdate']       = $myts->htmlSpecialChars($data['LD_sdate']);
+            $data ['LD_edate']       = $myts->htmlSpecialChars($data['LD_edate']);
+            $data ['LD_content']     = $myts->displayTarea($data['LD_content'], 1, 0, 0, 0, 0);
+            $data ['LD_day_hours']   = $myts->htmlSpecialChars($data['LD_day_hours']);
+            $data ['LD_night_hours'] = $myts->htmlSpecialChars($data['LD_night_hours']);
+            $data ['LD_update_user'] = $myts->htmlSpecialChars($data['LD_update_user']);
+            $data ['LD_update_date'] = $myts->htmlSpecialChars($data['LD_update_date']);
+            $data ['class_name']     = $myts->htmlSpecialChars($SchoolSet->class_name[$SchoolSet->stu_sn_classid[$data['LD_stu_sn']]]);
+            $data ['LD_kind_name']   = $myts->htmlSpecialChars($SchoolSet->AB_kind[$data['LD_kind']]);
             $data ['stu_name']       = $myts->htmlSpecialChars($SchoolSet->stu_anonymous[$data['LD_stu_sn']]);
-            $data ['depsnname']      = $myts->htmlSpecialChars($SchoolSet->depsnname[$SchoolSet->stu_dep[$ru['stu_sn']]]);
-            $data ['AB_period_name'] = $myts->htmlSpecialChars($SchoolSet->AB_period[$ru['AB_period']]);
-            $data ['AB_period']      = $myts->htmlSpecialChars($ru['AB_period']);
-            $data ['sdate']          = $myts->htmlSpecialChars($ru['sdate']);
-            $data ['edate']          = $myts->htmlSpecialChars($ru['edate']);
-            $data ['AB_hour']        = $myts->htmlSpecialChars($ru['AB_hour']);
-            $data ['AB_content']     = $myts->displayTarea($ru['AB_content'], 1, 0, 0, 0, 0);
         }
 
         $xoopsTpl->assign('form_title', $form_title);
@@ -611,14 +606,14 @@ switch ($op) {
 
         $xoopsTpl->assign('stu_sn_classid', Json_encode($SchoolSet->stu_sn_classid));
         
-        $sel['AB_kind']=radio_htm($SchoolSet->AB_kind,'LD_kind',$data['LD_kind']);
+        $sel['LD_kind']=radio_htm($SchoolSet->AB_kind,'LD_kind',$data['LD_kind']);
         if($data['LD_kind']=='99'){$sel['LD_kind_99']='checked';}
 
         $xoopsTpl->assign('sel', $sel);
 
         // //帶入使用者編號
         if ($sn) {
-            $uid = $_SESSION['beck_iscore_adm'] ? $data['update_user'] : $xoopsUser->uid();
+            $uid = $_SESSION['beck_iscore_adm'] ? $data['LD_update_user'] : $xoopsUser->uid();
         } else {
             $uid = $xoopsUser->uid();
         }
@@ -648,7 +643,7 @@ switch ($op) {
         //安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("tchstu_mag.php?op=absence_record_list", 2, '表單Token錯誤，請重新輸入!');
+            redirect_header("tchstu_mag.php?op=leave_day_list", 2, '表單Token錯誤，請重新輸入!');
             throw new Exception($error);
         }
         
@@ -657,46 +652,22 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
+        $hours_sum=Calculation_days_off($LD_sdate,$LD_edate);
         // die();
 
-        if($AB_period=='1'){
-            $sql_sdate=$AB_date.' '.$earlym_stime.':00';
-            $sql_edate=$AB_date.' '.$earlym_etime.':00';
-            $sql_AB_hour=$earlym_hour;
-
-        }elseif($AB_period=='2'){
-            $sql_sdate=$AB_date.' '.$morning_stime.':00';
-            $sql_edate=$AB_date.' '.$morning_etime.':00';
-            $sql_AB_hour=$morning_hour;
-
-        }elseif($AB_period=='3'){
-            $sql_sdate=$AB_date.' '.$night_stime.':00';
-            $sql_edate=$AB_date.' '.$night_etime.':00';
-
-            if($night_etime=='00:00'){
-                $sql_edate=date('Y-m-d H:i:s',strtotime($AB_date.' '.$night_etime.':00 +1 day'));
-            }else{
-                $sql_edate=$AB_date.' '.$night_etime.':00';
-            }
-
-
-            $sql_AB_hour=$night_hour;
-        }
-
         // 更新缺曠明細
-        $tbl = $xoopsDB->prefix('yy_absence_time');
+        $tbl = $xoopsDB->prefix('yy_leave_day');
         $sql = "update " . $tbl . " set 
-                `AB_kind`='{$AB_kind}',      
-                `AB_other_text`='{$AB_other_text}',      
-                `AB_date`='{$AB_date}',      
-                `AB_content`='{$AB_content}',      
-                `AB_period`='{$AB_period}',      
-                `sdate`='{$sql_sdate}',          
-                `edate`='{$sql_edate}',          
-                `AB_hour`='{$sql_AB_hour}',
-                `update_user`='{$uid}',
-                `update_date`=now()
-                where `sn`='{$sn}' 
+                `LD_kind`='{$LD_kind}',      
+                `LD_other_text`='{$LD_other_text}',      
+                `LD_sdate`='{$LD_sdate}',      
+                `LD_edate`='{$LD_edate}',      
+                `LD_content`='{$LD_content}',      
+                `LD_day_hours`='{$hours_sum['day_hr_sum']}',          
+                `LD_night_hours`='{$hours_sum['night_hr_sum']}',          
+                `LD_update_user`='{$uid}',
+                `LD_update_date`=now()
+                where `LD_sn`='{$sn}' 
                 ";
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         // echo($sql);die();
@@ -711,7 +682,7 @@ switch ($op) {
         //安全判斷 儲存 更新都要做
         if (!$GLOBALS['xoopsSecurity']->check()) {
             $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("tchstu_mag.php?op=absence_record_list", 2, '表單Token錯誤，請重新輸入!');
+            redirect_header("tchstu_mag.php?op=leave_day_list", 2, '表單Token錯誤，請重新輸入!');
             throw new Exception($error);
         }
         
@@ -720,45 +691,24 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
+        
+        $hours_sum=Calculation_days_off($LD_sdate,$LD_edate);
+        // var_dump($hours_sum);
         // die();
 
-        $Ab_times=[];
-        if($earlym_hour!=''){
-            $Ab_times['1']['sdate']=$AB_date.' '.$earlym_stime.':00';
-            $Ab_times['1']['edate']=$AB_date.' '.$earlym_etime.':00';
-            $Ab_times['1']['hour']=$earlym_hour;
-        }
-        if($morning_hour!=''){
-            $Ab_times['2']['sdate']=$AB_date.' '.$morning_stime.':00';
-            $Ab_times['2']['edate']=$AB_date.' '.$morning_etime.':00';
-            $Ab_times['2']['hour']=$morning_hour;
-        }
-        if($night_hour!=''){
-            $Ab_times['3']['sdate']=$AB_date.' '.$night_stime.':00';
-            if($night_etime=='00:00'){
-                $Ab_times['3']['edate']=date('Y-m-d H:i:s',strtotime($AB_date.' '.$night_etime.':00 +1 day'));
-            }else{
-                $Ab_times['3']['edate']=$AB_date.' '.$night_etime.':00';
-            }
-            $Ab_times['3']['hour']=$night_hour;
-        }
-        // var_dump($Ab_times);die();
-
-        $tbl = $xoopsDB->prefix('yy_absence_time');
-        foreach($Ab_times as $AB_period=>$v){
-            $sql = "insert into `$tbl` (
-                        `year`,`term`,`stu_sn`,`AB_kind`,`AB_other_text`,
-                        `AB_date`,`AB_content`,`AB_period`,`sdate`,`edate`,
-                        `AB_hour`,`update_user`,`update_date`
-                    )values(
-                        '{$year}','{$term}','{$stu_id}','{$AB_kind}','{$AB_other_text}',
-                        '{$AB_date}','{$AB_content}','{$AB_period}','{$v['sdate']}','{$v['edate']}',
-                        '{$v['hour']}','{$uid}',now()
-                    )";
-            // echo($sql);die();
-            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            // $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
-        }
+        $tbl = $xoopsDB->prefix('yy_leave_day');
+        $sql = "insert into `$tbl` (
+                    `LD_year`,`LD_term`,`LD_stu_sn`,`LD_kind`,`LD_other_text`,
+                    `LD_sdate`,`LD_edate`,`LD_content`,`LD_day_hours`,`LD_night_hours`,
+                    `LD_update_user`,`LD_update_date`
+                )values(
+                    '{$LD_year}','{$LD_term}','{$LD_stu_sn}','{$LD_kind}','{$LD_other_text}',
+                    '{$LD_sdate}','{$LD_edate}','{$LD_content}','{$hours_sum['day_hr_sum']}','{$hours_sum['night_hr_sum']}',
+                    '{$uid}',now()
+                )";
+        // echo($sql);die();
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
         return;
     }
 // ----------------------------------

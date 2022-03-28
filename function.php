@@ -27,13 +27,13 @@ function endKey($array){
     end($array);
     return key($array);
 }
-// 只有日間及夜間
+// 計算日間及夜間時數
 function Calculation_days_off($sdate_time,$edate_time){
     $date_data=$date_result=[];
     // $sdate_time='2022-01-03 08:30';
     // $edate_time='2022-01-06 00:00';
     $daterange=date_range(date('Y-m-d',strtotime($sdate_time)),date('Y-m-d',strtotime($edate_time)));
-    var_dump($sdate_time,$edate_time);
+    // var_dump($sdate_time,$edate_time);
     // 判斷是否連續一整天 
     foreach($daterange as $k=>$v) {
         if($k==0){
@@ -47,6 +47,7 @@ function Calculation_days_off($sdate_time,$edate_time){
     // var_dump($date_data);
     $s=strtotime($sdate_time);
     $e=strtotime($edate_time);
+
     $i=0;
     foreach($date_data as $vue){
         foreach($vue as $period=>$datetime_v){
@@ -120,7 +121,7 @@ function Calculation_days_off($sdate_time,$edate_time){
                         $date_result[$i]['period']='night';
                         $date_result[$i]['s']=$c_str;
                         $date_result[$i]['e']=$edate_time;
-                        $date_result[$i]['hours']=($c-$e)/3600;
+                        $date_result[$i]['hours']=($e-$c)/3600;
                         $i++;
                     }else{
                         $date_result[$i]['e']=$c_str;
@@ -129,9 +130,10 @@ function Calculation_days_off($sdate_time,$edate_time){
                         $date_result[$i]['period']='night';
                         $date_result[$i]['s']=$c_str;
                         $date_result[$i]['e']=$d_str;
-                        $date_result[$i]['hours']=($c-$d)/3600;
+                        $date_result[$i]['hours']=($d-$c)/3600;
                         $i++;
                     }
+
                 }elseif($s>=$c && $s<$d){
                     $date_result[$i]['period']='night';
                     $date_result[$i]['night']['s']=$sdate_time;
@@ -254,19 +256,22 @@ function Calculation_days_off($sdate_time,$edate_time){
 
         }
     }
+    // var_dump($date_result);
 
-    $day_hr_sum=$night_hur_sum=0;
+    $return=[];
     foreach($date_result as $key=>$val){
         if($val['period']=='before' or $val['period']=='night'){
-            $night_hur_sum=$night_hur_sum+$val['hours'];
+            $return['night_hr_sum']=$return['night_hr_sum']+round($val['hours'],2);
         }
         if($val['period']=='day'){
-            $day_hr_sum=$day_hr_sum+$val['hours'];
+            $return['day_hr_sum']=$return['day_hr_sum']+round($val['hours'],2);
         }
     }
-    print_r($date_result);
-    var_dump($day_hr_sum,$night_hur_sum);
+    $return['night_hr_sum']=$return['night_hr_sum']??0;
+    $return['day_hr_sum']= $return['day_hr_sum']??0;
 
+    // print_r($return);
+    return($return);
     // die();
 }
 // 晨 日 夜

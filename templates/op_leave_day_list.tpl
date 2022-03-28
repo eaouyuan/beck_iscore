@@ -61,28 +61,28 @@
         <thead class="table-info">
             <tr>
                 <th scope="col" class="text-center">編號</th>
-                <th scope="col" class="text-center">缺席類別</th>
                 <th scope="col" class="text-center">學生</th>
-                <th scope="col" class="text-center">時段</th>
+                <th scope="col" class="text-center">缺席類別</th>
                 <th scope="col" class="text-center">開始時間</th>
                 <th scope="col" class="text-center">結束時間</th>
-                <th scope="col" class="text-center">請假時數</th>
+                <th scope="col" class="text-center">日間請假時數</th>
+                <th scope="col" class="text-center">夜間請假時數</th>
                 <th scope="col" class="text-center">功能</th>
             </tr>
         </thead>
         <tbody>
     <{foreach from=$all key=i item=its}>
         <tr> 
-            <th class="text-center text-nowrap"><{$its.ABsn}></th>
-            <th class="text-center text-nowrap"><{$its.AB_kind_name}></th>
+            <th class="text-center text-nowrap"><{$its.LD_sn}></th>
             <th class="text-center text-nowrap"><{$its.stu_info}></th>
-            <th class="text-center text-nowrap"><{$its.AB_period_name}></th>
-            <th class="text-center text-nowrap"><{$its.sdate}></th>
-            <th class="text-center text-nowrap"><{$its.edate}></th>
-            <th class="text-center text-nowrap"><{$its.AB_hour}></th>
+            <th class="text-center text-nowrap"><{$its.LD_kind_name}></th>
+            <th class="text-center text-nowrap"><{$its.LD_sdate}></th>
+            <th class="text-center text-nowrap"><{$its.LD_edate}></th>
+            <th class="text-center text-nowrap"><{$its.LD_day_hours}></th>
+            <th class="text-center text-nowrap"><{$its.LD_night_hours}></th>
             <th class="text-center text-nowrap">
-                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=absence_record_form&sn=<{$its.ABsn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
-                <a href="javascript:AB_del(<{$its.ABsn}>)" class="btn btn-danger btn-sm">刪除</a>
+                <a href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=leave_day_form&sn=<{$its.LD_sn}>" class="btn btn-warning btn-sm mr-2">編輯</a>
+                <a href="javascript:LD_del(<{$its.LD_sn}>)" class="btn btn-danger btn-sm">刪除</a>
             </th>
         </tr>
     <{/foreach}>
@@ -103,24 +103,24 @@
         <thead>
             <tr>
                 <th class="text-center">編號</th>
-                <th class="text-center">缺席類別</th>
                 <th class="text-center">學生</th>
-                <th class="text-center">時段</th>
+                <th class="text-center">缺席類別</th>
                 <th class="text-center">開始時間</th>
                 <th class="text-center">結束時間</th>
-                <th class="text-center">請假時數</th>
+                <th class="text-center">日間請假時數</th>
+                <th class="text-center">夜間請假時數</th>
             </tr>
         </thead>
         <tbody>
     <{foreach from=$all key=i item=its}>
         <tr> 
-            <th class="text-center text-nowrap"><{$its.ABsn}></th>
-            <th class="text-center text-nowrap"><{$its.AB_kind_name}></th>
+            <th class="text-center text-nowrap"><{$its.LD_sn}></th>
             <th class="text-center text-nowrap"><{$its.stu_info}></th>
-            <th class="text-center text-nowrap"><{$its.AB_period_name}></th>
-            <th class="text-center text-nowrap"><{$its.sdate}></th>
-            <th class="text-center text-nowrap"><{$its.edate}></th>
-            <th class="text-center text-nowrap"><{$its.AB_hour}></th>
+            <th class="text-center text-nowrap"><{$its.LD_kind_name}></th>
+            <th class="text-center text-nowrap"><{$its.LD_sdate}></th>
+            <th class="text-center text-nowrap"><{$its.LD_edate}></th>
+            <th class="text-center text-nowrap"><{$its.LD_day_hours}></th>
+            <th class="text-center text-nowrap"><{$its.LD_night_hours}></th>
         </tr>
     <{/foreach}>
         </tbody>
@@ -137,7 +137,7 @@
 <!-- <link rel="stylesheet" href="<{$xoops_url}>/modules/tadtools/sweet-alert/sweet-alert.css" type="text/css" /> -->
 <script type="text/javascript">
     $(document).ready(function($){ 
-        $('#year,#term,#major_id,#stu_sn,#AB_period').change(function(e){
+        $('#year,#term,#major_id,#stu_sn,#period').change(function(e){
             document.forms["leave_day_list"].submit();
         })
 
