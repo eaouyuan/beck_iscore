@@ -42,11 +42,17 @@
     </div>
 <br>
 </form>
-<{if $show_submit_btn=='0'}>
+<{if $no_score=='0'}>
     <div class="alert alert-danger" role="alert">
         錯誤!！ 目的學年度、學期，已有學生「成績資料」，故無法複製整學期課程！！
     </div>
 <{/if}>
+<{if $no_s_cource=='0'}>
+    <div class="alert alert-danger" role="alert">
+        錯誤!！ 來源學年度，沒有「課程資料」，故無法複製整學期課程！！
+    </div>
+<{/if}>
+
 
 <script type="text/javascript">
     $(document).ready(function($){

@@ -328,6 +328,21 @@ switch ($op) {
         $dropmenu['dterm']=Get_select_opt_htm($terms,$pars['dterm'],1);
         $xoopsTpl->assign('dropmenu', $dropmenu);
 
+        // 是否有來源課程資料
+        if($pars['syear']!='' and $pars['sterm']!='' ){
+            $tbl     = $xoopsDB->prefix('yy_course');
+            $sql     = "SELECT * FROM $tbl Where `cos_year`='{$pars['syear']}' and `cos_term`='{$pars['sterm']}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $scourse_exist = $xoopsDB->fetchArray($result);
+
+            if(empty($scourse_exist)){
+                $no_s_cource='0';
+            }else{
+                $no_s_cource='1';
+            }
+            $xoopsTpl->assign('no_s_cource', $no_s_cource);
+        }
+
         if($pars['dyear']!='' and $pars['dterm']!='' ){
             // 判斷是否有學生平時成績
             $tbl     = $xoopsDB->prefix('yy_usual_score');
@@ -342,12 +357,17 @@ switch ($op) {
             $sscore_exist = $xoopsDB->fetchArray($result);
 
             if(empty($uscore_exist) & empty($sscore_exist)){
-                $show_submit_btn='1';
+                $no_score='1';
             }else{
-                $show_submit_btn='0';
+                $no_score='0';
             }
-            $xoopsTpl->assign('show_submit_btn', $show_submit_btn);
+            $xoopsTpl->assign('no_score', $no_score);
         }
+
+        if( $no_s_cource=='1' & $no_score=='1'){
+            $show_submit_btn='1';
+        }
+        $xoopsTpl->assign('show_submit_btn', $show_submit_btn);
 
         // 帶入使用者編號
         $uid = $xoopsUser->uid();
