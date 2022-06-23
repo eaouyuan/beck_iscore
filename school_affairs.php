@@ -341,17 +341,12 @@ switch ($op) {
             $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
             $sscore_exist = $xoopsDB->fetchArray($result);
 
-            // var_dump(empty($sscore_exist));
-            // var_dump(($score_exist));
-            // die();
-
             if(empty($uscore_exist) & empty($sscore_exist)){
                 $show_submit_btn='1';
             }else{
                 $show_submit_btn='0';
             }
             $xoopsTpl->assign('show_submit_btn', $show_submit_btn);
-
         }
 
         // 帶入使用者編號
