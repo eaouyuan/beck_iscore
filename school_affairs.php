@@ -27,7 +27,10 @@ $cfg['desc']   = Request::getString('desc');
 $cfg['search'] = Request::getString('search');
 $cou['cos_year'] = Request::getString('cos_year');
 $cou['cos_term'] = Request::getString('cos_term');
-
+$ccf['syear'] = Request::getString('syear');
+$ccf['sterm'] = Request::getString('sterm');
+$ccf['dyear'] = Request::getString('dyear');
+$ccf['dterm'] = Request::getString('dterm');
 // var_dump($_POST);
 // die(var_dump($_SESSION));
 // die(var_dump($_REQUEST));
@@ -244,7 +247,19 @@ switch ($op) {
             header("location:school_affairs.php?op=counseling_set&cos_year={$cou['cos_year']}&cos_term={$cou['cos_term']}");
             break;//跳出迴圈
         }
-
+// 課程複製
+    case "course_cp_form":
+        course_cp_form($ccf);
+        break;//跳出迴圈,往下執行
+    // case "counseling_set_update":
+    //     if($sn!=0){
+    //         $re=counseling_set_update($sn);
+    //         header("location:school_affairs.php?op=counseling_set&cos_year={$re['year']}&cos_term={$re['term']}&sn={$sn}");
+    //         exit;//離開，結束程式
+    //     }else{
+    //         header("location:school_affairs.php?op=counseling_set&cos_year={$cou['cos_year']}&cos_term={$cou['cos_term']}");
+    //         break;//跳出迴圈
+    //     }
 // 權限管理
     case "permission":
         permission();
@@ -262,6 +277,94 @@ switch ($op) {
 }
 
 /*-----------function區--------------*/
+// ----------------------------------
+// 課程複製
+    function course_cp_form($pars){
+        global $xoopsTpl,$xoopsUser,$xoopsDB;
+        // 只有管理員及能複製課程資料
+        if(!$xoopsUser->isAdmin()){
+            redirect_header('index.php', 3, '非管理員，無課程複製權限!  error:22062321');
+        }        
+
+        // 檢查目的地學年度學期 沒有學生平時成績、段考成績 才能複製
+
+        //套用formValidator驗證機制
+        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+            redirect_header("school_affairs.php", 3, _TAD_NEED_TADTOOLS);
+        }
+        include_once TADTOOLS_PATH."/formValidator.php";
+        $formValidator      = new formValidator("#course_cp_form", true);
+        $formValidator_code = $formValidator->render();
+        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+
+        $SchoolSet= new SchoolSet;
+        // 來源學年度select
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        $dropmenu['syear']=Get_select_opt_htm($sems_year,$pars['syear'],'1');
+        // 來源學期 select
+        if($pars['syear']!=''){
+            $terms=$SchoolSet->get_termarray($pars['syear']);
+        }else{
+            $terms=['1'=>'1','2'=>'2'];
+        }
+        $dropmenu['sterm']=Get_select_opt_htm($terms,$pars['sterm'],1);
+
+        // 目的學年度select
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        $dropmenu['dyear']=Get_select_opt_htm($sems_year,$pars['dyear'],'1');
+        // 目的來源學期 select
+        if($pars['dyear']!=''){
+            $terms=$SchoolSet->get_termarray($pars['dyear']);
+        }else{
+            $terms=['1'=>'1','2'=>'2'];
+        }
+        $dropmenu['dterm']=Get_select_opt_htm($terms,$pars['dterm'],1);
+        $xoopsTpl->assign('dropmenu', $dropmenu);
+
+        if($pars['dyear']!='' and $pars['dterm']!='' ){
+            // 判斷是否有學生平時成績
+            $tbl     = $xoopsDB->prefix('yy_usual_score');
+            $sql     = "SELECT * FROM $tbl Where `year`='{$pars['dyear']}' and `term`='{$pars['dterm']}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $uscore_exist = $xoopsDB->fetchArray($result);
+
+            // 判斷是否有學生段考成績
+            $tbl     = $xoopsDB->prefix('yy_stage_score');
+            $sql     = "SELECT * FROM $tbl Where `year`='{$pars['dyear']}' and `term`='{$pars['dterm']}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $sscore_exist = $xoopsDB->fetchArray($result);
+
+            // var_dump(empty($sscore_exist));
+            // var_dump(($score_exist));
+            // die();
+
+            if(empty($uscore_exist) & empty($sscore_exist)){
+                $show_submit_btn='1';
+            }else{
+                $show_submit_btn='0';
+            }
+            $xoopsTpl->assign('show_submit_btn', $show_submit_btn);
+
+        }
+
+        // 帶入使用者編號
+        $uid = $xoopsUser->uid();
+        $xoopsTpl->assign('uid', $uid);
+    
+        $op='course_cp_transform';
+        $xoopsTpl->assign('op', $op);
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+    }
 // ----------------------------------
 // 認輔設定
     function counseling_set_update($sn){

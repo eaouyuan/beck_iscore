@@ -30,13 +30,13 @@
         </div>
     
         <div class="col-4">
-            <h3 class="text-center bg-info">學生列表</h3>
+            <h3 class="text-center bg-info">未認輔學生</h3>
             <select id="s_list" class="custom-select custom-select-lg mb-3" size=15>
                 <{if $show_tea}><{$stu_sel}><{/if}>
             </select>
         </div>
         <div class="col-4">
-            <h3 class="text-center bg-info">認輔學生</h3>
+            <h3 class="text-center bg-info">已認輔學生</h3>
             <select id="d_list" class="custom-select custom-select-lg mb-3" name="d_list[]" size=15 multiple>
                 <{if $sn}><{$counseling_sel}><{/if}>
             </select>
