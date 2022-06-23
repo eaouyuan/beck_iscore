@@ -251,15 +251,13 @@ switch ($op) {
     case "course_cp_form":
         course_cp_form($ccf);
         break;//跳出迴圈,往下執行
-    // case "counseling_set_update":
-    //     if($sn!=0){
-    //         $re=counseling_set_update($sn);
-    //         header("location:school_affairs.php?op=counseling_set&cos_year={$re['year']}&cos_term={$re['term']}&sn={$sn}");
-    //         exit;//離開，結束程式
-    //     }else{
-    //         header("location:school_affairs.php?op=counseling_set&cos_year={$cou['cos_year']}&cos_term={$cou['cos_term']}");
-    //         break;//跳出迴圈
-    //     }
+
+    // 課程複製寫入DB
+    case "course_cp_transform":
+        course_cp_transform();
+        header("location:school_affairs.php?op=course_list");
+        exit;//離開，結束程式
+
 // 權限管理
     case "permission":
         permission();
@@ -278,6 +276,68 @@ switch ($op) {
 
 /*-----------function區--------------*/
 // ----------------------------------
+    // 課程複製寫入DB
+    function course_cp_transform(){
+        global $xoopsDB,$xoopsUser;
+
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header('index.php', 3, '無 course_cp_transform 權限! error:2206240636');
+        } 
+
+        // 安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=course_cp_form", 3, '課程複製，表單Token錯誤，請重新輸入!'.!$GLOBALS['xoopsSecurity']->check());
+            throw new Exception($error);
+        }
+        
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+
+        $tbl   = $xoopsDB->prefix('yy_course');
+        $sql      = "SELECT * FROM $tbl 
+                    WHERE `cos_year`='{$syear}'
+                    AND `cos_term`='{$sterm}'
+                    ORDER BY `sn` DESC
+                    ";
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $sdata=[];
+        while($exam_data= $xoopsDB->fetchArray($result)){
+            $data['cos_year']     = $myts->htmlSpecialChars($exam_data['cos_year']);
+            $data['cos_term']     = $myts->htmlSpecialChars($exam_data['cos_term']);
+            $data['dep_id']       = $myts->htmlSpecialChars($exam_data['dep_id']);
+            $data['tea_id']       = $myts->htmlSpecialChars($exam_data['tea_id']);
+            $data['cos_name']     = $myts->htmlSpecialChars($exam_data['cos_name']);
+            $data['cos_name_grp'] = $myts->htmlSpecialChars($exam_data['cos_name_grp']);
+            $data['cos_credits']  = $myts->htmlSpecialChars($exam_data['cos_credits']);
+            $data['scoring']      = $myts->htmlSpecialChars($exam_data['scoring']);
+            $data['first_test']   = $myts->htmlSpecialChars($exam_data['first_test']);
+            $data['second_test']  = $myts->htmlSpecialChars($exam_data['second_test']);
+            $data['status']       = $myts->htmlSpecialChars($exam_data['status']);
+            $data['sort']         = $myts->htmlSpecialChars($exam_data['sort']);
+            $sdata[]            = $data;
+        }
+
+        foreach($sdata as $v){
+            $sql = "insert into `$tbl` (
+                        `cos_year`,`cos_term`,`dep_id`,`tea_id`,`cos_name`,
+                        `cos_name_grp`,`cos_credits`,`scoring`,`first_test`,`second_test`,
+                        `status`,`sort`,`update_user`,`update_date`
+                    )values(
+                        '{$dyear}','{$dterm}','{$v["dep_id"]}','{$v["tea_id"]}','{$v["cos_name"]}',
+                        '{$v["cos_name_grp"]}','{$v["cos_credits"]}','{$v["scoring"]}','{$v["first_test"]}','{$v["second_test"]}',
+                        '{$v["status"]}','{$v["sort"]}','{$update_user}',now()
+                    )";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            // $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        }
+        redirect_header('tchstu_mag.php?op=course_list', 3, '課程複製成功!');
+
+    }
 // 課程複製
     function course_cp_form($pars){
         global $xoopsTpl,$xoopsUser,$xoopsDB;

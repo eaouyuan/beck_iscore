@@ -1,5 +1,5 @@
 <{$formValidator_code}>
-<form name="course_cp_form" id="course_cp_form" action="school_affairs.php" method="get">
+<form name="course_cp_form" id="course_cp_form" action="school_affairs.php" method="post">
     <h2 class="mb-3">全學期課程複製</h2>
     <br>
     <div class="col">
