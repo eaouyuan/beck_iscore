@@ -2835,9 +2835,6 @@ switch ($op) {
         // $xoopsTpl->assign('bar', $bar);
         // $xoopsTpl->assign('total', $total);
 
-        
-        // $SchoolSet->sem_year;
-        // $SchoolSet->sem_term;
         $xoopsTpl->assign('sem_year', $SchoolSet->max_sem_year);
         $xoopsTpl->assign('sem_term', $SchoolSet->max_sem_term);
         $xoopsTpl->assign('dep_id', $pars['dep_id']);
