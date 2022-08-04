@@ -15,6 +15,8 @@ class SchoolSet
     public $sem_sn; //學年度編號
     public $sem_year; //目前學年度
     public $sem_term; //目前學期
+    public $max_sem_year; //最新學年度
+    public $max_sem_term; //目前學期
     public $sem_term_sdate; //目前學期 起始日期
     public $sem_term_edate; //目前學期 起始日期
     public $all_sems; //所有學年度資料
@@ -818,12 +820,14 @@ class SchoolSet
         $this->sem_term = $school_year['term'];
         $this->sem_term_sdate = $school_year['start_date'];
         $this->sem_term_edate = $school_year['end_date'];
-        $sql            = "SELECT * FROM $tbl ORDER BY `year` DESC";
+        $sql            = "SELECT * FROM $tbl ORDER BY `year` DESC , `term` DESC";
         $result         = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         $sem_all=[];
         while($all= $xoopsDB->fetchArray($result)){
             $sem_all[] = $all;
         }
+        $this->max_sem_year = $sem_all[0]['year'];
+        $this->max_sem_term = $sem_all[0]['term'];
         $this->all_sems = $sem_all;
     }
     // get 教師資料含處室

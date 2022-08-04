@@ -1,22 +1,24 @@
 <?php
 use Xmf\Request;
+use XoopsModules\Tadtools\Utility;
 
 include_once "../../mainfile.php";
 include_once "function.php";
 
-$op = Request::getString('op');
-$sn = Request::getInt('sn');
+$op           = Request::getString('op');
+$sn           = Request::getInt('sn');
 $check_status = Request::getString('check_status');
-$odr_ary = Request::getArray('odr');
-$sdate = Request::getString('sdate');
-$edate = Request::getString('edate');
+$odr_ary      = Request::getArray('odr');
+$sdate        = Request::getString('sdate');
+$edate        = Request::getString('edate');
+$ids          = Request::getArray('ids');
 
 
 
 // if (!$xoopsUser->isAdmin()) {
 //     die();
 // }
-// var_dump($op);
+// var_dump($ids);
 // var_dump($order_ary);
 // die();
 // 處室列表
@@ -60,11 +62,61 @@ switch ($op) {
     case "calculate_hrs":
         calculate_hrs($sdate,$edate);
         exit;
-        
+    case "course_batch_del":
+        course_batch_del($ids);
+        exit;
     default:
         echo('this is default switch in op_teacher.php');
     break;
 }
+function course_batch_del($ids){
+    global $xoopsDB,$xoopsUser;
+    if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+        $return['code']='0';
+        $return['msg']='無 course_batch_del 權限! error:202208032307';
+        echo json_encode($return);
+    } 
+    $myts = MyTextSanitizer::getInstance();
+
+    $ids_sql="('".implode("','", $ids)."')";
+    // 先撈出課程之段考成績
+    $tbl = $xoopsDB->prefix('yy_stage_score');
+    $sql = "SELECT  sn FROM $tbl WHERE `course_id` IN {$ids_sql} limit 1";
+    $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $re = $data= array();
+    while($re= $xoopsDB->fetchArray($result)){
+        $data ['sn']  = $myts->htmlSpecialChars($re['sn']);
+    }
+
+    $data_exist=0;
+    if (count($data)>=1){$data_exist=1;}
+
+    // 沒有段考成績，再看是否有平時成績
+    if($data_exist==0){
+        $tbl = $xoopsDB->prefix('yy_usual_score');
+        $sql = "SELECT  sn FROM $tbl WHERE `course_id` IN {$ids_sql} limit 1";
+        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $re = $data= array();
+        while($re= $xoopsDB->fetchArray($result)){
+            $data ['sn']  = $myts->htmlSpecialChars($re['sn']);
+        }
+        if (count($data)>=1){$data_exist=1;}
+    }
+    if($data_exist==0){
+        $tbl   = $xoopsDB->prefix('yy_course');
+        $sql      = "DELETE FROM `$tbl` WHERE `sn` IN {$ids_sql}";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $return['code']='1';
+        $return['msg']='課程刪除成功!';
+        // redirect_header("tchstu_mag.php?op=course_batch", 3, '課程刪除成功!');
+    }else{
+        $return['code']='0';
+        $return['msg']='已存在段考、平時成績，課程無法刪除';
+    }
+    echo json_encode($return);
+
+}
+
 function calculate_hrs($sdate,$edate){
     global $xoopsDB,$xoopsUser;
     if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){

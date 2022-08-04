@@ -90,6 +90,10 @@ switch ($op) {
 
 // 課程 管理
     //課程 列表
+    case "course_batch":
+        course_batch($cos,$g2p);
+        break;//跳出迴圈,往下執行
+    //課程 列表
     case "course_list":
         course_list($cos,$g2p);
         break;//跳出迴圈,往下執行
@@ -2741,6 +2745,114 @@ switch ($op) {
     }
 // ----------------------------------
 // 課程 管理
+    // 批次刪除- 課程
+    function course_batch($pars=[],$g2p=''){
+        global $xoopsTpl,$xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+
+        if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
+            redirect_header("tchstu_mag.php?op=course_list", 3, '無course_batch 權限! error:2207311551');
+        } 
+
+        $pars['cos_year']=($pars['cos_year']=='')?(string)$SchoolSet->max_sem_year:$pars['cos_year'];
+        $pars['cos_term']=($pars['cos_term']=='')?(string)$SchoolSet->max_sem_term:$pars['cos_term'];
+
+        // var_dump($pars);die();
+        $myts = MyTextSanitizer::getInstance();
+
+        $tb1      = $xoopsDB->prefix('yy_course');
+        $tb2      = $xoopsDB->prefix('yy_department');
+        $tb3      = $xoopsDB->prefix('users');
+        $sql      = "SELECT  cr.* , de.dep_name , de.dep_status , ur.name as teacher_name
+                    FROM $tb1 as cr 
+                        LEFT JOIN $tb2 as de ON cr.dep_id=de.sn
+                        LEFT JOIN $tb3 as ur ON cr.tea_id=ur.uid
+                        " ;
+        $have_par='0';
+        if($pars['cos_year']!=''){
+            $sql.=" WHERE `cos_year`='{$pars['cos_year']}'";
+            $have_par='1';
+        }
+        if($pars['cos_term']!=''){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.="`cos_term`='{$pars['cos_term']}'";
+            $have_par='1';
+        }
+        if(($pars['dep_id']!='')){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.="cr.dep_id = '{$pars['dep_id']}'";
+            $have_par='1';
+        }
+
+        $sql.=" ORDER BY `cos_year` DESC , `cos_term` DESC ,`dep_id` ,`tea_id` , `cos_name`";
+        // echo($sql);die();
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+
+        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*30+1;}
+        $credit_sun=0;
+        $star_icon=['0'=>'','1'=>'<i class="fa fa-star" aria-hidden="true"></i>'];
+        while($cos= $xoopsDB->fetchArray($result)){
+            $cos['i']            = $i;
+            $cos['cos_year']     = $myts->htmlSpecialChars($cos['cos_year']);       //學號
+            $cos['cos_term']     = $myts->htmlSpecialChars($cos['cos_term']);      //姓名
+            $cos['year_term']    = $cos['cos_year'].'/'.$cos['cos_term'];
+            $cos['dep_name']     = $myts->htmlSpecialChars($cos['dep_name']);
+            $cos['teacher_name'] = $myts->htmlSpecialChars($cos['teacher_name']);
+            $cos['cos_name']     = $myts->htmlSpecialChars($cos['cos_name']);
+            $cos['cos_name_grp'] = $myts->htmlSpecialChars($cos['cos_name_grp']);
+            $cos['first_chk']    = Get_bootstrap_switch_opt_htm('first_test',$cos['sn'],$cos['first_test']);
+            $cos['f_icon']       = $star_icon[$cos['first_test']];
+            $cos['second_chk']   = Get_bootstrap_switch_opt_htm('second_test',$cos['sn'],$cos['second_test']);
+            $cos['s_icon']       = $star_icon[$cos['second_test']];
+            $credit_sun=$credit_sun+$cos['cos_credits'];
+            $all []              = $cos;
+            $i++;
+        }
+        $xoopsTpl->assign('credit_sun', $credit_sun);
+        // var_dump($credit_sun);die();
+        // 學年度select
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'0');
+        $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],'0');
+        $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
+
+        // 學程列表
+        $major_name=[];
+        foreach ($SchoolSet->dept as $k=>$v){
+            $major_name[$v['sn']]=$v['dep_name'];
+        }
+        $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
+        $xoopsTpl->assign('major_htm', $major_htm);
+
+        $xoopsTpl->assign('all', $all);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
+
+        
+        // $SchoolSet->sem_year;
+        // $SchoolSet->sem_term;
+        $xoopsTpl->assign('sem_year', $SchoolSet->max_sem_year);
+        $xoopsTpl->assign('sem_term', $SchoolSet->max_sem_term);
+        $xoopsTpl->assign('dep_id', $pars['dep_id']);
+
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+        $xoopsTpl->assign('op', "course_batch");
+        BootstrapTable::render();
+
+
+    }
     // sql-刪除處室
     function course_delete($sn){
         global $xoopsDB,$xoopsUser;
@@ -2748,7 +2860,7 @@ switch ($op) {
         if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){
             redirect_header("tchstu_mag.php?op=course_form&sn={$sn}", 3, '無course_delete 權限! error:2104270940');
         }       
-       
+    
         $tbl   = $xoopsDB->prefix('yy_course');
         $sql      = "SELECT * FROM $tbl WHERE `sn` = '{$sn}'";
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);

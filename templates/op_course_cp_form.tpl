@@ -47,12 +47,16 @@
         錯誤!！ 目的學年度、學期，已有學生「成績資料」，故無法複製整學期課程！！
     </div>
 <{/if}>
-<{if $no_s_cource=='0'}>
+<{if $no_s_course=='0'}>
     <div class="alert alert-danger" role="alert">
         錯誤!！ 來源學年度，沒有「課程資料」，故無法複製整學期課程！！
     </div>
 <{/if}>
-
+<{if $no_dcourse=='0'}>
+    <div class="alert alert-danger" role="alert">
+        錯誤!！ 目的學年度，已有「課程資料」，請先刪除課程！！
+    </div>
+<{/if}>
 
 <script type="text/javascript">
     $(document).ready(function($){

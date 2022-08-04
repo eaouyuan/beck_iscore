@@ -396,11 +396,11 @@ switch ($op) {
             $scourse_exist = $xoopsDB->fetchArray($result);
 
             if(empty($scourse_exist)){
-                $no_s_cource='0';
+                $no_s_course='0';
             }else{
-                $no_s_cource='1';
+                $no_s_course='1';
             }
-            $xoopsTpl->assign('no_s_cource', $no_s_cource);
+            $xoopsTpl->assign('no_s_course', $no_s_course);
         }
 
         if($pars['dyear']!='' and $pars['dterm']!='' ){
@@ -422,9 +422,22 @@ switch ($op) {
                 $no_score='0';
             }
             $xoopsTpl->assign('no_score', $no_score);
+
+            // 判斷新學年度已有課程資料
+            $tbl     = $xoopsDB->prefix('yy_course');
+            $sql     = "SELECT * FROM $tbl Where `cos_year`='{$pars['dyear']}' and `cos_term`='{$pars['dterm']}'";
+            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            $dcourse_exist = $xoopsDB->fetchArray($result);
+            if(empty($dcourse_exist)){
+                $no_dcourse='1';
+            }else{
+                $no_dcourse='0';
+            }
+            $xoopsTpl->assign('no_dcourse', $no_dcourse);
+
         }
 
-        if( $no_s_cource=='1' & $no_score=='1'){
+        if( $no_s_course=='1' & $no_score=='1' & $no_dcourse=='1' ){
             $show_submit_btn='1';
         }
         $xoopsTpl->assign('show_submit_btn', $show_submit_btn);
