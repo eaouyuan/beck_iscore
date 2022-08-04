@@ -16,7 +16,7 @@ class SchoolSet
     public $sem_year; //目前學年度
     public $sem_term; //目前學期
     public $max_sem_year; //最新學年度
-    public $max_sem_term; //目前學期
+    public $max_sem_term; //最新學期
     public $sem_term_sdate; //目前學期 起始日期
     public $sem_term_edate; //目前學期 起始日期
     public $all_sems; //所有學年度資料
