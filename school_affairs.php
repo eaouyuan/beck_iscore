@@ -566,7 +566,7 @@ switch ($op) {
                 $teachers[$v['uid']]=$v['name'];
             }
         }
-        // var_dump($SchoolSet->en_users);die();
+        // var_dump($teachers);die();
 
         // 列出所有認輔教師，將有認輔的老師加底色
         $tbl = $xoopsDB->prefix('yy_tea_counseling');
@@ -577,6 +577,7 @@ switch ($op) {
                 ORDER BY `tea_uid`
                 ";
         // echo($sql);die();
+        $teacher_first=$already_recognized_stu=$teacher_sel=[];
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($data= $xoopsDB->fetchArray($result)){
             // 認輔教師uid
@@ -586,19 +587,15 @@ switch ($op) {
             // 已經認輔學生
             $already_recognized_stu[$data['student_sn']]=$SchoolSet->stu_anonymous[$data['student_sn']];
         }
+        // var_dump($teacher_first);die();
 
         // 將有認輔的教師，排在前面，依tea_uid
         $teachers_nc=[];
         $teachers_nc=array_diff_assoc($teachers, $teacher_first);
         $teacher_order=$teacher_first+$teachers_nc;
-        // var_dump($teacher_first);
-        // var_dump($teachers_nc);
 
         // 教師列表
         $tea_sel=Get_select_opt_color_htm($teacher_order,$sn,'0',$teacher_sel);
-
-        // var_dump($tea_sel);
-        // die();
         $xoopsTpl->assign('tea_sel', $tea_sel);
 
         $xoopsTpl->assign('tea_name',$teachers[$sn]);
@@ -620,9 +617,12 @@ switch ($op) {
         }
 
         // 學生列表
-        $stu_list_ary=$SchoolSet->stu_anonymous;
-        $stu_list_ary=array_diff_key($stu_list_ary,$already_recognized_stu);
+        $stu_list_ary_all=$SchoolSet->stu_anonymous;
+        $stu_list_ary=array_diff_key($stu_list_ary_all,$already_recognized_stu);
+        // var_dump($already_recognized_stu);die();
         $stu_sel=Get_select_opt_htm($stu_list_ary,'','0');
+
+
         $xoopsTpl->assign('stu_sel', $stu_sel);
 
         $xoopsTpl->assign('uid', $xoopsUser->uid());

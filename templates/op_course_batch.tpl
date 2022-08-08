@@ -200,4 +200,13 @@
     .like {
         margin-right: 10px;
     }
+    tr.selected {
+        background-color: #fcdede;
+    }
+    .table > tbody > tr:hover{
+        text-decoration: none;
+        color: #000000;
+        background-color: #fcdede;
+    }
+    
 </style>
