@@ -21,6 +21,7 @@ $type = Request::getString('type');
 
 $tea_list['dep_id']=Request::getInt('dep_id');
 $tea_list['search']=Request::getString('search');
+$tea_list['enable']=Request::getString('enable');
 $g2p=Request::getInt('g2p');
 $cfg['gpname'] = Request::getString('gpname');
 $cfg['desc']   = Request::getString('desc');
@@ -34,7 +35,7 @@ $ccf['dterm'] = Request::getString('dterm');
 // var_dump($_POST);
 // die(var_dump($_SESSION));
 // die(var_dump($_REQUEST));
-// var_dump($_REQUEST);
+// var_dump($tea_list);
 // var_dump($d_list);
 // var_dump('g2p:'.$g2p);
 // die();
@@ -121,7 +122,7 @@ switch ($op) {
     // 更新 教師
     case "teacher_update":
         $sn=teacher_update($sn);
-        header("location:school_affairs.php?op=teacher_list&dep_id={$tea_list['dep_id']}");
+        header("location:school_affairs.php?op=teacher_list&dep_id={$tea_list['dep_id']}&enable={$tea_list['enable']}");
         // header("location:school_affairs.php?op=teacher_show&sn={$sn}");
         exit;
 
@@ -1943,6 +1944,9 @@ switch ($op) {
         $sql      = "SELECT  ur.name,ur.uname,ur.email, tr.* ,ur.uid,tr.sort
                     FROM $tbl as ur LEFT JOIN $tb2 as tr ON ur.uid=tr.uid" ;
         // echo($sql);die();
+        if($pars['enable']==""){
+            $pars['enable']='1';
+        }
 
         $have_par='0';
         if(!empty($pars['dep_id'])){
@@ -1957,8 +1961,13 @@ switch ($op) {
                 ) ";
             $have_par='1';
         }
+        if($pars['enable']!=""){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.=" `enable`='{$pars['enable']}'";
+            $have_par='1';
+        }
         if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
-        $sql.=" ur.uid != '1' ORDER BY `sort` ";
+        $sql.=" ur.uid != '1' ORDER BY `dep_id` Desc";
         // echo($sql);  die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
@@ -1971,6 +1980,9 @@ switch ($op) {
         $all      = array();
         if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=$g2p*10+1;}
         $is_chk=["0"=>'',"1"=>'checked'];
+        // 目前狀態
+        $status_ary=['0'=>'關閉','1'=>'啟用'] ;
+
         while($tch= $xoopsDB->fetchArray($result)){
             $tch['sn']         = $i;
             $tch['uid']        = $myts->htmlSpecialChars($tch['uid']);
@@ -1982,7 +1994,7 @@ switch ($op) {
             $tch['sex']        = $myts->htmlSpecialChars($tch['sex']);
             $tch['phone']      = $myts->htmlSpecialChars($tch['phone']);
             $tch['cell_phone'] = $myts->htmlSpecialChars($tch['cell_phone']);
-            $tch['enable']     = $myts->htmlSpecialChars($tch['enable']);
+            $tch['enable']     = $status_ary[$myts->htmlSpecialChars($tch['enable'])];
             // $tch['isteacher']  = $myts->htmlSpecialChars($tch['isteacher']);
             $tch['sort']       = $myts->htmlSpecialChars($tch['sort']);
             $tch['istch_chk']  = $is_chk[$tch['isteacher']];
@@ -2002,6 +2014,10 @@ switch ($op) {
         $parameter['search'] = (!isset($pars['search'])) ? '' : $pars['search'];
         $xoopsTpl->assign('search', $pars['search']);
         // var_dump($ann_list);die();
+
+        
+        $status_htm=Get_select_opt_htm($status_ary,$pars['enable'],'0');
+        $xoopsTpl->assign('status_htm', $status_htm);
 
         $xoopsTpl->assign('all', $all);
         // $xoopsTpl->assign('bar', $bar);

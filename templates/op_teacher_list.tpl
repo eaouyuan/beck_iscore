@@ -18,6 +18,12 @@
         <div class="mx-sm-3 col-3 text-left px-0">
             <input type="text" class="form-control" id="search" name="search" placeholder="search" value="<{$search}>">
         </div>
+        <label for="status" class="col-1.5 col-form-label text-sm-right px-0">狀態：</label>
+        <div class="col-2 text-left px-0 mr-3">
+            <select class="custom-select" name="enable" id="enable">
+                <{$status_htm}>
+            </select>
+        </div>
         <div>
             <input name="op" id="op" value="<{$op}>" type="hidden">
         </div>
@@ -39,7 +45,7 @@
                 <th scope="col" class="text-center">姓名</th>
                 <th scope="col" class="text-center">處室</th>
                 <th scope="col" class="text-center">職稱</th>
-                <th scope="col" class="text-center">分機</th>
+                <th scope="col" class="text-center">狀態</th>
                 <th scope="col" class="text-center">教師</th>
                 <th scope="col" class="text-center">輔導師</th>
                 <th scope="col" class="text-center">社工師</th>
@@ -57,7 +63,7 @@
             <td class="text-center clk-tbrow" data-href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=teacher_show&sn=<{$its.uid}>"><{$its.name}></td>
             <td class="text-center clk-tbrow" data-href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=teacher_show&sn=<{$its.uid}>"><{$its.dep_id}></td>
             <td class="text-center clk-tbrow" data-href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=teacher_show&sn=<{$its.uid}>"><{$its.title}></td>
-            <td class="text-center clk-tbrow" data-href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=teacher_show&sn=<{$its.uid}>"><{$its.phone}></td>
+            <td class="text-center clk-tbrow" data-href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=teacher_show&sn=<{$its.uid}>"><{$its.enable}></td>
             <td class="text-center"> 
                 <div class="custom-control custom-switch">
                     <input type="checkbox" class="custom-control-input" name="switch_tch" id="tch_<{$its.uid}>" value="<{$its.uid}>" <{$its.istch_chk}>>
@@ -116,6 +122,9 @@
             // 方法一 php form表單按下submit
             // $(this).closest('form').trigger('submit');
             // 方法二 php form表單按下submit
+            document.forms["teacher_list"].submit();
+        });
+        $('#enable').change(function(e){
             document.forms["teacher_list"].submit();
         });
 
