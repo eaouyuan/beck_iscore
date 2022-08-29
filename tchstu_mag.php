@@ -3145,7 +3145,8 @@ switch ($op) {
 
         // 教師列表
         $teacher_name=[];
-        foreach ($SchoolSet->teachers as $k=>$v){
+        // die(var_export($SchoolSet->en_users));
+        foreach ($SchoolSet->en_users as $k=>$v){
             $teacher_name[$v['uid']]=$v['name'];
         }
         $cour['teacher_htm']=Get_select_opt_htm($teacher_name,$cour['tea_id'],'1');
