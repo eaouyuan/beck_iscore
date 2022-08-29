@@ -22,6 +22,7 @@ class SchoolSet
     public $all_sems; //所有學年度資料
     public $users; //使用者資料
     public $en_users; //啟用狀態的使用者
+    public $en_isteach_users; //啟用狀態的使用者
     public $uid_deptname; //uid對映deptname
     public $uid_deptid; //uid_deptid
     public $uid2name; // uid map 中文姓名
@@ -882,8 +883,21 @@ class SchoolSet
             $all[] = $en_teausers;
         }
         // var_dump($all);die();
-
         $this->en_users=$all;
+
+        // get enable users and isteacher
+        $sql_enisteach = $sql." AND $tb2.isteacher='1' AND $tb2.enable !='0' ";
+        // echo($sql_enusr);die();
+        $result = $xoopsDB->query($sql_enisteach) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all    = [];
+        while($en_tea_enab_users= $xoopsDB->fetchArray($result)){
+            $all[] = $en_tea_enab_users;
+        }
+        // var_dump($all);die();
+        $this->en_isteach_users=$all;
+
+
+
     }
 
     // get 班級資料
