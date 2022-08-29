@@ -1945,7 +1945,7 @@ switch ($op) {
                     FROM $tbl as ur LEFT JOIN $tb2 as tr ON ur.uid=tr.uid" ;
         // echo($sql);die();
         if($pars['enable']==""){
-            $pars['enable']='1';
+            $pars['enable']='';
         }
 
         $have_par='0';
@@ -2016,7 +2016,7 @@ switch ($op) {
         // var_dump($ann_list);die();
 
         
-        $status_htm=Get_select_opt_htm($status_ary,$pars['enable'],'0');
+        $status_htm=Get_select_opt_htm($status_ary,$pars['enable'],'1');
         $xoopsTpl->assign('status_htm', $status_htm);
 
         $xoopsTpl->assign('all', $all);
