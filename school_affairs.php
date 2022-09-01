@@ -1626,7 +1626,7 @@ switch ($op) {
 
     }
 // ----------------------------------
-// 教師列表    
+// 教師管理    
     // sql-刪除 教師基本資料
     function teacher_delete($sn){
         global $xoopsDB,$xoopsUser;
@@ -1742,9 +1742,13 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
+        // die();
+        $uid=add_user_to_xoops($name, $uname, "", $passwd, $email,2);
         // die(var_dump($uid));
-        update_group($sn);
-
+        // add_user_to_xoops($name = "", $uname = "", $id = "", $passwd = "", $email = "", $groupid = "")
+        
+        /*   
+        //舊版新增使用者
         $tbl = $xoopsDB->prefix('users');
         $sql = "update `$tbl` set 
                     `email`='{$email}'
@@ -1752,6 +1756,9 @@ switch ($op) {
         // echo($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
 
+        // 修改權限
+        update_group($sn); 
+        */
 
         $tbl = $xoopsDB->prefix('yy_teacher');
         $sql = "insert into `$tbl` (
@@ -1759,7 +1766,7 @@ switch ($op) {
                     `cell_phone`,`enable`,`isteacher`,`isguidance`,`issocial`,
                     `create_uid`,`create_time`,`update_uid`,`update_time`,`sort`
                 )values(
-                    '{$sn}','{$dep_id}','{$title}','{$sex}','{$phone}',
+                    '{$uid}','{$dep_id}','{$title}','{$sex}','{$phone}',
                     '{$cell_phone}','{$enable}','{$isteacher}','{$isguidance}','{$issocial}',
                     '{$create_uid}', now(),'{$create_uid}',now(),'99'
                 )";
@@ -1841,10 +1848,11 @@ switch ($op) {
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
 
-        $form_title = '編輯教師基本資料';
+        $form_title = '新增教師基本資料';
         $space='1';//發佈處室空白選項
         $tch=[];
         if($sn){
+            $form_title = '編輯教師基本資料';
             $tbl    = $xoopsDB->prefix('users');
             $tb2    = $xoopsDB->prefix('yy_teacher');
             $sql    = "SELECT * , ur.uid FROM $tbl as ur LEFT JOIN $tb2 as tr ON ur.uid=tr.uid
@@ -1856,13 +1864,16 @@ switch ($op) {
             if(!(($xoopsUser->isAdmin()) OR ($_SESSION['xoopsUserId']== $tch['uid']))){
                 redirect_header('school_affairs.php?op=teacher_list', 3, '非管理員或非個人基本資料!');
             }
+            $readonly='1';
         }else{
-            redirect_header('index.php', 3, '無教師基本資料!');
+            // redirect_header('index.php', 3, '無教師基本資料!');
+            $readonly='0';
         }
         // var_export($tch);die();
 
         $xoopsTpl->assign('form_title', $form_title);
         $xoopsTpl->assign('tch', $tch);
+        $xoopsTpl->assign('readonly', $readonly);
 
         // 性別
         $sex_id = (!isset($tch['sex'])) ? '' : $tch['sex'];

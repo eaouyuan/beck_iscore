@@ -8,6 +8,51 @@ if (!file_exists(XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php")) {
 include_once XOOPS_ROOT_PATH . "/modules/tadtools/tad_function.php";
 // require_once XOOPS_ROOT_PATH."/modules/tadtools/TadUpFiles.php" ;
 
+// 10-1 新增XOOPS會員 
+function add_user_to_xoops($name = "", $uname = "", $id = "", $passwd = "", $email = "", $groupid = "")
+{
+    global $xoopsConfig;
+
+    define('XOOPS_XMLRPC', 1);
+    $_SERVER['REQUEST_METHOD'] = 'POST';
+
+    $member_handler = xoops_gethandler('member');
+
+    $email = empty($email) ? "{$uname}@{$_SERVER['HTTP_HOST']}" : $email;
+
+    $newuser = $member_handler->createUser();
+    $newuser->setVar('loginname', $id);
+    $newuser->setVar('uname', $uname);
+    $newuser->setVar('name', $name);
+    $newuser->setVar('email', $email);
+    $newuser->setVar('pass', md5($passwd));
+    $newuser->setVar('user_avatar', 'blank.gif');
+    $actkey = substr(md5(uniqid(mt_rand(), 1)), 0, 8);
+    $newuser->setVar('actkey', $actkey);
+    $newuser->setVar('user_regdate', time());
+    $newuser->setVar('uorder', $xoopsConfig['com_order']);
+    $newuser->setVar('umode', $xoopsConfig['com_mode']);
+    $newuser->setVar('level', 1);
+    $newuser->setVar('theme', $xoopsConfig['theme_set']);
+    $newuser->setVar('timezone_offset', "8.0");
+
+    if (!$member_handler->insertUser($newuser, true)) {
+        redirect_header($_SERVER['PHP_SELF'], 10, "無法新增XOOPS帳號");
+    }
+    $new_uid = $newuser->uid();
+    if ($groupid == XOOPS_GROUP_USERS) {
+        if (!$member_handler->addUserToGroup(XOOPS_GROUP_USERS, $new_uid)) {
+            redirect_header($_SERVER['PHP_SELF'], 10, "無法加入群組");
+        }
+    } else {
+        if (!$member_handler->addUserToGroup(XOOPS_GROUP_USERS, $new_uid) or !$member_handler->addUserToGroup($groupid, $new_uid)) {
+            redirect_header($_SERVER['PHP_SELF'], 10, "無法加入指定群組");
+        }
+    }
+
+    return $new_uid;
+}
+
 // 算出日期區間
 function date_range($first, $last){
     $dates  = array();

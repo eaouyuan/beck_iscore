@@ -6,11 +6,12 @@
     <div class="form-group row">
         <label for="uname" class="col-lg-2 col-form-label text-sm-right">帳號</label>
         <div class="col-lg-4">
-            <input class="form-control validate[required]" type="text" name="uname" id="uname" value="<{$tch.uname}>" readonly>
+            <input class="form-control validate[required]" type="text" name="uname" id="uname" value="<{$tch.uname}>" <{if $readonly=='1'}>readonly<{/if}>>
         </div>
         <label for="name" class="col-lg-2 col-form-label text-sm-right">姓名</label>
         <div class="col-lg-4">
-            <input class="form-control validate[required]" type="text" name="name" id="name" value="<{$tch.name}>" readonly>
+            <input class="form-control validate[required]" type="text" name="name" id="name" value="<{$tch.name}>"
+                <{if $readonly=='1'}>readonly<{/if}>>
         </div>
     </div>
 
@@ -66,11 +67,17 @@
 
         </div>
         <div class="form-group row">
-            <label for="group" class="col-lg-2 col-form-label text-sm-right">群組</label>
-            <div class="col-lg-4"><{$XoopGroupUser}></div>
-
+            <{if $readonly=='1'}>
+                <label for="group" class="col-lg-2 col-form-label text-sm-right">群組</label>
+                <div class="col-lg-4"><{$XoopGroupUser}></div>
+            <{else}>
+                <label for="group" class="col-lg-2 col-form-label text-sm-right">密碼</label>
+                <div class="col-lg-4">
+                    <input class="form-control validate[required]" type="password" name="passwd" id="passwd" value="">
+                </div>
+            <{/if}>
             <label for="group" class="col-lg-2 col-form-label text-sm-right">啟用</label>
-            <div class="col-lg-2 mt-2"><{$eal_is_html}></div>
+            <div class="col-lg-2"><{$eal_is_html}></div>
             
         </div>
     <{/if}>
