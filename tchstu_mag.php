@@ -3301,7 +3301,7 @@ switch ($op) {
         $nationalid_exist = $xoopsDB->fetchArray($result);//fetchrow
 
         if(!empty($nationalid_exist)){
-            redirect_header('tchstu_mag.php?op=student_form', 3, '學生身份證字號重覆，請重新輸入!  error:2210102110');
+            redirect_header('tchstu_mag.php?op=student_form', 3, '學生身份證字號重複，請重新輸入!  error:2210102110');
 
         }
 
