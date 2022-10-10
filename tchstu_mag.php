@@ -3293,10 +3293,19 @@ switch ($op) {
             $$key = $myts->addSlashes($value);
             echo "<p>\${$key}={$$key}</p>";
         }
-        // die();
         $stu_anonymous=name_substr_cut($stu_name);
 
         $tbl = $xoopsDB->prefix('yy_student');
+        $query_nationid="SELECT `national_id` FROM $tbl Where `national_id `='{$national_id }'";
+        $result=$xoopsDB->query($query_nationid) or Utility::web_error($query_nationid, __FILE__, __LINE__);
+        $nationalid_exist = $xoopsDB->fetchArray($result);//fetchrow
+
+        if(!empty($nationalid_exist)){
+            redirect_header('tchstu_mag.php?op=student_form', 3, '學生身份證字號重覆，請重新輸入!  error:2210102110');
+
+        }
+
+
         $sql = "insert into `$tbl` (
             `stu_name`,`national_id`,`stu_id`,`stu_no`,`class_id`,
             `major_id`,`grade`,`arrival_date`,`birthday`,`orig_school`,`orig_grade`,
