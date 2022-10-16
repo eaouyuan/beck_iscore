@@ -2366,11 +2366,12 @@ switch ($op) {
         $course['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['dep_id'],'1');
         // 段考名稱 下拉選單
         // $course['exam_number_htm']=Get_select_opt_htm($SchoolSet->stage_exam_name+['8' => '總成績'],$pars['exam_stage'],'1');
-        $course['exam_number_htm']=Get_select_opt_htm($SchoolSet->stage_exam_name,$pars['exam_stage'],'1');
-        $course['year']=$SchoolSet->sem_year;
-        $course['term']=$SchoolSet->sem_term;
-        $course['dep_id']=$pars['dep_id'];
-        
+        $course['exam_number_htm'] = Get_select_opt_htm($SchoolSet->stage_exam_name,$pars['exam_stage'],'1');
+        $course['year']     = $SchoolSet->sem_year;
+        $course['term']     = $SchoolSet->sem_term;
+        $course['dep_id']   = $pars['dep_id'];
+        $course['dep_name'] = $SchoolSet->depsnname[$pars['dep_id']];
+        $course['stage_exam_name'] = $SchoolSet->stage_exam_name[$pars['exam_stage']];
 
         if(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin()){
             $xoopsTpl->assign("ps_edit",true);
