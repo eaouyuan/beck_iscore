@@ -15,7 +15,9 @@
                     <{$course.exam_number_htm}>
                 </select>
             </div>
-            <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print" aria-hidden="true"></i>列印</button>
+            <{if $showtable}>
+                <button type="button" class="btn btn-success" id="print_web"><i class="fa fa-print" aria-hidden="true"></i>列印</button>
+            <{/if}>
         </div>
     </div>
 <{if $showtable}>
