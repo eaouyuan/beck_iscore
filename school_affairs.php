@@ -41,6 +41,16 @@ $ccf['dterm'] = Request::getString('dterm');
 // die();
 
 switch ($op) {
+// 各學期學生管理
+    // 學期學生列表
+    case "term_stu_list":
+        term_stu_list();
+        break;
+    // 更新學生列表
+    case "term_stu_update":
+        term_stu_update();
+        header("location:school_affairs.php?op=term_stu_list");
+        exit;
 // 處室 管理
     case "dept_school_list":
         dept_school_list();
@@ -276,6 +286,194 @@ switch ($op) {
 }
 
 /*-----------function區--------------*/
+// 學期學生列表
+    function term_stu_update(){
+        global $xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+
+        if(!(power_chk("beck_iscore", "2") or $xoopsUser->isAdmin())){
+            redirect_header('school_affairs.php', 2, '無 term_stu_update 權限! error:202211202200');
+        }
+
+
+        //安全判斷 儲存 更新都要做
+        if (!$GLOBALS['xoopsSecurity']->check()) {
+            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+            redirect_header("school_affairs.php?op=term_stu_list", 2, '表單Token錯誤，請重新輸入!');
+            throw new Exception($error);
+        }
+
+        $myts = MyTextSanitizer::getInstance();
+        foreach ($_POST as $key => $value) {
+            $$key = $myts->addSlashes($value);
+            echo "<p>\${$key}={$$key}</p>";
+        }
+        
+        if(!($year==$SchoolSet->sem_year & $term==$SchoolSet->sem_term)){
+            redirect_header('school_affairs.php?op=term_stu_list', 2, '非目前學期，無法更新! error:202211251630');
+        }
+
+        $sem_year=$SchoolSet->sem_year;
+        $sem_term=$SchoolSet->sem_term;
+
+        $tbl = $xoopsDB->prefix('yy_term_stu');
+        $sql = "DELETE FROM `$tbl` WHERE `year` = '{$sem_year}' AND `term` = '{$sem_term}'";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        $tb1 = $xoopsDB->prefix('yy_student');
+        $tb2 = $xoopsDB->prefix('yy_class');
+        $sql = "SELECT *,$tb1.sn as stusn FROM $tb1 
+                LEFT JOIN $tb2 ON $tb1.class_id =$tb2.sn
+                WHERE `status` !='2'
+                ORDER BY $tb1.sn
+                ";
+        // echo($sql);die();
+        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all=[];
+        while($user= $xoopsDB->fetchArray($result)){
+            $stu['year']          = $sem_year;
+            $stu['term']          = $sem_term;
+            $stu['stu_sn']        = $user['stusn'];
+            $stu['stu_id']        = $user['stu_id'];
+            $stu['stu_name']      = $user['stu_name'];
+            $stu['stu_anonymous'] = $user['stu_anonymous'];
+            $stu['class_id']      = $user['class_id'];
+            $stu['class_name']    = $SchoolSet->class_name_all[$user['class_id']];
+            $stu['major_id']      = $user['major_id'];
+            $stu['dep_name']      = $SchoolSet->depsnname[$user['major_id']];
+            $stu['tutor_uid']     = $user['tutor_sn'];
+            $stu['tutor_name']    = $SchoolSet->uid2name[$user['tutor_sn']];
+            $stu['grade']         = $user['grade'];
+            $all []               = $stu;
+        }
+        // die(var_dump($all));
+
+        $tbl = $xoopsDB->prefix('yy_term_stu');
+        foreach($all as $v){
+            $sql = "insert into `$tbl` (
+                        `year`,`term`,`stu_sn`,`stu_id`,`stu_name`,
+                        `stu_anonymous`,`class_id`,`class_name`,`major_id`,`dep_name`,
+                        `tutor_uid`,`tutor_name`,`grade`
+                    )values(
+                        '{$v['year']}','{$v['term']}','{$v['stu_sn']}','{$v['stu_id']}','{$v['stu_name']}',
+                        '{$v['stu_anonymous']}','{$v['class_id']}','{$v['class_name']}','{$v['major_id']}','{$v['dep_name']}',
+                        '{$v['tutor_uid']}','{$v['tutor_name']}','{$v['grade']}'
+                    )";
+            // echo($sql);die();
+            $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+            // $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+        }
+    }
+    // 學期學生列表
+    function term_stu_list(){
+        global $xoopsTpl,$xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+        $myts = MyTextSanitizer::getInstance();
+        if(!(power_chk("beck_iscore", "6") or $xoopsUser->isAdmin())){
+            redirect_header('tchstu_mag.php', 2, '無 leave_day_list 權限! error:202202151136');
+        }
+        // var_dump($pars);die();
+        $pars['year']=($pars['year']=='')?(string)$SchoolSet->sem_year:$pars['year'];
+        $pars['term']=($pars['term']=='')?(string)$SchoolSet->sem_term:$pars['term'];
+        
+        // 只顯示3學年
+        for ($i=0 ; $i<5 ; $i++ ) {
+            $sems_year[$SchoolSet->all_sems[$i]['year']]=$SchoolSet->all_sems[$i]['year'];
+        }
+        
+        // 學年
+        $sel['year']=Get_select_opt_htm($sems_year,$pars['year'],'1');
+        // 學期
+        $terms=['1'=>'1','2'=>'2'];
+        $sel['term']=Get_select_opt_htm($terms,$pars['term'],1);
+        // 學程
+        $sel['major_htm']=Get_select_opt_htm($SchoolSet->depsnname,$pars['major_id'],'1');
+        // 學生
+        $sel['stu_sn']=Get_select_grp_opt_htm($SchoolSet->classname_stuid,$pars['stu_sn'],'1');
+        // 時段: 日 夜間 
+        $LD_period=['LD_day_hours'=>'日間','LD_night_hours'=>'夜間'];
+        $sel['period']=Get_select_opt_htm($LD_period,$pars['period'],'1');
+        $xoopsTpl->assign('sel', $sel);
+
+        $tbl = $xoopsDB->prefix('yy_leave_day');
+        $tb2 = $xoopsDB->prefix('yy_student');
+        $sql = "SELECT  * FROM $tbl as a
+                LEFT JOIN $tb2 as b
+                ON a.LD_stu_sn =b.sn
+                WHERE 1";
+        // echo($sql);die();
+
+        if($pars['year']!=''){
+            $sql.=" AND  `LD_year`='{$pars['year']}'";
+        }
+        if($pars['term']!=''){
+            $sql.=" AND  `LD_term`='{$pars['term']}'";
+        }
+        if(($pars['major_id']!='')){
+            $sql.=" AND `major_id` = '{$pars['major_id']}'";
+        }
+        if(($pars['stu_sn']!='')){
+            $sql.=" AND `LD_stu_sn` = '{$pars['stu_sn']}'";
+        }
+        if(($pars['period']=='LD_day_hours')){
+            $sql.=" AND `LD_day_hours` > 0 ";
+        }
+        if(($pars['period']=='LD_night_hours')){
+            $sql.=" AND `LD_night_hours` > 0 ";
+        }
+        $sql.=" ORDER BY `LD_sn` DESC ";
+        // echo($sql);die();
+
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all = $r = array();
+        while($r= $xoopsDB->fetchArray($result)){
+            $ru['LD_sn']          = $myts->htmlSpecialChars($r['LD_sn']);
+            $ru['LD_year']        = $myts->htmlSpecialChars($r['LD_year']);
+            $ru['LD_term']        = $myts->htmlSpecialChars($r['LD_term']);
+            $ru['LD_stu_sn']      = $myts->htmlSpecialChars($r['LD_stu_sn']);
+            $ru['LD_kind']        = $myts->htmlSpecialChars($r['LD_kind']);
+            $ru['LD_other_text']  = $myts->htmlSpecialChars($r['LD_other_text']);
+            $ru['LD_sdate']       = $myts->htmlSpecialChars($r['LD_sdate']);
+            $ru['LD_edate']       = $myts->htmlSpecialChars($r['LD_edate']);
+            $ru['LD_content']     = $myts->displayTarea($r['LD_content'], 1, 0, 0, 0, 0);
+            $ru['LD_day_hours']   = $myts->htmlSpecialChars($r['LD_day_hours']);
+            $ru['LD_night_hours'] = $myts->htmlSpecialChars($r['LD_night_hours']);
+            $ru['LD_update_user'] = $myts->htmlSpecialChars($r['LD_update_user']);
+            $ru['LD_update_date'] = $myts->htmlSpecialChars($r['LD_update_date']);
+            $ru['stu_name']       = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$r['LD_stu_sn']]);
+            $ru['class_name']     = $myts->htmlSpecialChars($SchoolSet->class_name[$r['class_id']]);
+            $ru['depsnname']      = $myts->htmlSpecialChars($SchoolSet->depsnname[$r['major_id']]);
+            $ru['LD_kind_name']   = $myts->htmlSpecialChars($SchoolSet->AB_kind_anther[$r['LD_kind']]);
+            $ru['stu_info']       = $ru['depsnname'].'<br>'.$ru ['class_name'].' / '.$ru ['stu_name'];
+            $all []            = $ru;
+            $Summary[$ru['LD_kind']]['name']=$ru['LD_kind_name'];
+            $Summary[$ru['LD_kind']]['hour']+=$ru['LD_day_hours']+$ru['LD_night_hours'];
+        }
+
+        // die(var_dump($Summary));
+
+        ksort($Summary);
+        $remove_AB_option=['G'=>'晤談'];          
+        $Summary=array_diff_key($Summary, $remove_AB_option);
+
+        foreach($Summary as $k=>$v){
+            $summary_ary[]=$Summary[$k]['name'].$Summary[$k]['hour'].'小時';
+        }
+        if (count($summary_ary)>0){
+            $summary_text='總計：'.implode("、", $summary_ary).'。';
+            $xoopsTpl->assign('summary_text', $summary_text);
+        }
+
+        $SweetAlert = new SweetAlert();
+        $SweetAlert->render('LD_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=leave_day_delete&sn=", 'sn','確定要刪除新版學生出缺勤紀錄？','新版學生出缺勤紀錄刪除。');
+
+        $xoopsTpl->assign('all', $all);
+        $xoopsTpl->assign('op', "term_stu_update");
+
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+    }
 // ----------------------------------
     // 課程複製寫入DB
     function course_cp_transform(){
