@@ -17,9 +17,9 @@
                 <{$web.pic}>
                 <{if $web.title or $web.url}>
                     <div class="caption">
-                        <{if $web.title}><p style="font-size: 1rem;height: 1rem;"><{$web.title}></p><{/if}>
+                        <{if $web.title}><p style="font-size: 1.2rem;height: 1rem;"><{$web.title}></p><{/if}>
                         <!-- <{if $web.title}><p style="font-size: 1rem;height: 1rem; overflow: hidden;"><{$web.title}></p><{/if}> -->
-                        <{if $web.url}><p style="font-size: 0.6875rem; height: 1.2rem; overflow: hidden;"><{$web.url}></p><{/if}>
+                        <{if $web.url}><p style="font-size: 1rem; height: 1.2rem; overflow: hidden;"><{$web.url}></p><{/if}>
                     </div>
                 <{/if}>
             </div>

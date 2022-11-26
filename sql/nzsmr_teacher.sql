@@ -530,6 +530,30 @@ CREATE TABLE `yy_mentor_comment` (
 ALTER TABLE `yy_mentor_comment`
 ADD UNIQUE `year_term_student_sn` (`year`, `term`, `student_sn`);
 
+-- 學期學生一覽表
+CREATE TABLE `yy_term_stu` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '流水號',
+  `year` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學年度',
+  `term` varchar(8) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '學期',
+  `stu_sn` mediumint(8) unsigned NOT NULL COMMENT '學生流水號',
+  `stu_id` varchar(8) NOT NULL COMMENT '學號',
+  `stu_name` varchar(65) NOT NULL COMMENT '學生姓名', 
+  `stu_anonymous` varchar(65) NOT NULL COMMENT '學生匿名', 
+  `class_id` mediumint(8) unsigned NOT NULL COMMENT '班級',
+  `class_name` varchar(65) NOT NULL COMMENT '班級名稱',
+  `major_id` mediumint(8) unsigned NOT NULL COMMENT '學程',
+  `dep_name` varchar(65) NOT NULL COMMENT '學程名稱',
+  `tutor_uid` mediumint(8) unsigned NOT NULL COMMENT '導師編號',
+  `tutor_name` varchar(65) NOT NULL COMMENT '導師姓名',
+  `grade`  enum('1','2','3','畢業或結業')  NOT NULL COMMENT '年級',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- 修正學年度及學期及學生不能重複
+ALTER TABLE `yy_term_stu`
+ADD UNIQUE `year_term_stu_sn` (`year`, `term`,`stu_sn`);
+
+
 -- 學年度
 INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`, `create_date`, `update_user`, `update_date`, `activity`, `sort`) VALUES
 (1,	'109',	'2',	'2021-02-01',	'2021-07-04',	1,	'2021-04-09 13:09:58',	1,	'2021-04-09 13:09:58',	'1',	0);

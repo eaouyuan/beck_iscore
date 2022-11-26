@@ -69,13 +69,11 @@ switch ($op) {
     case "student_form":
         student_form($sn);
         break;//跳出迴圈,往下執行
-
     // 新增 學生
     case "student_insert":
         student_insert();
         header("location:tchstu_mag.php?op=student_list");
         exit;//離開，結束程式
-
     // 更新 學生
     case "student_update":
         student_update($sn);
@@ -87,6 +85,7 @@ switch ($op) {
         student_delete($sn);
         header("location:tchstu_mag.php?op=student_list");
         exit;
+
 
 // 課程 管理
     //課程 列表

@@ -142,7 +142,7 @@
                 var chk='0';
             }
             var teacher_id=  $(this).val();;
-            var XOOPS_TOKEN_REQUEST=  $('#XOOPS_TOKEN_REQUEST').val();;
+            var XOOPS_TOKEN_REQUEST=  $('#XOOPS_TOKEN_REQUEST').val();
             // console.log(XOOPS_TOKEN_REQUEST);
             // console.log(chk);
             // console.log(teacher_id);
