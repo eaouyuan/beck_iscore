@@ -195,5 +195,5 @@
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #absence_record_list,.notprint,#footer-container-display,#nav-container { display: none; }
+    #absence_record_list,.notprint,#footer-container-display,#nav-container-sticky-wrapper { display: none; }
 </style>

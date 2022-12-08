@@ -553,6 +553,26 @@ CREATE TABLE `yy_term_stu` (
 ALTER TABLE `yy_term_stu`
 ADD UNIQUE `year_term_stu_sn` (`year`, `term`,`stu_sn`);
 
+-- 導師輔導紀錄
+CREATE TABLE `yy_mentor_tutor` (
+  `sn` mediumint(8) unsigned NOT NULL AUTO_INCREMENT COMMENT '導師輔導紀錄流水號',
+  `year` varchar(8) NOT NULL COMMENT '學年度',
+  `term` varchar(8) NOT NULL COMMENT '學期',
+  `notice_time` datetime NOT NULL COMMENT '通報時間',
+  `stu_sn` mediumint(8) unsigned NOT NULL COMMENT '學生流水號',
+  `tutor_uid` mediumint(8) unsigned NOT NULL COMMENT '導師uid',
+  `CounselingObject` varchar(65) NOT NULL COMMENT '導師輔導對象',
+  `other_objectn` varchar(255) NOT NULL  DEFAULT '' COMMENT '其他輔導對象',
+  `TutorLocation` varchar(65) NOT NULL COMMENT '導師輔導地點',
+  `other_location` varchar(255) NOT NULL  DEFAULT '' COMMENT '其他輔導面談地點',
+  `MentoringFocus` varchar(65) NOT NULL COMMENT '導師輔導重點',
+  `other_focus` varchar(255) NOT NULL DEFAULT '' COMMENT '其他輔導重點',
+  `content` text NOT NULL COMMENT '內容簡述',
+  `update_user` mediumint(8)  NOT NULL DEFAULT '0' COMMENT '新增/修改者',
+  `update_date` datetime NOT NULL COMMENT '修改日期', 
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  PRIMARY KEY (`sn`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- 學年度
 INSERT INTO `yy_semester` (`sn`, `year`, `term`, `start_date`, `end_date`, `uid`, `create_date`, `update_user`, `update_date`, `activity`, `sort`) VALUES

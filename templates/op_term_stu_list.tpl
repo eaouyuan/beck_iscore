@@ -88,9 +88,20 @@
 
     });
     $("#update").click(function() {
-        $('#op').val('term_stu_update');
-        // console.log($('#op').val());
-        document.forms["term_stu_list"].submit();
+        swal({
+                title: '確定要更新本次學生列表嗎',
+                text: '更新學生列表',
+                type: 'warning',
+                showCancelButton: 1,
+                confirmButtonColor: '#DD6B55',
+                confirmButtonText: '確定更新！',
+                closeOnConfirm: false ,
+                allowOutsideClick: true
+            },
+            function(){
+                $('#op').val('term_stu_update');
+                document.forms["term_stu_list"].submit();
+        });
     });
 
     $('#mytable').bootstrapTable({
@@ -147,5 +158,5 @@
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #term_stu_list,.notprint,#footer-container-display,#nav-container { display: none; }
+    #term_stu_list,.notprint,#footer-container-display,#nav-container-sticky-wrapper { display: none; }
 </style>

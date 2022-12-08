@@ -230,5 +230,5 @@
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #reward_punishment_list,.notprint,#footer-container-display,#nav-container { display: none; }
+    #reward_punishment_list,.notprint,#footer-container-display,#nav-container-sticky-wrapper { display: none; }
 </style>

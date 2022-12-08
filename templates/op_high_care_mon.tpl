@@ -156,5 +156,5 @@
 </style>
 <style type="text/css" media="print">
     /* 列印時隱藏 */
-    #high_care_mon,.notprint,#footer-container-display,#nav-container { display: none; }
+    #high_care_mon,.notprint,#footer-container-display,#nav-container-sticky-wrapper { display: none; }
 </style>

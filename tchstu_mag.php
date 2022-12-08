@@ -61,6 +61,28 @@ $LD['class_id'] = Request::getString('class_id');
 // var_dump($type);die();
 
 switch ($op) {
+// 導師輔導紀錄管理
+    case "mentor_tutor_list":
+        mentor_tutor_list($cos);
+        break;//跳出迴圈,往下執行
+    case "mentor_tutor_show":
+        mentor_tutor_show($mentor_tutor);
+        break;//跳出迴圈,往下執行
+    case "mentor_tutor_form":
+        mentor_tutor_form($mentor_tutor,$sn);
+        break;//跳出迴圈,往下執行
+    case "mentor_tutor_insert":
+        $re=mentor_tutor_insert();
+        header("location:tchstu_mag.php?op=mentor_tutor_show&year={$re['year']}&term={$re['term']}&stu_sn={$re['stu_sn']}&tea_uid={$re['tea_uid']}");
+        exit;//離開，結束程式
+    case "mentor_tutor_update":
+        $re=mentor_tutor_update($sn);
+        header("location:tchstu_mag.php?op=mentor_tutor_show&year={$re['year']}&term={$re['term']}&stu_sn={$re['stu_sn']}&tea_uid={$re['tea_uid']}");
+        exit;//離開，結束程式
+    case "mentor_tutor_delete":
+        $re=mentor_tutor_delete($sn);
+        header("location:tchstu_mag.php?op=mentor_tutor_show&year={$re['year']}&term={$re['term']}&stu_sn={$re['student_sn']}&tea_uid={$re['tea_uid']}");
+        exit;
 // 學生 管理
     case "student_list":
         student_list($stu_list,$g2p);
@@ -355,394 +377,396 @@ switch ($op) {
     // function counseling_insert(){
     //     global $xoopsDB,$xoopsUser;
 
-        if (!$xoopsUser) {
-            redirect_header('tchstu_mag.php', 2, '無 counseling_insert 權限! error:21060121730');
-        }
-        //安全判斷 儲存 更新都要做
-        if (!$GLOBALS['xoopsSecurity']->check()) {
-            $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
-            redirect_header("tchstu_mag.php?op=counseling_list", 2, '表單Token錯誤，請重新輸入!');
-            throw new Exception($error);
-        }
+    //     if (!$xoopsUser) {
+    //         redirect_header('tchstu_mag.php', 2, '無 counseling_insert 權限! error:21060121730');
+    //     }
+    //     //安全判斷 儲存 更新都要做
+    //     if (!$GLOBALS['xoopsSecurity']->check()) {
+    //         $error = implode("<br>", $GLOBALS['xoopsSecurity']->getErrors());
+    //         redirect_header("tchstu_mag.php?op=counseling_list", 2, '表單Token錯誤，請重新輸入!');
+    //         throw new Exception($error);
+    //     }
         
-        $myts = MyTextSanitizer::getInstance();
-        foreach ($_POST as $key => $value) {
-            $$key = $myts->addSlashes($value);
-            echo "<p>\${$key}={$$key}</p>";
-        }
+    //     $myts = MyTextSanitizer::getInstance();
+    //     foreach ($_POST as $key => $value) {
+    //         $$key = $myts->addSlashes($value);
+    //         echo "<p>\${$key}={$$key}</p>";
+    //     }
 
-        $CounselingFocus_ary = Request::getArray('CounselingFocus');
-        // 輔導重點轉string
-        $Counseling_ary2str=implode(",",$CounselingFocus_ary); 
-        $tbl = $xoopsDB->prefix('yy_counseling_rec');
-        $sql = "insert into `$tbl` (
-                `year`,`term`,`notice_time`,`student_sn`,`tea_uid`,
-                `AdoptionInterviewLocation`,`location`,`CounselingFocus`,`focus`,`content`,
-                `update_user`,`update_date`
-                )values(
-                    '{$year}','{$term}','{$notice_time}','{$student_sn}','{$tea_uid}',
-                    '{$AdoptionInterviewLocation}','{$location}','{$Counseling_ary2str}','{$focus}','{$content}',
-                    '{$uid}',now()
-                )";
-        // echo($sql);die();
-        $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
+    //     $CounselingFocus_ary = Request::getArray('CounselingFocus');
+    //     // 輔導重點轉string
+    //     $Counseling_ary2str=implode(",",$CounselingFocus_ary); 
+    //     $tbl = $xoopsDB->prefix('yy_counseling_rec');
+    //     $sql = "insert into `$tbl` (
+    //             `year`,`term`,`notice_time`,`student_sn`,`tea_uid`,
+    //             `AdoptionInterviewLocation`,`location`,`CounselingFocus`,`focus`,`content`,
+    //             `update_user`,`update_date`
+    //             )values(
+    //                 '{$year}','{$term}','{$notice_time}','{$student_sn}','{$tea_uid}',
+    //                 '{$AdoptionInterviewLocation}','{$location}','{$Counseling_ary2str}','{$focus}','{$content}',
+    //                 '{$uid}',now()
+    //             )";
+    //     // echo($sql);die();
+    //     $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //     $sn = $xoopsDB->getInsertId(); //取得最後新增的編號
         
-        //上傳表單（enctype='multipart/form-data'）
-        $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
-        // 上傳附檔
-        $TadUpFiles->set_col('counseling_file',$sn);
-        $TadUpFiles->upload_file('counseling_file');
+    //     //上傳表單（enctype='multipart/form-data'）
+    //     $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
+    //     // 上傳附檔
+    //     $TadUpFiles->set_col('counseling_file',$sn);
+    //     $TadUpFiles->upload_file('counseling_file');
 
-        $re['year']=$year;
-        $re['term']=$term;
-        $re['stu_sn']=$student_sn;
-        $re['tea_uid']=$tea_uid;
-        return $re;
-    }
+    //     $re['year']=$year;
+    //     $re['term']=$term;
+    //     $re['stu_sn']=$student_sn;
+    //     $re['tea_uid']=$tea_uid;
+    //     return $re;
+    // }
 
-    function counseling_form($pars=[],$sn){
-        global $xoopsTpl,$xoopsUser,$xoopsDB;
-        $SchoolSet= new SchoolSet;
-        $myts = MyTextSanitizer::getInstance();
+    // function counseling_form($pars=[],$sn){
+    //     global $xoopsTpl,$xoopsUser,$xoopsDB;
+    //     $SchoolSet= new SchoolSet;
+    //     $myts = MyTextSanitizer::getInstance();
 
-        if (!$xoopsUser) {
-            redirect_header('tchstu_mag.php', 2, '無 counseling_form 權限! error:21060121000');
-        }
+    //     if (!$xoopsUser) {
+    //         redirect_header('tchstu_mag.php', 2, '無 counseling_form 權限! error:21060121000');
+    //     }
 
-        //套用formValidator驗證機制
-        if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
-            redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
-        }
-        include_once TADTOOLS_PATH."/formValidator.php";
-        $formValidator      = new formValidator("#counseling_form", true);
-        $formValidator_code = $formValidator->render();
-        $xoopsTpl->assign("formValidator_code",$formValidator_code);
+    //     //套用formValidator驗證機制
+    //     if(!file_exists(TADTOOLS_PATH."/formValidator.php")){
+    //         redirect_header("tchstu_mag.php", 3, _TAD_NEED_TADTOOLS);
+    //     }
+    //     include_once TADTOOLS_PATH."/formValidator.php";
+    //     $formValidator      = new formValidator("#counseling_form", true);
+    //     $formValidator_code = $formValidator->render();
+    //     $xoopsTpl->assign("formValidator_code",$formValidator_code);
 
-        // 載入xoops表單元件
-        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+    //     // 載入xoops表單元件
+    //     include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
 
-        $form_title = '新增認輔學生紀錄';
-        if($sn){
-            $form_title = '編輯認輔學生紀錄';
-            $tbl     = $xoopsDB->prefix('yy_counseling_rec');
-            $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
-            $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            $stu = $xoopsDB->fetchArray($result);
-            if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
-                redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2105302220');
-            }
-        }
-        $xoopsTpl->assign('form_title', $form_title);
-        $info['sn']                        = $myts->htmlSpecialChars($stu['sn']);
-        $info['year']                      = $myts->htmlSpecialChars($stu['year']??$pars['year']);
-        $info['term']                      = $myts->htmlSpecialChars($stu['term']??$pars['term']);
-        $info['notice_time']               = $myts->htmlSpecialChars($stu['notice_time']??'');
-        $info['student_sn']                = $myts->htmlSpecialChars($stu['student_sn']??$pars['stu_sn']);
-        $info['tea_uid']                   = $myts->htmlSpecialChars($stu['tea_uid']??$pars['tea_uid']);
-        $info['content']                   = $myts->displayTarea($stu['content'], 1, 0, 0, 0, 0);
-        $info['AdoptionInterviewLocation'] = $myts->htmlSpecialChars($stu['AdoptionInterviewLocation']);
-        $info['location']                  = $myts->htmlSpecialChars($stu['location']);
-        $info['CounselingFocus']           = $myts->htmlSpecialChars($stu['CounselingFocus']);
-        $info['CounselingFocus_ary']       = explode(",",$info['CounselingFocus']);
-        $info['focus']                     = $myts->htmlSpecialChars($stu['focus']);
-        $info['stu_name']                  = $SchoolSet->stu_anonymous[$info['student_sn']];
-        $info['tea_name']                  = $SchoolSet->uid2name[$info['tea_uid']];
-        $info['class']                     = $SchoolSet->class_name[$SchoolSet->stu_sn_classid[$info['student_sn']]];
-        $xoopsTpl->assign('info', $info);
+    //     $form_title = '新增認輔學生紀錄';
+    //     if($sn){
+    //         $form_title = '編輯認輔學生紀錄';
+    //         $tbl     = $xoopsDB->prefix('yy_counseling_rec');
+    //         $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+    //         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //         $stu = $xoopsDB->fetchArray($result);
+    //         if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+    //             redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2105302220');
+    //         }
+    //     }
+    //     $xoopsTpl->assign('form_title', $form_title);
+    //     $info['sn']                        = $myts->htmlSpecialChars($stu['sn']);
+    //     $info['year']                      = $myts->htmlSpecialChars($stu['year']??$pars['year']);
+    //     $info['term']                      = $myts->htmlSpecialChars($stu['term']??$pars['term']);
+    //     $info['notice_time']               = $myts->htmlSpecialChars($stu['notice_time']??'');
+    //     $info['student_sn']                = $myts->htmlSpecialChars($stu['student_sn']??$pars['stu_sn']);
+    //     $info['tea_uid']                   = $myts->htmlSpecialChars($stu['tea_uid']??$pars['tea_uid']);
+    //     $info['content']                   = $myts->displayTarea($stu['content'], 1, 0, 0, 0, 0);
+    //     $info['AdoptionInterviewLocation'] = $myts->htmlSpecialChars($stu['AdoptionInterviewLocation']);
+    //     $info['location']                  = $myts->htmlSpecialChars($stu['location']);
+    //     $info['CounselingFocus']           = $myts->htmlSpecialChars($stu['CounselingFocus']);
+    //     $info['CounselingFocus_ary']       = explode(",",$info['CounselingFocus']);
+    //     $info['focus']                     = $myts->htmlSpecialChars($stu['focus']);
+    //     $info['stu_name']                  = $SchoolSet->stu_anonymous[$info['student_sn']];
+    //     $info['tea_name']                  = $SchoolSet->uid2name[$info['tea_uid']];
+    //     $info['class']                     = $SchoolSet->class_name[$SchoolSet->stu_sn_classid[$info['student_sn']]];
+    //     $xoopsTpl->assign('info', $info);
 
-        $chk['location']=radio_htm($SchoolSet->sys_config['AdoptionInterviewLocation'],'AdoptionInterviewLocation',$info['AdoptionInterviewLocation']);
-        $chk['focus']=checkbox_htm($SchoolSet->sys_config['CounselingFocus'],'CounselingFocus[]',$info['CounselingFocus_ary'],1.5);
+    //     $chk['location']=radio_htm($SchoolSet->sys_config['AdoptionInterviewLocation'],'AdoptionInterviewLocation',$info['AdoptionInterviewLocation']);
+    //     $chk['focus']=checkbox_htm($SchoolSet->sys_config['CounselingFocus'],'CounselingFocus[]',$info['CounselingFocus_ary'],1.5);
 
-        if($info['AdoptionInterviewLocation']=='99'){
-            $chk_99['AdoptionInterviewLocation']='checked';
-        }else{
-            $chk_99['AdoptionInterviewLocation']='';
-        }
+    //     if($info['AdoptionInterviewLocation']=='99'){
+    //         $chk_99['AdoptionInterviewLocation']='checked';
+    //     }else{
+    //         $chk_99['AdoptionInterviewLocation']='';
+    //     }
 
-        if(in_array('99',$info['CounselingFocus_ary'])){
-            $chk_99['CounselingFocus']='checked';
-        }else{
-            $chk_99['CounselingFocus']='';
-        }
+    //     if(in_array('99',$info['CounselingFocus_ary'])){
+    //         $chk_99['CounselingFocus']='checked';
+    //     }else{
+    //         $chk_99['CounselingFocus']='';
+    //     }
 
-        $xoopsTpl->assign('chk', $chk);
-        $xoopsTpl->assign('chk_99', $chk_99);
+    //     $xoopsTpl->assign('chk', $chk);
+    //     $xoopsTpl->assign('chk_99', $chk_99);
         
-        // var_dump($counseling_otp_ary);die();
-        // //帶入使用者編號
-        if ($sn) {
-            $uid = $_SESSION['beck_iscore_adm'] ? $info['tea_uid'] : $xoopsUser->uid();
-        } else {
-            $uid = $xoopsUser->uid();
-        }
-        $xoopsTpl->assign('uid', $uid);
+    //     // var_dump($counseling_otp_ary);die();
+    //     // //帶入使用者編號
+    //     if ($sn) {
+    //         $uid = $_SESSION['beck_iscore_adm'] ? $info['tea_uid'] : $xoopsUser->uid();
+    //     } else {
+    //         $uid = $xoopsUser->uid();
+    //     }
+    //     $xoopsTpl->assign('uid', $uid);
         
-        // 下個動作
-        if ($sn) {
-            $op='counseling_update';
-            $xoopsTpl->assign('sn', $sn);
-        } else {
-            $op='counseling_insert';
-        }
-        $xoopsTpl->assign('op', $op);
+    //     // 下個動作
+    //     if ($sn) {
+    //         $op='counseling_update';
+    //         $xoopsTpl->assign('sn', $sn);
+    //     } else {
+    //         $op='counseling_insert';
+    //     }
+    //     $xoopsTpl->assign('op', $op);
 
 
-        //上傳附檔
-        $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
-        $TadUpFiles->set_col('counseling_file',$sn); //若 $show_list_del_file ==true 時一定要有
-        $upform=$TadUpFiles->upform(true,'counseling_file');
-        $xoopsTpl->assign('upform', $upform);
+    //     //上傳附檔
+    //     $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
+    //     $TadUpFiles->set_col('counseling_file',$sn); //若 $show_list_del_file ==true 時一定要有
+    //     $upform=$TadUpFiles->upform(true,'counseling_file');
+    //     $xoopsTpl->assign('upform', $upform);
         
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
-        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+    //     $token =new XoopsFormHiddenToken('XOOPS_TOKEN',360);
+    //     $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
-    }
+    // }
 
-    function counseling_delete($sn){
-        global $xoopsDB,$xoopsUser;
+    // function counseling_delete($sn){
+    //     global $xoopsDB,$xoopsUser;
 
-        if (!$xoopsUser) {
-            redirect_header('tchstu_mag.php', 2, '無 counseling_delete 權限! error:21060142116');
-        }    
+    //     if (!$xoopsUser) {
+    //         redirect_header('tchstu_mag.php', 2, '無 counseling_delete 權限! error:21060142116');
+    //     }    
 
-        $tbl     = $xoopsDB->prefix('yy_counseling_rec');
-        $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
-        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $stu = $xoopsDB->fetchArray($result);
-        if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
-            redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106142120');
-        }
-        // die(var_dump($stu));
+    //     $tbl     = $xoopsDB->prefix('yy_counseling_rec');
+    //     $sql     = "SELECT * FROM $tbl Where `sn`='{$sn}'";
+    //     $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //     $stu = $xoopsDB->fetchArray($result);
+    //     if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin())){
+    //         redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106142120');
+    //     }
+    //     // die(var_dump($stu));
 
-        // 刪除認輔資料
-        $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
-        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //     // 刪除認輔資料
+    //     $sql = "DELETE FROM `$tbl` WHERE `sn` = '{$sn}'";
+    //     $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         
-        // 附檔刪除
-        $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
-        $TadUpFiles->set_col('counseling_file', $sn);
-        $TadUpFiles->del_files();
+    //     // 附檔刪除
+    //     $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
+    //     $TadUpFiles->set_col('counseling_file', $sn);
+    //     $TadUpFiles->del_files();
 
-        return $stu;
-    }
+    //     return $stu;
+    // }
 
-    function counseling_show($pars=[]){
-        global $xoopsTpl,$xoopsUser,$xoopsDB;
-        $SchoolSet= new SchoolSet;
-        $myts = MyTextSanitizer::getInstance();
+    // function counseling_show($pars=[]){
+    //     global $xoopsTpl,$xoopsUser,$xoopsDB;
+    //     $SchoolSet= new SchoolSet;
+    //     $myts = MyTextSanitizer::getInstance();
 
-        if (!$xoopsUser) {
-            redirect_header('tchstu_mag.php', 2, '無 counseling_show 權限! error:21060120942');
-        }
+    //     if (!$xoopsUser) {
+    //         redirect_header('tchstu_mag.php', 2, '無 counseling_show 權限! error:21060120942');
+    //     }
 
-        $info['stu_name']=$SchoolSet->stu_anonymous_all[$pars['stu_sn']];
-        $info['tea_name']=$SchoolSet->uid2name[$pars['tea_uid']];
-        $info['class']=$SchoolSet->class_name_all[$SchoolSet->stu_sn_classid_all[$pars['stu_sn']]];
-        $info['stu_sn']=$pars['stu_sn'];
-        $info['tea_uid']=$pars['tea_uid'];
-        $info['year']=$pars['year'];
-        $info['term']=$pars['term'];
-        $xoopsTpl->assign('info', $info);
+    //     $info['stu_name']=$SchoolSet->stu_anonymous_all[$pars['stu_sn']];
+    //     $info['tea_name']=$SchoolSet->uid2name[$pars['tea_uid']];
+    //     $info['class']=$SchoolSet->class_name_all[$SchoolSet->stu_sn_classid_all[$pars['stu_sn']]];
+    //     $info['stu_sn']=$pars['stu_sn'];
+    //     $info['tea_uid']=$pars['tea_uid'];
+    //     $info['year']=$pars['year'];
+    //     $info['term']=$pars['term'];
+    //     $xoopsTpl->assign('info', $info);
         
-        $tbl     = $xoopsDB->prefix('yy_tea_counseling');
-        $sql     = "SELECT * FROM $tbl 
-                    Where `year`='{$info['year']}' 
-                    AND `term`='{$info['term']}'
-                    AND `student_sn`='{$info['stu_sn']}'
-                    AND `tea_uid`='{$info['tea_uid']}'";
-        $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $stu = $xoopsDB->fetchArray($result);
+    //     $tbl     = $xoopsDB->prefix('yy_tea_counseling');
+    //     $sql     = "SELECT * FROM $tbl 
+    //                 Where `year`='{$info['year']}' 
+    //                 AND `term`='{$info['term']}'
+    //                 AND `student_sn`='{$info['stu_sn']}'
+    //                 AND `tea_uid`='{$info['tea_uid']}'";
+    //     $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //     $stu = $xoopsDB->fetchArray($result);
         
-        if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin() or power_chk("beck_iscore", "5"))){
-            redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106131027');
-        }
+    //     if(!($stu['tea_uid']==$xoopsUser->uid() OR $xoopsUser->isAdmin() or power_chk("beck_iscore", "5"))){
+    //         redirect_header('tchstu_mag.php?op=counseling_list', 3, '非填報人員，無權限 !error:2106131027');
+    //     }
 
-        $tbl      = $xoopsDB->prefix('yy_counseling_rec');
-        $sql      = "SELECT * FROM $tbl
-                    Where `year`='{$info['year']}' 
-                    AND `term`='{$info['term']}'
-                    AND `student_sn`='{$info['stu_sn']}'
-                    AND `tea_uid`='{$info['tea_uid']}'
-                        ORDER BY `sn` DESC"; 
-        // echo($sql);die();                    
-        $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-        $all  = $Counsel = array();
-        $opt_all=$SchoolSet->sys_config;
+    //     $tbl      = $xoopsDB->prefix('yy_counseling_rec');
+    //     $sql      = "SELECT * FROM $tbl
+    //                 Where `year`='{$info['year']}' 
+    //                 AND `term`='{$info['term']}'
+    //                 AND `student_sn`='{$info['stu_sn']}'
+    //                 AND `tea_uid`='{$info['tea_uid']}'
+    //                     ORDER BY `sn` DESC"; 
+    //     // echo($sql);die();                    
+    //     $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    //     $all  = $Counsel = array();
+    //     $opt_all=$SchoolSet->sys_config;
         
-        // 顯示附檔
-        $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
-        while($ycr= $xoopsDB->fetchArray($result)){
-            $ycr['sn']                        = $myts->htmlSpecialChars($ycr['sn']);
-            $ycr['year']                      = $myts->htmlSpecialChars($ycr['year']);
-            $ycr['term']                      = $myts->htmlSpecialChars($ycr['term']);
-            $ycr['notice_time']               = $myts->htmlSpecialChars($ycr['notice_time']);
-            $ycr['student_sn']                = $myts->htmlSpecialChars($ycr['student_sn']);
-            $ycr['tea_uid']                   = $myts->htmlSpecialChars($ycr['tea_uid']);
-            $ycr['content_ptr']               = str_replace("\n","<br>",$ycr['content']);
-            $ycr['content']                   = $myts->displayTarea($ycr['content'], 1, 0, 0, 0, 0);
-            $ycr['AdoptionInterviewLocation'] = $myts->htmlSpecialChars($ycr['AdoptionInterviewLocation']);
-            $ycr['location']                  = $myts->htmlSpecialChars($ycr['location']);
-            $ycr['CounselingFocus']           = $myts->htmlSpecialChars($ycr['CounselingFocus']);
-            $ycr['focus']                     = $myts->htmlSpecialChars($ycr['focus']);
-            $TadUpFiles->set_col('counseling_file',$ycr['sn']);
-            $Counsel[$ycr['sn']]['files'] = $TadUpFiles->show_files('counseling_file',false,'filename');
-            $ycr['AdoptionLocation_htm'] = $ycr['AdoptionLocation_oth_htm']=$ycr['CounselingFocus_htm']=$ycr['CounselingFocus_oth_htm']='';
-            // 面談地點
-            foreach($opt_all['AdoptionInterviewLocation'] as $v=>$text){
-                if($v==$ycr['AdoptionInterviewLocation']){
-                    $ycr['AdoptionLocation_htm'].="<div class='col-2'><i class='fa fa-square' aria-hidden='true'></i> {$text}</div>";
-                }else{
-                    $ycr['AdoptionLocation_htm'].="<div class='col-2'><i class='fa fa-square-o' aria-hidden='true'></i> {$text}</div>";
-                }
-            }
-            if($ycr['AdoptionInterviewLocation']=='99'){
-                $ycr['AdoptionLocation_oth_htm'].=<<<HTML
-                        <div><i class="fa fa-square" aria-hidden="true"></i> 其他： <u>{$ycr['location']}</u></div>
-                HTML;
-            }else{
-                $ycr['AdoptionLocation_oth_htm'].=<<<HTML
-                        <div><i class="fa fa-square-o" aria-hidden="true"></i> 其他： <u></u></div>
-                HTML;
-            }
-            // 輔導重點
-            foreach($opt_all['CounselingFocus'] as $v=>$text){
-                if(in_array($v,explode(",",$ycr['CounselingFocus']))){
-                    $ycr['CounselingFocus_htm'].="<div class='col-2'><i class='fa fa-square' aria-hidden='true'></i> {$text}</div>";
-                }else{
-                    $ycr['CounselingFocus_htm'].="<div class='col-2'><i class='fa fa-square-o' aria-hidden='true'></i> {$text}</div>";
-                }
-            }
-            if(in_array('99',explode(",",$ycr['CounselingFocus']))){
-                $ycr['CounselingFocus_oth_htm'].=<<<HTML
-                <div><i class="fa fa-square" aria-hidden="true"></i>其他： <u>{$ycr['focus']}</u></div>
-            HTML;
-            }else{
-                $ycr['CounselingFocus_oth_htm'].=<<<HTML
-                <div><i class="fa fa-square-o" aria-hidden="true"></i> 其他： <u></u></div>
-            HTML;
-            }
+    //     // 顯示附檔
+    //     $TadUpFiles=new TadUpFiles("beck_iscore","/counseling");
+    //     while($ycr= $xoopsDB->fetchArray($result)){
+    //         $ycr['sn']                        = $myts->htmlSpecialChars($ycr['sn']);
+    //         $ycr['year']                      = $myts->htmlSpecialChars($ycr['year']);
+    //         $ycr['term']                      = $myts->htmlSpecialChars($ycr['term']);
+    //         $ycr['notice_time']               = $myts->htmlSpecialChars($ycr['notice_time']);
+    //         $ycr['student_sn']                = $myts->htmlSpecialChars($ycr['student_sn']);
+    //         $ycr['tea_uid']                   = $myts->htmlSpecialChars($ycr['tea_uid']);
+    //         $ycr['content_ptr']               = str_replace("\n","<br>",$ycr['content']);
+    //         $ycr['content']                   = $myts->displayTarea($ycr['content'], 1, 0, 0, 0, 0);
+    //         $ycr['AdoptionInterviewLocation'] = $myts->htmlSpecialChars($ycr['AdoptionInterviewLocation']);
+    //         $ycr['location']                  = $myts->htmlSpecialChars($ycr['location']);
+    //         $ycr['CounselingFocus']           = $myts->htmlSpecialChars($ycr['CounselingFocus']);
+    //         $ycr['focus']                     = $myts->htmlSpecialChars($ycr['focus']);
+    //         $TadUpFiles->set_col('counseling_file',$ycr['sn']);
+    //         $Counsel[$ycr['sn']]['files'] = $TadUpFiles->show_files('counseling_file',false,'filename');
+    //         $ycr['AdoptionLocation_htm'] = $ycr['AdoptionLocation_oth_htm']=$ycr['CounselingFocus_htm']=$ycr['CounselingFocus_oth_htm']='';
+    //         // 面談地點
+    //         foreach($opt_all['AdoptionInterviewLocation'] as $v=>$text){
+    //             if($v==$ycr['AdoptionInterviewLocation']){
+    //                 $ycr['AdoptionLocation_htm'].="<div class='col-2'><i class='fa fa-square' aria-hidden='true'></i> {$text}</div>";
+    //             }else{
+    //                 $ycr['AdoptionLocation_htm'].="<div class='col-2'><i class='fa fa-square-o' aria-hidden='true'></i> {$text}</div>";
+    //             }
+    //         }
+    //         if($ycr['AdoptionInterviewLocation']=='99'){
+    //             $ycr['AdoptionLocation_oth_htm'].=<<<HTML
+    //                     <div><i class="fa fa-square" aria-hidden="true"></i> 其他： <u>{$ycr['location']}</u></div>
+    //             HTML;
+    //         }else{
+    //             $ycr['AdoptionLocation_oth_htm'].=<<<HTML
+    //                     <div><i class="fa fa-square-o" aria-hidden="true"></i> 其他： <u></u></div>
+    //             HTML;
+    //         }
+    //         // 輔導重點
+    //         foreach($opt_all['CounselingFocus'] as $v=>$text){
+    //             if(in_array($v,explode(",",$ycr['CounselingFocus']))){
+    //                 $ycr['CounselingFocus_htm'].="<div class='col-2'><i class='fa fa-square' aria-hidden='true'></i> {$text}</div>";
+    //             }else{
+    //                 $ycr['CounselingFocus_htm'].="<div class='col-2'><i class='fa fa-square-o' aria-hidden='true'></i> {$text}</div>";
+    //             }
+    //         }
+    //         if(in_array('99',explode(",",$ycr['CounselingFocus']))){
+    //             $ycr['CounselingFocus_oth_htm'].=<<<HTML
+    //             <div><i class="fa fa-square" aria-hidden="true"></i>其他： <u>{$ycr['focus']}</u></div>
+    //         HTML;
+    //         }else{
+    //             $ycr['CounselingFocus_oth_htm'].=<<<HTML
+    //             <div><i class="fa fa-square-o" aria-hidden="true"></i> 其他： <u></u></div>
+    //         HTML;
+    //         }
             
-            $all [$ycr['sn']]             = $ycr;
-        }
-        $xoopsTpl->assign('all', $all);
-        $xoopsTpl->assign('Counsel', $Counsel);
+    //         $all [$ycr['sn']]             = $ycr;
+    //     }
+    //     $xoopsTpl->assign('all', $all);
+    //     $xoopsTpl->assign('Counsel', $Counsel);
         
-        $uid = $_SESSION['beck_iscore_adm'] ? $ycr['tea_uid'] : $xoopsUser->uid();
-        $xoopsTpl->assign('uid', $uid);
+    //     $uid = $_SESSION['beck_iscore_adm'] ? $ycr['tea_uid'] : $xoopsUser->uid();
+    //     $xoopsTpl->assign('uid', $uid);
 
-        $SweetAlert = new SweetAlert();
-        $SweetAlert->render('counseling_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=counseling_delete&sn=", 'sn','確定要刪除認輔紀錄','學生認輔紀錄刪除。');
-    }
+    //     $SweetAlert = new SweetAlert();
+    //     $SweetAlert->render('counseling_del', XOOPS_URL . "/modules/beck_iscore/tchstu_mag.php?op=counseling_delete&sn=", 'sn','確定要刪除認輔紀錄','學生認輔紀錄刪除。');
+    // }
 
     function mentor_tutor_list($pars=[]){
-        global $xoopsTpl,$xoopsDB,$xoopsModuleConfig,$xoopsUser;
+        global $xoopsTpl,$xoopsDB,$xoopsUser;
         $SchoolSet= new SchoolSet;
         $myts = MyTextSanitizer::getInstance();
-        
-        $counseling_manage=false;
-        if((power_chk("beck_iscore", "5") or $xoopsUser->isAdmin())){
-            $counseling_manage=true;
-            $xoopsTpl->assign('counseling_manage', $counseling_manage);
-
+    
+        $mentor_manage=false;
+        if($xoopsUser->isAdmin()){
+            $mentor_manage=true;
+            $xoopsTpl->assign('mentor_manage', $mentor_manage);
         }
         if (!$xoopsUser) {
-            redirect_header('tchstu_mag.php', 2, '無 counseling_list 權限! error:2106081000');
+            redirect_header('tchstu_mag.php', 2, '無 mentor_tutor_list 權限! error:202212070840');
         }
 
         $pars['cos_year']=($pars['cos_year']=='')?(string)$SchoolSet->sem_year:$pars['cos_year'];
         $pars['cos_term']=($pars['cos_term']=='')?(string)$SchoolSet->sem_term:$pars['cos_term'];
 
-
         // 學年度select
-        $tbl      = $xoopsDB->prefix('yy_counseling_rec');
+        $tbl      = $xoopsDB->prefix('yy_term_stu');
         $sql      = "SELECT distinct `year` , `term`  FROM $tbl ORDER BY `year`" ;
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($year_ary= $xoopsDB->fetchArray($result)){
             $sel['year'][$year_ary['year']]= $year_ary['year'];
             $sel['term'][$year_ary['year']][$year_ary['term']]= $year_ary['term'];
         }
-        
-        foreach ($SchoolSet->all_sems as $k=>$v){
-            $sems_year[$v['year']]=$v['year'];
-        }
-        // $exam_year_htm=Get_select_opt_htm($sems_year,$exam_date['exam_year'],'1');
-        // $xoopsTpl->assign('exam_year_htm', $exam_year_htm);
-
-        // 學期 
-        $terms=['1'=>'1','2'=>'2'];
-        // $exam_term_htm=Get_select_opt_htm($terms,$exam_date['exam_term'],1);
-        // $xoopsTpl->assign('exam_term_htm', $exam_term_htm);
-
-
-        asort($sems_year);
-        asort($sel['term']);
 
         // 學年度
-        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'1');
+        $sems_year_htm=Get_select_opt_htm($sel['year'],$pars['cos_year'],'1');
         $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
-        // 學期
-        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],1);
+        // 學期 
+        // $terms=['1'=>'1','2'=>'2'];
+        $sems_term_htm=Get_select_opt_htm($sel['term'][$pars['cos_year']],$pars['cos_term'],1);
         $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
-        // // 學年度
-        // $sems_year_htm=Get_select_opt_htm($sel['year'],$pars['cos_year'],'1');
-        // $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
-        // // 學期
-        // $sems_term_htm=Get_select_opt_htm($sel['term'][$pars['cos_year']],$pars['cos_term'],1);
-        // $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
 
         
-        if($counseling_manage){
-            $tbl = $xoopsDB->prefix('yy_tea_counseling');
+
+        // 找出該學期各班導師
+        // $tbl      = $xoopsDB->prefix('yy_term_stu');
+        // $sql      = "SELECT distinct `year` , `term`, `tutor_uid` FROM $tbl 
+        //             WHERE `year`='{$pars['cos_year']}' 
+        //             AND  `term`='{$pars['cos_term']}'";
+        // $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        // while($re= $xoopsDB->fetchArray($result)){
+        //     $tutor_ary[]= $re['tutor_uid'];
+        // }
+        // if(!(in_array($xoopsUser->uid(),$tutor_ary) or $xoopsUser->isAdmin())){
+        //     redirect_header('tchstu_mag.php?op=mentor_tutor_list', 2, '非該學期導師或管理員，請重新選取！');
+        // }
+ 
+        // asort($sel['year']);
+        // asort($sel['term']);
+        // var_dump($sel);die();
+
+
+        $tbl = $xoopsDB->prefix('yy_term_stu');
+        if($mentor_manage){
             $sql = "SELECT  * FROM $tbl 
                     WHERE `year`='{$pars['cos_year']}' 
                     AND  `term`='{$pars['cos_term']}' 
-                    ORDER BY `year` DESC, `term` DESC, `tea_uid`"; 
-
-            //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
-            $PageBar = getPageBar($sql, 60, 10);
-            $bar     = $PageBar['bar'];
-            $sql     = $PageBar['sql'];
-            $total   = $PageBar['total'];
+                    ORDER BY `year` DESC, `term` DESC, `tutor_uid`"; 
         }else{
-            $tbl = $xoopsDB->prefix('yy_tea_counseling');
             $sql = "SELECT  * FROM $tbl 
-                    WHERE `tea_uid`='{$xoopsUser->uid()}' 
-                    ORDER BY `year` DESC, `term` DESC, `student_sn`"; 
+                    WHERE `year`='{$pars['cos_year']}' 
+                    AND `term`='{$pars['cos_term']}' 
+                    AND `tutor_uid`='{$xoopsUser->uid()}' 
+                    ORDER BY `year` DESC, `term` DESC, `stu_sn`"; 
         }
-        
+        //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
+        $PageBar = getPageBar($sql, 60, 10);
+        $bar     = $PageBar['bar'];
+        $sql     = $PageBar['sql'];
+        $total   = $PageBar['total'];
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($ru= $xoopsDB->fetchArray($result)){
+            $data['sn']            = $myts->htmlSpecialChars($ru['sn']);
             $data['year']          = $myts->htmlSpecialChars($ru['year']);
             $data['term']          = $myts->htmlSpecialChars($ru['term']);
-            $data['tea_uid']       = $myts->htmlSpecialChars($ru['tea_uid']);
-            $data['tea_name']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$ru['tea_uid']]);
-            $data['student_sn']    = $myts->htmlSpecialChars($ru['student_sn']);
-            $data['stu_anonymous'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$ru['student_sn']]);
-            $data['class_name']    = $myts->htmlSpecialChars($SchoolSet->class_name_all[$SchoolSet->stu_sn_classid_all[$ru['student_sn']]]);
-            $data['class_id']      = $myts->htmlSpecialChars($SchoolSet->stu_sn_classid_all[$ru['student_sn']]);
+            $data['stu_sn']        = $myts->htmlSpecialChars($ru['stu_sn']);
+            $data['stu_id']        = $myts->htmlSpecialChars($ru['stu_id']);
+            $data['stu_name']      = $myts->htmlSpecialChars($ru['stu_name']);
+            $data['stu_anonymous'] = $myts->htmlSpecialChars($ru['stu_anonymous']);
+            $data['class_id']      = $myts->htmlSpecialChars($ru['class_id']);
+            $data['class_name']    = $myts->htmlSpecialChars($ru['class_name']);
+            $data['major_id']      = $myts->htmlSpecialChars($ru['major_id']);
+            $data['dep_name']      = $myts->htmlSpecialChars($ru['dep_name']);
+            $data['tutor_uid']     = $myts->htmlSpecialChars($ru['tutor_uid']);
+            $data['tutor_name']    = $myts->htmlSpecialChars($ru['tutor_name']);
+            $data['grade']         = $myts->htmlSpecialChars($ru['grade']);
             $all  [] = $data;
         }
         $i=0;
         $tbl = $xoopsDB->prefix('yy_counseling_rec');
-        foreach($all as $k =>$v){
-            $sql = "SELECT count(sn) count  FROM $tbl 
-                    WHERE `year`= {$v['year']} 
-                    AND `term`= {$v['term']}
-                    AND `student_sn`= {$v['student_sn']}
-                    GROUP BY `year`,`term`,`student_sn`
-            ";
-            $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
-            $ru= $xoopsDB->fetchArray($result);
-            $all[$i]['count']=$ru['count']??'0';
-            $i++;
-        }
+        // foreach($all as $k =>$v){
+        //     $sql = "SELECT count(sn) count  FROM $tbl 
+        //             WHERE `year`= {$v['year']} 
+        //             AND `term`= {$v['term']}
+        //             AND `student_sn`= {$v['student_sn']}
+        //             GROUP BY `year`,`term`,`student_sn`
+        //     ";
+        //     $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        //     $ru= $xoopsDB->fetchArray($result);
+        //     $all[$i]['count']=$ru['count']??'0';
+        //     $i++;
+        // }
             // var_dump($all);die();
 
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('bar', $bar);
         $xoopsTpl->assign('total', $total);
-        $xoopsTpl->assign('op', "counseling_list");
+        $xoopsTpl->assign('op', "mentor_tutor_list");
     }
 
 // ----------------------------------
