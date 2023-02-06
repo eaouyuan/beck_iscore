@@ -16,12 +16,17 @@
             </select>
         </div>
         <label for="dep_id" class="col-1.5 col-form-label text-sm-right px-0">學程名稱：</label>
-        <div class="col-2 text-left px-0 mr-3">
+        <div class="col-1.5 text-left px-0 mr-3">
             <select class="custom-select" name="dep_id" id="dep_id">
                 <{$major_htm}>
             </select>
         </div>
-
+        <label for="dep_id" class="col-1.5 col-form-label text-sm-right px-0">教師：</label>
+        <div class="col-1.5 text-left px-0 mr-3">
+            <select class="custom-select" name="tea_id" id="tea_id">
+                <{$teacher_htm}>
+            </select>
+        </div>
         <div>
             <input name="op" id="op" value="<{$op}>" type="hidden">
             <button type="submit" class="btn btn-outline-primary mb-2 mr-1">搜尋</button>
@@ -109,10 +114,11 @@
             $('#cos_year').val('<{$sem_year}>');
             $('#cos_term').val('<{$sem_term}>');
             $('#dep_id').val('');
+            $('#tea_id').val('');
             document.forms["course_list"].submit();
         });
 
-        $('#cos_year , #cos_term , #dep_id').change(function(e){
+        $('#cos_year , #cos_term , #dep_id, #tea_id').change(function(e){
             document.forms["course_list"].submit();
         });
 

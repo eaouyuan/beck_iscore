@@ -25,6 +25,7 @@ $g2p=Request::getInt('g2p');
 $cos['cos_year'] = Request::getString('cos_year');
 $cos['cos_term'] = Request::getString('cos_term');
 $cos['dep_id']   = Request::getString('dep_id');
+$cos['tea_id']   = Request::getString('tea_id');
 $uscore['dep_id']      = Request::getString('dep_id');
 $uscore['course_id']   = Request::getString('course_id');
 $uscore['exam_stage']  = Request::getString('exam_stage');  //第幾次段考或第幾次段考前平時考
@@ -3383,8 +3384,13 @@ switch ($op) {
             $sql.="cr.dep_id = '{$pars['dep_id']}'";
             $have_par='1';
         }
+        if(($pars['tea_id']!='')){
+            if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
+            $sql.="tea_id = '{$pars['tea_id']}'";
+            $have_par='1';
+        }
 
-        $sql.=" ORDER BY `cos_year` DESC , `cos_term` DESC ,`dep_id` ,`sort`,`tea_id` , `cos_name`";
+        $sql.=" ORDER BY `cos_year` DESC , `cos_term` DESC ,`dep_id` ,`tea_id` ,`sort`, `cos_name`";
         // echo($sql);die();
 
         $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
@@ -3395,8 +3401,8 @@ switch ($op) {
         $star_icon=['0'=>'','1'=>'<i class="fa fa-star" aria-hidden="true"></i>'];
         while($cos= $xoopsDB->fetchArray($result)){
             $cos['i']            = $i;
-            $cos['cos_year']     = $myts->htmlSpecialChars($cos['cos_year']);       //學號
-            $cos['cos_term']     = $myts->htmlSpecialChars($cos['cos_term']);      //姓名
+            $cos['cos_year']     = $myts->htmlSpecialChars($cos['cos_year']);       //學年度
+            $cos['cos_term']     = $myts->htmlSpecialChars($cos['cos_term']);      //學期
             $cos['year_term']    = $cos['cos_year'].'/'.$cos['cos_term'];
             $cos['dep_name']     = $myts->htmlSpecialChars($cos['dep_name']);
             $cos['teacher_name'] = $myts->htmlSpecialChars($cos['teacher_name']);
@@ -3430,6 +3436,14 @@ switch ($op) {
         }
         $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
         $xoopsTpl->assign('major_htm', $major_htm);
+
+        // 教師列表
+        $teacher_name=[];
+        foreach ($SchoolSet->en_isteach_users as $k=>$v){
+            $teacher_name[$v['uid']]=$v['name'];
+        }
+        $teacher_htm=Get_select_opt_htm($teacher_name,$pars['tea_id'],'1');
+        $xoopsTpl->assign('teacher_htm', $teacher_htm);
 
         $xoopsTpl->assign('all', $all);
         // $xoopsTpl->assign('bar', $bar);
