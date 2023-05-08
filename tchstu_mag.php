@@ -517,7 +517,7 @@ switch ($op) {
     //     $upform=$TadUpFiles->upform(true,'counseling_file');
     //     $xoopsTpl->assign('upform', $upform);
         
-    //     $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+    //     $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
     //     $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     // }
@@ -892,7 +892,7 @@ switch ($op) {
         $xoopsTpl->assign('uid', $uid);
         $xoopsTpl->assign('op', 'mentor_comment_update');
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -1101,7 +1101,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         // die(var_dump($ru));
@@ -1410,7 +1410,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         // die(var_dump($ru));
@@ -1765,7 +1765,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -2061,7 +2061,7 @@ switch ($op) {
         $upform=$TadUpFiles->upform(true,'counseling_file');
         $xoopsTpl->assign('upform', $upform);
         
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -2531,7 +2531,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -2597,7 +2597,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $xoopsTpl->assign('op', "high_care_mon");
@@ -2764,7 +2764,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         // $xoopsTpl->assign('op', "course_list");
@@ -2931,7 +2931,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
         
     }
@@ -3208,7 +3208,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
         
 
@@ -3312,7 +3312,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $xoopsTpl->assign('op', "course_batch");
@@ -3460,7 +3460,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $xoopsTpl->assign('op', "course_list");
@@ -3663,7 +3663,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $SweetAlert = new SweetAlert();
@@ -3947,7 +3947,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -4051,7 +4051,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $xoopsTpl->assign('op', "student_list");
@@ -4244,7 +4244,7 @@ switch ($op) {
         $op='usual_score_insert';
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -4405,7 +4405,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
 

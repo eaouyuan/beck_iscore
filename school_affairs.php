@@ -446,7 +446,7 @@ switch ($op) {
         $xoopsTpl->assign('all', $all);
         $xoopsTpl->assign('op', "term_stu_list");
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
     }
 // ----------------------------------
@@ -623,7 +623,7 @@ switch ($op) {
         $op='course_cp_transform';
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -803,7 +803,7 @@ switch ($op) {
         // $xoopsTpl->assign('op', 'counseling_set');
         $xoopsTpl->assign('op', 'counseling_set_update');
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -1023,7 +1023,7 @@ switch ($op) {
         } 
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -1089,7 +1089,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
         $xoopsTpl->assign('op', "variable_list");
@@ -1295,7 +1295,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -1356,7 +1356,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
 
@@ -1520,7 +1520,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -1750,7 +1750,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -2104,7 +2104,7 @@ switch ($op) {
         $XoopGroupUser=new XoopsFormSelectGroup('group', 'group', false, $user_groups,3,true);
         $xoopsTpl->assign('XoopGroupUser' , $XoopGroupUser->render());
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
         
         if($xoopsUser->isAdmin()){
@@ -2212,7 +2212,7 @@ switch ($op) {
 
         // 載入xoops表單元件
         include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
 
@@ -2403,7 +2403,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -2610,7 +2610,7 @@ switch ($op) {
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }

@@ -130,7 +130,7 @@ function student_list($pars=[],$g2p=''){
 
     // 載入xoops表單元件
     include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
-    $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+    $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
     $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     $xoopsTpl->assign('op', "student_list");

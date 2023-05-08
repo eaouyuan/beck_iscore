@@ -301,7 +301,7 @@ default:
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
@@ -649,7 +649,7 @@ default:
         }
         $xoopsTpl->assign('op', $op);
 
-        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',1800);
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
         $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
 
     }
