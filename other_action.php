@@ -69,6 +69,59 @@ switch ($op) {
         echo('this is default switch in op_teacher.php');
     break;
 }
+function usual_score_batch($ids){
+    global $xoopsDB,$xoopsUser;
+    if(!($xoopsUser->isAdmin())){
+        $return['code']='0';
+        $return['msg']='無 usual_score_batch 權限! error:202307080946';
+        echo json_encode($return);
+    } 
+    $myts = MyTextSanitizer::getInstance();
+
+    $ids_sql="('".implode("','", $ids)."')";
+    // 依編號撈出平時考成績
+    $tbl = $xoopsDB->prefix('yy_usual_score');
+    $sql = "SELECT * FROM $tbl WHERE `sn` IN {$ids_sql}";
+    $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    $re = $data= $courses=array();
+    while($re= $xoopsDB->fetchArray($result)){
+        $re ['sn']  = $myts->htmlSpecialChars($re['sn']);
+        $re ['dep_id']  = $myts->htmlSpecialChars($re['dep_id']);
+        $re ['course_id']  = $myts->htmlSpecialChars($re['course_id']);
+        $data []=$re;
+        if (!((array_key_exists($re ['course_id'],$courses)) && (in_array($re ['exam_stage'],$courses[$re ['course_id']])))){
+            $courses[$re ['course_id']][]=$re ['exam_stage'];
+        }
+    }
+    $data_exist=0;
+    if (count($data)>=1){$data_exist=1;}
+    // var_dump($courses);die();
+    // var_dump($data);die();
+    // var_dump($courses);die();
+    // var_dump(count($data));die();
+
+    if($data_exist==1){
+        $tbl   = $xoopsDB->prefix('yy_usual_score');
+        $sql      = "DELETE FROM `$tbl` WHERE `sn` IN {$ids_sql}";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $return['code']='1';
+        $return['msg']='編號：'.$ids_sql.'，平時成績刪除成功!';
+        // redirect_header("tchstu_mag.php?op=course_batch", 3, '課程刪除成功!');
+
+        // 重新計算平時考平均
+        $SchoolSet= new SchoolSet;
+        foreach ($courses as $course_id => $value) {
+            foreach ($value as $exam_stage) {
+                $SchoolSet->uscore_avg($course_id,$exam_stage);
+        }}
+    }else{
+        $return['code']='0';
+        $return['msg']='找不到平時成績，請聯繫工程師';
+    }
+    echo json_encode($return);
+
+}
+
 function course_batch_del($ids){
     global $xoopsDB,$xoopsUser;
     if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin())){

@@ -4413,6 +4413,103 @@ switch ($op) {
 
     }
 // ----------------------------------
+// 平時成績批次刪除
+    function usual_score_batch($pars=[],$g2p=''){
+        global $xoopsTpl,$xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+
+        if(!($xoopsUser->isAdmin())){
+            redirect_header("tchstu_mag.php?op=usual_score_batch", 3, 'usual_score_batch 權限! error:2306302210');
+        } 
+
+        $pars['cos_year']=($pars['cos_year']=='')?(string)$SchoolSet->sem_year:$pars['cos_year'];
+        $pars['cos_term']=($pars['cos_term']=='')?(string)$SchoolSet->sem_term:$pars['cos_term'];
+
+        // var_dump($pars);die();
+        $myts = MyTextSanitizer::getInstance();
+
+        $tb1      = $xoopsDB->prefix('yy_usual_score');
+        $tb2      = $xoopsDB->prefix('yy_student');
+        $sql      = "SELECT  us.* , stu.*
+                    FROM $tb1 as us 
+                        LEFT JOIN $tb2 as stu ON us.student_sn=stu.sn WHERE 1
+                        " ;
+        if($pars['cos_year']!=''){
+            $sql.=" AND `year`='{$pars['cos_year']}'";
+        }
+        if($pars['cos_term']!=''){
+            $sql.=" AND `term`='{$pars['cos_term']}'";
+        }
+        if(($pars['stu_id']!='')){
+            $sql.=" AND us.stu_id = '{$pars['stu_id']}'";
+        }
+
+        $sql.=" ORDER BY  `year` DESC , `term` DESC ,`dep_id` ,`student_sn`, `course_id`";
+        // echo($sql);die();
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+
+        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*20+1;}
+        $credit_sun=0;
+        $star_icon=['0'=>'','1'=>'<i class="fa fa-star" aria-hidden="true"></i>'];
+        while($cos= $xoopsDB->fetchArray($result)){
+            $cos['i']            = $i;
+            $cos['cos_year']     = $myts->htmlSpecialChars($cos['cos_year']);       //學號
+            $cos['cos_term']     = $myts->htmlSpecialChars($cos['cos_term']);      //姓名
+            $cos['year_term']    = $cos['cos_year'].'/'.$cos['cos_term'];
+            $cos['dep_name']     = $myts->htmlSpecialChars($cos['dep_name']);
+            $cos['teacher_name'] = $myts->htmlSpecialChars($cos['teacher_name']);
+            $cos['cos_name']     = $myts->htmlSpecialChars($cos['cos_name']);
+            $cos['cos_name_grp'] = $myts->htmlSpecialChars($cos['cos_name_grp']);
+            $cos['first_chk']    = Get_bootstrap_switch_opt_htm('first_test',$cos['sn'],$cos['first_test']);
+            $cos['f_icon']       = $star_icon[$cos['first_test']];
+            $cos['second_chk']   = Get_bootstrap_switch_opt_htm('second_test',$cos['sn'],$cos['second_test']);
+            $cos['s_icon']       = $star_icon[$cos['second_test']];
+            $credit_sun=$credit_sun+$cos['cos_credits'];
+            $all []              = $cos;
+            $i++;
+        }
+        $xoopsTpl->assign('credit_sun', $credit_sun);
+        // var_dump($credit_sun);die();
+        // 學年度select
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'0');
+        $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],'0');
+        $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
+
+        // 學程列表
+        $major_name=[];
+        foreach ($SchoolSet->dept as $k=>$v){
+            $major_name[$v['sn']]=$v['dep_name'];
+        }
+        $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
+        $xoopsTpl->assign('major_htm', $major_htm);
+
+        $xoopsTpl->assign('all', $all);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
+
+        $xoopsTpl->assign('sem_year', $SchoolSet->max_sem_year);
+        $xoopsTpl->assign('sem_term', $SchoolSet->max_sem_term);
+        $xoopsTpl->assign('dep_id', $pars['dep_id']);
+
+
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+        $xoopsTpl->assign('op', "usual_score_batch");
+        BootstrapTable::render();
+
+
+    }
 
 /*-----------秀出結果區--------------*/
 
