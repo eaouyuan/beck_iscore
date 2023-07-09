@@ -123,15 +123,16 @@
             document.forms["student_list"].submit();
         });
 
-        $('#sort').sortable({ opacity: 0.6, cursor: 'move', update: function() {
-            var order = $(this).sortable('serialize')+'&op=student_sort';
-            // console.log(order);
-            $.post('other_action.php',  order, function(theResponse){
-                // console.log(theResponse);
-                $('#save_msg').html(theResponse);
-            });
-            }
-        });
+        // 移除拖拉排序功能
+        // $('#sort').sortable({ opacity: 0.6, cursor: 'move', update: function() {
+        //     var order = $(this).sortable('serialize')+'&op=student_sort';
+        //     // console.log(order);
+        //     $.post('other_action.php',  order, function(theResponse){
+        //         // console.log(theResponse);
+        //         $('#save_msg').html(theResponse);
+        //     });
+        //     }
+        // });
     })
         
     $('#mytable').bootstrapTable({

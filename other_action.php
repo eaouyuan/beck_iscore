@@ -1,6 +1,7 @@
 <?php
 use Xmf\Request;
 use XoopsModules\Tadtools\Utility;
+use XoopsModules\Beck_iscore\SchoolSet;
 
 include_once "../../mainfile.php";
 include_once "function.php";
@@ -12,13 +13,14 @@ $odr_ary      = Request::getArray('odr');
 $sdate        = Request::getString('sdate');
 $edate        = Request::getString('edate');
 $ids          = Request::getArray('ids');
+$Sel_data     = json_decode(Request::getString('Selections_data'),true);
 
 
 
 // if (!$xoopsUser->isAdmin()) {
 //     die();
 // }
-// var_dump($ids);
+// var_dump($Sel_data);
 // var_dump($order_ary);
 // die();
 // 處室列表
@@ -65,10 +67,82 @@ switch ($op) {
     case "course_batch_del":
         course_batch_del($ids);
         exit;
+    case "usual_score_batch":
+        usual_score_batch($ids);
+        exit;
+    case "stage_score_batch":
+        stage_score_batch($ids);
+        exit;
     default:
-        echo('this is default switch in op_teacher.php');
+        echo('this is default switch in other_action.php');
     break;
 }
+function stage_score_batch($ids){
+    global $xoopsDB,$xoopsUser;
+    if(!($xoopsUser->isAdmin())){
+        $return['code']='0';
+        $return['msg']='無 stage_score_batch 權限! error:202307091200';
+        echo json_encode($return);
+    } 
+    $myts = MyTextSanitizer::getInstance();
+
+    $ids_sql="('".implode("','", $ids)."')";
+    // 依編號撈出段考成績xx_yy_stage_score
+    $tbl = $xoopsDB->prefix('yy_stage_score');
+    $sql = "SELECT * FROM $tbl WHERE `sn` IN {$ids_sql} ORDER BY `sn`";
+    $result = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+    // echo($sql);die();
+
+    $re = $data= $yy_stage_sum_sn=$dep_course=array();
+
+    while($re= $xoopsDB->fetchArray($result)){
+        $re ['sn']  = $myts->htmlSpecialChars($re['sn']);
+        $re ['dep_id']  = $myts->htmlSpecialChars($re['dep_id']);
+        $re ['course_id']  = $myts->htmlSpecialChars($re['course_id']);
+        $data []=$re;
+        if (!   ((array_key_exists($re ['dep_id'],$dep_course)) && (in_array($re ['course_id'],$dep_course[$re ['dep_id']])))){
+            $dep_course[$re ['dep_id']][]=$re ['course_id'];
+        }
+        
+        // if (!(in_array($re ['final_score_sn'],$yy_stage_sum_sn))    ){
+        //     $yy_stage_sum_sn[]=$re ['final_score_sn'];
+        // }
+    }
+    $data_exist=0;
+    if (count($data)>=1){$data_exist=1;}
+    // var_dump((array_key_exists($re ['dep_id'],$dep_course)));die();
+    // var_dump($dep_course);die();
+
+    if($data_exist==1){
+        $tbl   = $xoopsDB->prefix('yy_stage_score');
+        $sql      = "DELETE FROM `$tbl` WHERE `sn` IN {$ids_sql}";
+        $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $return['code']='1';
+        $return['msg']='編號：'.$ids_sql.'，段考成績刪除成功!';
+
+        // 刪除段考成績加總
+        // $yy_stage_sum_sql="('".implode("','", $yy_stage_sum_sn)."')";
+        // echo($yy_stage_sum_sql);die();
+        // $tbl   = $xoopsDB->prefix('yy_stage_sum');
+        // $sql      = "DELETE FROM `$tbl` WHERE `sn` IN {$yy_stage_sum_sql}";
+        // $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+
+        // 重新計算此學程的段考及平時考平均，及加總成績
+        $SchoolSet= new SchoolSet;
+        foreach ($dep_course as $dep_id => $value) {
+            foreach ($value as $course_id) {
+                $SchoolSet->sscore_calculate( $dep_id,$course_id);
+        }}
+
+
+    }else{
+        $return['code']='0';
+        $return['msg']='找不到段考成績，請聯繫工程師';
+    }
+    echo json_encode($return);
+
+}
+
 function usual_score_batch($ids){
     global $xoopsDB,$xoopsUser;
     if(!($xoopsUser->isAdmin())){

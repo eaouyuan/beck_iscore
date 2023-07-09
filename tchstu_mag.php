@@ -55,6 +55,12 @@ $LD['major_id'] = Request::getString('major_id');
 $LD['stu_sn'] = Request::getString('stu_sn');
 $LD['period'] = Request::getString('period');
 $LD['class_id'] = Request::getString('class_id');
+$USB['usb_year'] = Request::getString('usb_year');
+$USB['usb_term'] = Request::getString('usb_term');
+$USB['usb_stu_id'] = Request::getString('usb_stu_id');
+$SSB['ssb_year']   = Request::getString('ssb_year');
+$SSB['ssb_term']   = Request::getString('ssb_term');
+$SSB['ssb_stu_id'] = Request::getString('ssb_stu_id');
 
 // die(var_dump($_GET));
 // die(var_dump($_REQUEST));
@@ -111,7 +117,7 @@ switch ($op) {
 
 
 // 課程 管理
-    //課程 列表
+    //課程 批次刪除
     case "course_batch":
         course_batch($cos,$g2p);
         break;//跳出迴圈,往下執行
@@ -140,6 +146,16 @@ switch ($op) {
         $re=course_delete($sn);
         header("location:tchstu_mag.php?op=course_list&cos_year={$re['cos_year']}&cos_term={$re['cos_term']}&dep_id={$re['dep_id']}");
         exit;
+// 成績批次刪除
+    // 平時成績
+    case "usual_score_batch":
+        usual_score_batch($USB);
+        break;//跳出迴圈,往下執行
+    // 段考成績
+    case "stage_score_batch":
+        stage_score_batch($SSB);
+        break;//跳出迴圈,往下執行
+
 // 平時成績 管理
     //平時成績 列表
     case "usual_score_list":
@@ -3000,7 +3016,7 @@ switch ($op) {
         $stu_score  = Request::getArray('stu_score');//學生編號=>平時成績
         $tea_keyin_score  = Request::getArray('tea_keyin_score');//學生編號=>教師keyin總成績
 
-        // var_dump($tea_keyin_score);        
+        // die(var_dump($tea_keyin_score));
         // die(var_dump($stu_score));
 
         // 先刪除該科目段考資料
@@ -3104,7 +3120,6 @@ switch ($op) {
             $sscore['tea_name']  = $SchoolSet->uid2name[$sscore['tea_id']];
             $sscore['dep_name']  = $SchoolSet->depsnname[$sscore['dep_id']];
             $sscore['course_name']  = $SchoolSet->courese_chn[$sscore['course_id']];
-            // die(var_dump($sscore));
 
             // 判斷是否為教師本人 或管理員
             if(!(power_chk("beck_iscore", "3") or $xoopsUser->isAdmin() or $sscore['tea_id']==$_SESSION['xoopsUserId'])){
@@ -3115,6 +3130,8 @@ switch ($op) {
 
             // 列出該學程內所有學生sn, name 不含回歸結案
             $major_stu=$SchoolSet->major_stu[$pars['dep_id']];
+            // die(var_dump($major_stu));
+
             foreach ($major_stu as $dep_id=>$stu_sn){
                 $stu_data[$stu_sn]['name']          = $myts->htmlSpecialChars($SchoolSet->stu_name_all[$stu_sn]);
                 $stu_data[$stu_sn]['stu_anonymous'] = $myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$stu_sn]);
@@ -3186,6 +3203,7 @@ switch ($op) {
             while($data= $xoopsDB->fetchArray($result)){
                 $stu_data [$data['student_sn']]['name']=$myts->htmlSpecialChars($SchoolSet->stu_name_all[$data['student_sn']]);
                 $stu_data [$data['student_sn']]['stu_anonymous']=$myts->htmlSpecialChars($SchoolSet->stu_anonymous_all[$data['student_sn']]);
+                $stu_data [$data['student_sn']]['stu_id_all']=$myts->htmlSpecialChars($SchoolSet->stu_id_all[$data['student_sn']]);
                 $stu_data [$data['student_sn']]['f_usual']= $myts->htmlSpecialChars($data['uscore_avg']);
                 $stu_data [$data['student_sn']]['f_stage']= $myts->htmlSpecialChars($data['sscore_avg']);
                 $stu_data [$data['student_sn']]['f_sum']= $myts->htmlSpecialChars($data['sum_usual_stage_avg']);
@@ -3981,7 +3999,8 @@ switch ($op) {
             $sql.=" WHERE status='{$pars['status']}'";
             // $have_par='1';
         }else{
-            $sql.=" WHERE status != '2'";
+            // $sql.=" WHERE status != '2'";
+            $sql.=" WHERE 1 ";
         }
         if($pars['major_id']!=''){
             // if($have_par=='1'){$sql.=" AND ";}else{$sql.=" WHERE ";};
@@ -3994,7 +4013,7 @@ switch ($op) {
             // $have_par='1';
         }
         // if($have_par=='1'){$sql.=" AND status != '2'";}else{$sql.=" WHERE status != '2'";};
-        $sql.=" ORDER BY `major_id` ,`stu_id` ,`stu_no` DESC";
+        $sql.=" ORDER BY `stu_no` DESC,`major_id` ,`stu_id`";
         // echo($sql);  die();
 
         //getPageBar($原sql語法, 每頁顯示幾筆資料, 最多顯示幾個頁數選項);
@@ -4065,7 +4084,7 @@ switch ($op) {
         global $xoopsDB,$xoopsUser;
 
         if (!$xoopsUser) {
-            redirect_header('index.php', 3, 'usual_score_insert! error:2105052140');
+            redirect_header('index.php', 3, 'usual_score_delete! error:2105052140');
         }
         // die(var_dump($pars));
         // 安全判斷 儲存 更新都要做
@@ -4205,7 +4224,7 @@ switch ($op) {
                 $uscore['exam_number']=(string)((int)$exam_number['exam_number']+1);
             }
 
- 
+
         }else{
             // 找出，要撈哪些學生的平時成績
             $sql_stusn = "('".implode("','", $major_stu)."')";
@@ -4331,6 +4350,7 @@ switch ($op) {
             while($data= $xoopsDB->fetchArray($result)){
                 $uexam_times[$data['exam_stage']]= $data['uexam_times'];
             }
+            // var_dump($uexam_times);die();
 
             // 列出該學程內所有學生sn, name 不含回歸結案
             $major_stu=$SchoolSet->major_stu[$course['dep_id']];
@@ -4422,26 +4442,26 @@ switch ($op) {
             redirect_header("tchstu_mag.php?op=usual_score_batch", 3, 'usual_score_batch 權限! error:2306302210');
         } 
 
-        $pars['cos_year']=($pars['cos_year']=='')?(string)$SchoolSet->sem_year:$pars['cos_year'];
-        $pars['cos_term']=($pars['cos_term']=='')?(string)$SchoolSet->sem_term:$pars['cos_term'];
-
-        // var_dump($pars);die();
+        $pars['usb_year']=($pars['usb_year']=='')?(string)$SchoolSet->sem_year:$pars['usb_year'];
+        $pars['usb_term']=($pars['usb_term']=='')?(string)$SchoolSet->sem_term:$pars['usb_term'];
         $myts = MyTextSanitizer::getInstance();
 
         $tb1      = $xoopsDB->prefix('yy_usual_score');
         $tb2      = $xoopsDB->prefix('yy_student');
-        $sql      = "SELECT  us.* , stu.*
+        $sql      = "SELECT  us.sn as usual_score_sn, us.* , stu.*
                     FROM $tb1 as us 
                         LEFT JOIN $tb2 as stu ON us.student_sn=stu.sn WHERE 1
                         " ;
-        if($pars['cos_year']!=''){
-            $sql.=" AND `year`='{$pars['cos_year']}'";
+        if($pars['usb_year']!=''){
+            $sql.=" AND `year`='{$pars['usb_year']}'";
         }
-        if($pars['cos_term']!=''){
-            $sql.=" AND `term`='{$pars['cos_term']}'";
+        if($pars['usb_term']!=''){
+            $sql.=" AND `term`='{$pars['usb_term']}'";
         }
-        if(($pars['stu_id']!='')){
-            $sql.=" AND us.stu_id = '{$pars['stu_id']}'";
+        if(($pars['usb_stu_id']!='')){
+            $sql.=" AND stu_id = '{$pars['usb_stu_id']}'";
+        }else{
+            $sql.=" AND stu_id = ''";
         }
 
         $sql.=" ORDER BY  `year` DESC , `term` DESC ,`dep_id` ,`student_sn`, `course_id`";
@@ -4451,45 +4471,45 @@ switch ($op) {
         $all      = array();
 
         if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*20+1;}
-        $credit_sun=0;
-        $star_icon=['0'=>'','1'=>'<i class="fa fa-star" aria-hidden="true"></i>'];
-        while($cos= $xoopsDB->fetchArray($result)){
-            $cos['i']            = $i;
-            $cos['cos_year']     = $myts->htmlSpecialChars($cos['cos_year']);       //學號
-            $cos['cos_term']     = $myts->htmlSpecialChars($cos['cos_term']);      //姓名
-            $cos['year_term']    = $cos['cos_year'].'/'.$cos['cos_term'];
-            $cos['dep_name']     = $myts->htmlSpecialChars($cos['dep_name']);
-            $cos['teacher_name'] = $myts->htmlSpecialChars($cos['teacher_name']);
-            $cos['cos_name']     = $myts->htmlSpecialChars($cos['cos_name']);
-            $cos['cos_name_grp'] = $myts->htmlSpecialChars($cos['cos_name_grp']);
-            $cos['first_chk']    = Get_bootstrap_switch_opt_htm('first_test',$cos['sn'],$cos['first_test']);
-            $cos['f_icon']       = $star_icon[$cos['first_test']];
-            $cos['second_chk']   = Get_bootstrap_switch_opt_htm('second_test',$cos['sn'],$cos['second_test']);
-            $cos['s_icon']       = $star_icon[$cos['second_test']];
-            $credit_sun=$credit_sun+$cos['cos_credits'];
-            $all []              = $cos;
-            $i++;
+        
+        while($usco= $xoopsDB->fetchArray($result)){
+            $rs['sn']               = $myts->htmlSpecialChars($usco['usual_score_sn']);
+            $rs['year']             = $myts->htmlSpecialChars($usco['year']);
+            $rs['term']             = $myts->htmlSpecialChars($usco['term']);
+            $rs['dep_id']           = $myts->htmlSpecialChars($usco['dep_id']);
+            $rs['course_id']        = $myts->htmlSpecialChars($usco['course_id']);
+            $rs['exam_stage']       = $myts->htmlSpecialChars($usco['exam_stage']);
+            $rs['usual_exam_name']  = $myts->htmlSpecialChars($SchoolSet->usual_exam_name[$usco['exam_stage']]);
+            $rs['exam_number']      = $myts->htmlSpecialChars($usco['exam_number']);
+            $rs['student_sn']       = $myts->htmlSpecialChars($usco['student_sn']);//學生—流水號
+            $rs['score']            = $myts->htmlSpecialChars($usco['score']);
+            $rs['usual_average_sn'] = $myts->htmlSpecialChars($usco['usual_average_sn']);
+            $rs['stu_id']           = $myts->htmlSpecialChars($usco['stu_id']);//學號
+            $rs['stu_no']           = $myts->htmlSpecialChars($usco['stu_no']); //學生編號
+            $rs['stu_name']         = $myts->htmlSpecialChars($usco['stu_name']);
+            $rs['stu_anonymous']    = $myts->htmlSpecialChars($usco['stu_anonymous']);
+            $rs['dep_name']         = $myts->htmlSpecialChars($SchoolSet->all_depsnname[$usco['dep_id']]);
+            $rs['cos_name']         = $myts->htmlSpecialChars($SchoolSet->courese_chn[$usco['course_id']]);
+            $rs['tea_name']         = $myts->htmlSpecialChars($SchoolSet->uid2name[$SchoolSet->all_course[$usco['course_id']]['tea_id']]);
+            $rs['update_user']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$usco['update_user']]);
+            $rs['update_date']      = $myts->htmlSpecialChars($usco['update_date']);
+            $rs['usual_average_sn'] = $myts->htmlSpecialChars($usco['usual_average_sn']);
+            $all []                 = $rs;
         }
-        $xoopsTpl->assign('credit_sun', $credit_sun);
-        // var_dump($credit_sun);die();
-        // 學年度select
+        // var_dump($all);die();
+        // 學年度select $SchoolSet->all_course
         foreach ($SchoolSet->all_sems as $k=>$v){
             $sems_year[$v['year']]=$v['year'];
         }
-        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['cos_year'],'0');
+
+        // 取前三筆
+        $sems_year=array_slice($sems_year, 0, 3,true);   
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['usb_year'],'0');
         $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
         // 學期 
         $terms=['1'=>'1','2'=>'2'];
-        $sems_term_htm=Get_select_opt_htm($terms,$pars['cos_term'],'0');
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['usb_term'],'0');
         $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
-
-        // 學程列表
-        $major_name=[];
-        foreach ($SchoolSet->dept as $k=>$v){
-            $major_name[$v['sn']]=$v['dep_name'];
-        }
-        $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
-        $xoopsTpl->assign('major_htm', $major_htm);
 
         $xoopsTpl->assign('all', $all);
         // $xoopsTpl->assign('bar', $bar);
@@ -4497,7 +4517,7 @@ switch ($op) {
 
         $xoopsTpl->assign('sem_year', $SchoolSet->max_sem_year);
         $xoopsTpl->assign('sem_term', $SchoolSet->max_sem_term);
-        $xoopsTpl->assign('dep_id', $pars['dep_id']);
+        $xoopsTpl->assign('usb_stu_id', $pars['usb_stu_id']);
 
 
         // 載入xoops表單元件
@@ -4507,11 +4527,110 @@ switch ($op) {
 
         $xoopsTpl->assign('op', "usual_score_batch");
         BootstrapTable::render();
+    }
+// 段考成績批次刪除
+    function stage_score_batch($pars=[],$g2p=''){
+        global $xoopsTpl,$xoopsDB,$xoopsUser;
+        $SchoolSet= new SchoolSet;
+
+        if(!($xoopsUser->isAdmin())){
+            redirect_header("tchstu_mag.php?op=stage_score_batch", 3, 'stage_score_batch 權限! error:20230709');
+        } 
+
+        $pars['ssb_year']=($pars['ssb_year']=='')?(string)$SchoolSet->sem_year:$pars['ssb_year'];
+        $pars['ssb_term']=($pars['ssb_term']=='')?(string)$SchoolSet->sem_term:$pars['ssb_term'];
+        $myts = MyTextSanitizer::getInstance();
+
+        $tb1      = $xoopsDB->prefix('yy_stage_score');
+        $tb2      = $xoopsDB->prefix('yy_student');
+        $sql      = "SELECT  ss.sn as stage_score_sn, ss.* , stu.*
+                    FROM $tb1 as ss 
+                        LEFT JOIN $tb2 as stu ON ss.student_sn=stu.sn WHERE 1
+                        " ;
+        if($pars['ssb_year']!=''){
+            $sql.=" AND `year`='{$pars['ssb_year']}'";
+        }
+        if($pars['ssb_term']!=''){
+            $sql.=" AND `term`='{$pars['ssb_term']}'";
+        }
+        if(($pars['ssb_stu_id']!='')){
+            $sql.=" AND stu_id = '{$pars['ssb_stu_id']}'";
+        }else{
+            $sql.=" AND stu_id = ''";
+        }
+
+        $sql.=" ORDER BY  `year` DESC , `term` DESC ,`dep_id` ,`student_sn`, `course_id`";
+        // echo($sql);die();
+
+        $result   = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
+        $all      = array();
+
+        if($g2p=='' OR $g2p=='1'){$i=1;}else{$i=($g2p-1)*20+1;}
+        
+        while($usco= $xoopsDB->fetchArray($result)){
+            $rs['sn']               = $myts->htmlSpecialChars($usco['stage_score_sn']);
+            $rs['year']             = $myts->htmlSpecialChars($usco['year']);
+            $rs['term']             = $myts->htmlSpecialChars($usco['term']);
+            $rs['dep_id']           = $myts->htmlSpecialChars($usco['dep_id']);
+            $rs['course_id']        = $myts->htmlSpecialChars($usco['course_id']);
+            $rs['exam_stage']       = $myts->htmlSpecialChars($usco['exam_stage']);
+            $rs['usual_exam_name']  = $myts->htmlSpecialChars($SchoolSet->exam_name[$usco['exam_stage']]);
+            $rs['student_sn']       = $myts->htmlSpecialChars($usco['student_sn']);//學生—流水號
+            $rs['score']            = $myts->htmlSpecialChars($usco['score']);
+            $rs['final_score_sn']   = $myts->htmlSpecialChars($usco['final_score_sn']);
+            $rs['stu_id']           = $myts->htmlSpecialChars($usco['stu_id']);//學號
+            $rs['stu_no']           = $myts->htmlSpecialChars($usco['stu_no']); //學生編號
+            $rs['stu_name']         = $myts->htmlSpecialChars($usco['stu_name']);
+            $rs['stu_anonymous']    = $myts->htmlSpecialChars($usco['stu_anonymous']);
+            $rs['dep_name']         = $myts->htmlSpecialChars($SchoolSet->all_depsnname[$usco['dep_id']]);
+            $rs['cos_name']         = $myts->htmlSpecialChars($SchoolSet->courese_chn[$usco['course_id']]);
+            $rs['tea_name']         = $myts->htmlSpecialChars($SchoolSet->uid2name[$SchoolSet->all_course[$usco['course_id']]['tea_id']]);
+            $rs['update_user']      = $myts->htmlSpecialChars($SchoolSet->uid2name[$usco['update_user']]);
+            $rs['update_date']      = $myts->htmlSpecialChars($usco['update_date']);
+            $all []                 = $rs;
+        }
+        // var_dump($all);die();
+        // 學年度select $SchoolSet->all_course
+        foreach ($SchoolSet->all_sems as $k=>$v){
+            $sems_year[$v['year']]=$v['year'];
+        }
+
+        // 取前三筆
+        $sems_year=array_slice($sems_year, 0, 3,true);   
+        $sems_year_htm=Get_select_opt_htm($sems_year,$pars['ssb_year'],'0');
+        $xoopsTpl->assign('sems_year_htm', $sems_year_htm);
+        // 學期 
+        $terms=['1'=>'1','2'=>'2'];
+        $sems_term_htm=Get_select_opt_htm($terms,$pars['ssb_term'],'0');
+        $xoopsTpl->assign('sems_term_htm', $sems_term_htm);
+
+        // 學程列表
+        // $major_name=[];
+        // foreach ($SchoolSet->dept as $k=>$v){
+        //     $major_name[$v['sn']]=$v['dep_name'];
+        // }
+        // $major_htm=Get_select_opt_htm($major_name,$pars['dep_id'],'1');
+        // $xoopsTpl->assign('major_htm', $major_htm);
+
+        $xoopsTpl->assign('all', $all);
+        // $xoopsTpl->assign('bar', $bar);
+        // $xoopsTpl->assign('total', $total);
+
+        $xoopsTpl->assign('sem_year', $SchoolSet->max_sem_year);
+        $xoopsTpl->assign('sem_term', $SchoolSet->max_sem_term);
+        $xoopsTpl->assign('ssb_stu_id', $pars['ssb_stu_id']);
 
 
+        // 載入xoops表單元件
+        include_once(XOOPS_ROOT_PATH."/class/xoopsformloader.php");
+        $token =new XoopsFormHiddenToken('XOOPS_TOKEN',3000);
+        $xoopsTpl->assign('XOOPS_TOKEN' , $token->render());
+
+        $xoopsTpl->assign('op', "stage_score_batch");
+        BootstrapTable::render();
     }
 
-/*-----------秀出結果區--------------*/
+    /*-----------秀出結果區--------------*/
 
 $xoopsTpl->assign('now_op', $op);
 $xoopsTpl->assign("toolbar", toolbar_bootstrap($interface_menu));

@@ -31,7 +31,7 @@ class SchoolSet
     public $issocial; //社工師
     public $dept; //學程資料 enable
     public $depsnname; //['4'=>'資料處理科']學程中文名稱 sn map name
-    public $all_dept;
+    public $all_dept;  // 只有開啟的學程
     public $all_depsnname; //所有學程
     public $deptofsch; //處室資料
     public $depid_depname; //處室id=處室名稱
@@ -61,6 +61,7 @@ class SchoolSet
     public $stu_dep; //[stu sn]= dep id 學生 學程
     public $stu_id; // 學生 學號
     public $stu_id_all; // 學生 學號
+    public $stu_id_sn; // stu_id_sn[stu_id]=[sn]
     public $month_ary; // 月份陣列
     public $sys_config; // config
     public $sys_var; // config
@@ -800,7 +801,6 @@ class SchoolSet
             $tea_course[$all['tea_id']][$all['dep_id']][]= $all['sn'];
             $dep2course[$all['dep_id']][]= $all['sn'];
             $courese_chn[$all['sn']]=$all['cos_name'];
-            $courese_chn[$all['sn']]=$all['cos_name'];
             $all_course[$all['sn']]=$all;
         }
         $this->tea_course = $tea_course;
@@ -1048,6 +1048,8 @@ class SchoolSet
         $sql = "SELECT *,$tb1.sn as stusn FROM $tb1 
                 LEFT JOIN $tb2 ON $tb1.class_id =$tb2.sn
                 ORDER BY $tb1.stu_id DESC ";
+        // echo($sql);die();
+
         $result  = $xoopsDB->query($sql) or Utility::web_error($sql, __FILE__, __LINE__);
         while($user= $xoopsDB->fetchArray($result)){
             $stu_anonymous_all[$user['stusn']] = $user['stu_anonymous'];// [stu sn]= stu_anonymous
@@ -1055,10 +1057,10 @@ class SchoolSet
             $stu_name_all[$user['stusn']] = $user['stu_name'];    //[stu sn]=name
             $stu_id_all[$user['stusn']] = $user['stu_id'];  // [stu sn]= stu_id
             $stu_dep_all[$user['stusn']] = $user['major_id'];  // [stu sn]= dep id
+            $stu_id_sn[$user['stu_id']] = $user['stusn'];  // [stu sn]= dep id
 
         }
-        // var_dump($major_stu);die();
-
+        // var_dump($stu_id_sn);die();
 
         $this->major_stu=$major_stu;
         $this->stu_name=$stu_name;
@@ -1069,7 +1071,7 @@ class SchoolSet
         $this->stu_sn_classid=$stu_sn_classid;
         $this->stu_dep=$stu_dep;
         $this->stu_dep_all=$stu_dep_all;
-        $this->stu_id=$stu_id;
+        $this->stu_id_sn=$stu_id_sn;
         $this->stu_id_all=$stu_id_all;
         $this->stu_grade=$stu_grade;
         $this->classname_stuid=$classname_stuid;
