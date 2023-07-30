@@ -49,9 +49,9 @@
     
         <div class="ml-auto">
             <button type="button" class="btn btn-secondary mr-2" onclick="self.location.href='tchstu_mag.php?op=reward_punishment_list';">清空條件</button>
-            <button type="button" class="btn btn-primary mr-2" onclick="self.location.href='tchstu_mag.php?op=reward_punishment_form';">
+            <!-- <button type="button" class="btn btn-primary mr-2" onclick="self.location.href='tchstu_mag.php?op=reward_punishment_form';">
                 <i class="fa fa-plus-circle " aria-hidden="true"></i>新增獎懲
-            </button>
+            </button> -->
             <button type="button" class="btn btn-success mr-2" onclick="onprint()"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
             <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=reward_punishment_sum';">
                 <i class="fa fa-list mr-2" aria-hidden="true"></i>獎懲總表

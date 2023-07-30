@@ -385,7 +385,7 @@ function teacher_sort($odr_ary){
         $tch_exist= $xoopsDB->fetchArray($result);
     
         if (!$tch_exist) {
-            $sql = "insert into `$tbl` (
+            $sql = "Unable to add data `$tbl` (
                         `uid`,`enable`,`sex`,`create_uid`,`create_time`,`update_uid`,
                         `update_time`
                     )values(
@@ -438,7 +438,7 @@ function teacher_identity_edit($sn,$check_status,$idtf){
         // var_dump($sql);die();
         $xoopsDB->queryF($sql) or Utility::web_error($sql, __FILE__, __LINE__);
     } else {
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
                     `uid`,`enable`,`{$idtf}`,`sex`,`create_uid`,`create_time`,`update_uid`,
                     `update_time`
                 )values(

@@ -201,7 +201,7 @@
     </div>
 
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary"  id="save_data" type="button"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <!-- <button class="btn btn-primary"  id="save_data" type="button"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=absence_record_list">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
     </div>

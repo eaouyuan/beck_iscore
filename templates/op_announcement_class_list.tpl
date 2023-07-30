@@ -1,11 +1,11 @@
 
 <div class="col">
     <h2 style="float:left">公告分類 ─ 列表</h2>
-   
-    <button type="button" class="btn btn-primary btn-sm" style="float:right" 
+
+    <!-- <button type="button" class="btn btn-primary btn-sm" style="float:right" 
         onclick="self.location.href='index.php?op=announcement_class_form';">
         <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增分類"> 新增分類
-    </button>
+    </button> -->
 
 
 </div>

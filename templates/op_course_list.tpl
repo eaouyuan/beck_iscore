@@ -35,9 +35,9 @@
         </div>
 
         <div class="ml-auto">
-            <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='tchstu_mag.php?op=course_form';">
+            <!-- <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='tchstu_mag.php?op=course_form';">
             <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增課程">新增課程
-            </button>
+            </button> -->
         </div>
 
     </div>

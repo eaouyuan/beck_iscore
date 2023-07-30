@@ -1,10 +1,10 @@
 <div class="col">
     <h2 style="float:left">學校處室 ─ 列表</h2>
 
-    <button type="button" class="btn btn-primary btn-sm" style="float:right" 
+    <!-- <button type="button" class="btn btn-primary btn-sm" style="float:right" 
         onclick="self.location.href='school_affairs.php?op=dept_school_form';">
         <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增處室"> 新增處室
-    </button>
+    </button> -->
 
 
 </div>

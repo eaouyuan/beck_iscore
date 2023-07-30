@@ -3,9 +3,9 @@
         <div class="form-group row">
             <div class="col text-center"><h3><{$info.year}> 學年度 第 <{$info.term}> 學期 <{$info.class}>班：<{$info.stu_name}> 學生認輔紀錄</h3></div>
             <div class="ml-auto">
-                <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=counseling_form&year=<{$info.year}>&term=<{$info.term}>&stu_sn=<{$info.stu_sn}>&tea_uid=<{$info.tea_uid}>';">
+                <!-- <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=counseling_form&year=<{$info.year}>&term=<{$info.term}>&stu_sn=<{$info.stu_sn}>&tea_uid=<{$info.tea_uid}>';">
                     <i class="fa fa-plus-circle  mr-2" aria-hidden="true"></i>新增認輔學生紀錄
-                </button>
+                </button> -->
                 <button type="button" class="btn btn-success" onclick="onprint()"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
             </div>
         </div>

@@ -48,9 +48,9 @@
     
         <div class="ml-auto">
             <button type="button" class="btn btn-outline-success mr-2" onclick="self.location.href='tchstu_mag.php?op=absence_record_list';">目前學期</button>
-            <button type="button" class="btn btn-primary mr-2" onclick="self.location.href='tchstu_mag.php?op=absence_record_form';">
+            <!-- <button type="button" class="btn btn-primary mr-2" onclick="self.location.href='tchstu_mag.php?op=absence_record_form';">
                 <i class="fa fa-plus-circle " aria-hidden="true"></i>新增缺勤紀錄
-            </button>
+            </button> -->
             <button type="button" class="btn btn-success mr-2" onclick="onprint()"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
         </div>
     </div>

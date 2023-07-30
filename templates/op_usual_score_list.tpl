@@ -26,7 +26,7 @@
                     <{$course.exam_number_htm}>
                 </select>
                 <div class="input-group-append">
-                    <button class="btn btn-outline-primary" type="button" id="add_uscore">確定</button>
+                    <!-- <button class="btn btn-outline-primary" type="button" id="add_uscore">確定</button> -->
                 </div>
             </div>
             <{/if}>
@@ -106,17 +106,17 @@
             document.forms["usual_score_list"].submit();
         });
 
-        $("#add_uscore").click(function() {
-            let exam_number_val=$("#exam_number option:selected").val();
-            if(exam_number_val==''){
-                sweetAlert("請選擇成績階段或目前非成績輸入時間", "輸入錯誤","error");
+        // $("#add_uscore").click(function() {
+        //     let exam_number_val=$("#exam_number option:selected").val();
+        //     if(exam_number_val==''){
+        //         sweetAlert("請選擇成績階段或目前非成績輸入時間", "輸入錯誤","error");
 
-            }else{
-                let url="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_score_form&dep_id=<{$course.dep_id}>&course_id=<{$course.course_id}>&exam_stage="+exam_number_val;
-                location.href=url;
-            }
+        //     }else{
+        //         let url="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=usual_score_form&dep_id=<{$course.dep_id}>&course_id=<{$course.course_id}>&exam_stage="+exam_number_val;
+        //         location.href=url;
+        //     }
             
-        });
+        // });
 
 
     })

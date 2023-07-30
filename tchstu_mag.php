@@ -2454,7 +2454,7 @@ switch ($op) {
         $class_id=($SchoolSet->stu_sn_classid[$student_sn]);
 
         $tbl = $xoopsDB->prefix('yy_high_care');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
             `year`,`month`,`student_sn`,`class_id`,`event_desc`,
             `keyin_date`,`update_user`,`update_date`) 
             values(

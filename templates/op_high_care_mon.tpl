@@ -23,9 +23,9 @@
         <button type="submit" class="btn btn-outline-primary col-0.5 mb-3 mr-3">搜尋</button>
         <button type="button" class="btn btn-outline-success col-0.5 mb-3 mr-3" onclick="self.location.href='tchstu_mag.php?op=high_care_mon';">目前月份</button>
         <div class="ml-auto">
-            <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=high_care_form';">
+            <!-- <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=high_care_form';">
                 <i class="fa fa-plus-circle  mr-2" aria-hidden="true"></i>新增關懷學生
-            </button>
+            </button> -->
             <button type="button" class="btn btn-success" onclick="onprint()"><i class="fa fa-print  mr-2" aria-hidden="true"></i>列印</button>
             <button type="button" class="btn btn-primary" onclick="self.location.href='tchstu_mag.php?op=high_care_list';">
                 <i class="fa fa-list mr-2" aria-hidden="true"></i>回高關懷名單列表

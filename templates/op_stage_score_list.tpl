@@ -86,7 +86,7 @@
     </div>
     <div class="col-md-12 text-center mb-3">
         <{if $desc_addEdit}>
-            <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+            <!-- <button class="btn btn-primary" type="button" onclick="check_num()"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
         <{/if}>
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=stage_score_list&dep_id=<{$sscore.dep_id}>">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>

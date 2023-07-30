@@ -72,7 +72,7 @@
     <br>
     <div class="col-md-12 text-center mb-3">
         <{if $ps_edit}>
-            <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>修改備註</button>
+            <!-- <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>修改備註</button> -->
         <{/if}>
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/tchstu_mag.php?op=query_stage_score&dep_id=<{$course.dep_id}>"><i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
     </div>

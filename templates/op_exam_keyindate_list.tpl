@@ -5,11 +5,11 @@
             
             <h2 class="mb-3">成績登入時間 ─ 列表</h2>
 
-            <div class="ml-auto">
+            <!-- <div class="ml-auto">
                 <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='school_affairs.php?op=exam_keyindate_form';">
                 <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增成績登入時間">新增成績登入時間
                 </button>
-            </div>
+            </div> -->
 
         </div>
 

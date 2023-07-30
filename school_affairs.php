@@ -370,7 +370,7 @@ switch ($op) {
 
         $tbl = $xoopsDB->prefix('yy_term_stu');
         foreach($all as $v){
-            $sql = "insert into `$tbl` (
+            $sql = "Unable to add data `$tbl` (
                         `year`,`term`,`stu_sn`,`stu_id`,`stu_name`,
                         `stu_anonymous`,`class_id`,`class_name`,`major_id`,`dep_name`,
                         `tutor_uid`,`tutor_name`,`grade`,`update_date`
@@ -496,7 +496,7 @@ switch ($op) {
         }
 
         foreach($sdata as $v){
-            $sql = "insert into `$tbl` (
+            $sql = "Unable to add data `$tbl` (
                         `cos_year`,`cos_term`,`dep_id`,`tea_id`,`cos_name`,
                         `cos_name_grp`,`cos_credits`,`scoring`,`first_test`,`second_test`,
                         `status`,`sort`,`update_user`,`update_date`
@@ -679,7 +679,7 @@ switch ($op) {
         
         foreach ($d_list as $key => $stusn) {
             // 新增認輔對應紀錄
-            $sql = "insert into `$tbl` (
+            $sql = "Unable to add data `$tbl` (
                 `year`,`term`,`tea_uid`,`student_sn`,`update_user`,
                 `update_date`) 
                 values(
@@ -1194,7 +1194,7 @@ switch ($op) {
         // die(var_dump($cos_exist));
     
         if (!$data_exist) {
-            $sql = "insert into `$tbl` (
+            $sql = "Unable to add data `$tbl` (
                         `exam_year`,`exam_term`,`exam_name`,`exam_value`,`start_date`,`end_date`,
                         `status`,`update_user`,`update_date`
                     )values(
@@ -1443,7 +1443,7 @@ switch ($op) {
         // die(var_dump($_POST));
 
         $tbl = $xoopsDB->prefix('yy_department');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
             `dep_name`,`dep_status`,`create_uid`,`create_time`,`update_uid`,`update_time`,`normal_exam` , `section_exam`) 
             values('{$dep_name}','{$dep_status}','{$operator_uid}',now(),'{$operator_uid}', now(), '{$normal_exam}', '{$section_exam}')";
         // echo($sql);die();
@@ -1647,7 +1647,7 @@ switch ($op) {
         // die(var_dump($_POST));
 
         $tbl = $xoopsDB->prefix('yy_class');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
             `class_name`,`class_status`,`tutor_sn`,`create_uid`,`create_time`,`update_uid`,`update_time`) 
             values('{$class_name}','{$status}','{$teacher}','{$operator_uid}',now(),'{$operator_uid}', now())";
         // echo($sql);die();
@@ -1934,7 +1934,7 @@ switch ($op) {
         */
 
         $tbl = $xoopsDB->prefix('yy_teacher');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
                     `uid`,`dep_id`,`title`,`sex`,`phone`,
                     `cell_phone`,`enable`,`isteacher`,`isguidance`,`issocial`,
                     `create_uid`,`create_time`,`update_uid`,`update_time`,`sort`
@@ -2323,7 +2323,7 @@ switch ($op) {
         }
         // echo($sql);die();
 
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
                     `year`,`term`,`start_date`,`end_date`,`uid`,
                     `create_date`,`update_user`,`update_date`,`activity`
                 )values(
@@ -2523,7 +2523,7 @@ switch ($op) {
         // die(var_dump($_POST));
 
         $tbl = $xoopsDB->prefix('yy_dept_school');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
             `dept_name`,`enable`,`uid`,`create_time`,`update_time`) 
             values('{$dept_name}','{$enable}','{$uid}',now(), now())";
 

@@ -1,10 +1,10 @@
 
 <div class="col">
     <h2 style="float:left" class="mb-3">學年度 ─ 列表</h2>
-    <button type="button" class="btn btn-primary btn-sm mb-3" 
+    <!-- <button type="button" class="btn btn-primary btn-sm mb-3" 
     onclick="self.location.href='school_affairs.php?op=semester_form';"style="float:right">
     <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增學年度"> <span class="vertical-align:middle">新增學年度</span>
-    </button>
+    </button> -->
 </div>
 
 

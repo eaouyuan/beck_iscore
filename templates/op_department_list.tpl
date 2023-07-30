@@ -1,10 +1,10 @@
 <div class="col">
     <h2 style="float:left">學程 ─ 列表</h2>
 
-    <button type="button" class="btn btn-primary btn-sm" style="float:right" 
+    <!-- <button type="button" class="btn btn-primary btn-sm float-right"
         onclick="self.location.href='school_affairs.php?op=department_form';">
         <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增學程"> 新增學程
-    </button>
+    </button> -->
 
 
 </div>

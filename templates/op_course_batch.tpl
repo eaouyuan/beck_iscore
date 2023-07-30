@@ -37,11 +37,11 @@
             <button type="button" id="ac_smes" class="btn btn btn-success col-0.5 mb-2 mr-3">最新學期</button>
         </div>
 
-        <div class="ml-auto">
+        <!-- <div class="ml-auto">
             <button type="button" class="btn btn-primary btn-sm mb-2" onclick="self.location.href='tchstu_mag.php?op=course_form';">
             <img src="<{$xoops_url}>/modules/system/images/icons/transition/add.png" alt="新增課程">新增課程
             </button>
-        </div>
+        </div> -->
 
     </div>
 

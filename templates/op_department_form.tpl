@@ -30,7 +30,7 @@
     <div class="form-group row"></div>
 
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <!-- <button class="btn btn-primary" type="submit"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=department_list">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>取消</a>
     </div>

@@ -219,7 +219,7 @@ default:
 
 
         $tbl = $xoopsDB->prefix('yy_announcement_class');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
             `ann_class_name`,`enable`,`uid`,`create_time`,`update_time`) 
             values('{$ann_class_name}','{$enable}','{$uid}',now(), now())";
 
@@ -443,7 +443,7 @@ default:
         // var_dump($_POST);die();
 
         $tbl = $xoopsDB->prefix('yy_announcement');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
                     `ann_class_id`,`dept_id`,`title`,`content`,`start_date`,
                     `end_date`,`uid`,`create_date`,`update_user`,`update_date`,
                     `top`
@@ -969,7 +969,7 @@ default:
         // die();
 
         $tbl = $xoopsDB->prefix('yy_student');
-        $sql = "insert into `$tbl` (
+        $sql = "Unable to add data `$tbl` (
             `stu_sn                `,`stu_name              `,`arrival_date          `,`birthday              `,`national_id           `,`ori_referral          `,`domicile              `,`ethnic_group          `,`marital               `,`height                `,`weight                `,`Low_income            `,`guardian_disability   `,`referral_reason       `,`original_education    `,`original_school       `,`family_profile        `,`residence_address     `,`address               `,`guardian1             `,`guardian_relationship1`,`guardian_cellphone1   `,`guardian2             `,`guardian_relationship2`,`guardian_cellphone2   `,`emergency_contact1    `,`emergency_contact_rel1`,`emergency_cellphone1  `,`emergency_contact2    `,`emergency_contact_rel2`,`emergency_cellphone2  `,`sort                  `,`uid`                   ,
             `create_time`           ,`update_time`) 
             values('{$stu_sn}','{$stu_name}','{$arrival_date}','{$birthday}','{$national_id}','{$ori_referral}','{$domicile}','{$ethnic_group}','{$marital}','{$height}','{$weight}','{$Low_income}','{$guardian_disability}','{$referral_reason}','{$original_education}','{$original_school}','{$family_profile}','{$residence_address}','{$address}','{$guardian1}','{$guardian_relationship1}','{$guardian_cellphone1}','{$guardian2}','{$guardian_relationship2}','{$guardian_cellphone2}','{$emergency_contact1}','{$emergency_contact_rel1}','{$emergency_cellphone1}','{$emergency_contact2}','{$emergency_contact_rel2}','{$emergency_cellphone2}','{$sort}','{$uid}',now(), now())";

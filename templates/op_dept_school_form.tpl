@@ -14,7 +14,7 @@
         <div class="col-lg-10"><{$enable_option}></div>
     </div>
     <div class="col-md-12 text-center mb-3">
-        <button class="btn btn-primary" type="submit">儲存</button>
+        <!-- <button class="btn btn-primary" type="submit">儲存</button> -->
         <a class="btn btn-secondary" href="<{$xoops_url}>/modules/beck_iscore/school_affairs.php?op=dept_school_list">取消</a>
     </div>
 

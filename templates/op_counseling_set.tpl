@@ -52,7 +52,7 @@
 
     <div class="col-md-12 text-center mb-3">
         <button type="submit" style="display:none;"></button>
-        <button class="btn btn-primary" type="button" onclick="selectAll();"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button>
+        <!-- <button class="btn btn-primary" type="button" onclick="selectAll();"><i class="fa fa-floppy-o mr-2" aria-hidden="true"></i>儲存</button> -->
         <a class="btn btn-secondary" href="javascript:history.back()">
             <i class="fa fa-undo mr-2" aria-hidden="true"></i>回上一頁</a>
     </div>
